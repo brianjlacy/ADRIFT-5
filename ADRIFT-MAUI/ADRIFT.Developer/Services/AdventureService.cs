@@ -1,4 +1,5 @@
 using ADRIFT.Core.Models;
+using ADRIFT.Engine;
 
 namespace ADRIFT.Developer.Services;
 
@@ -22,22 +23,29 @@ public class AdventureService : IAdventureService
     {
         try
         {
-            // TODO: Implement file loading using FileIO class
-            // var adventure = await System.Threading.Tasks.Task.Run(() => FileIO.LoadAdventure(filePath));
-            // _currentAdventure = adventure;
-            // AdventureChanged?.Invoke(this, new AdventureChangedEventArgs
-            // {
-            //     Adventure = adventure,
-            //     FilePath = filePath
-            // });
-            // return adventure;
-
-            await System.Threading.Tasks.Task.CompletedTask;
-            return null;
+            var adventure = await AdventureLoader.LoadAdventureAsync(filePath);
+            _currentAdventure = adventure;
+            AdventureChanged?.Invoke(this, new AdventureChangedEventArgs
+            {
+                Adventure = adventure,
+                FilePath = filePath
+            });
+            return adventure;
+        }
+        catch (FileNotFoundException ex)
+        {
+            throw new InvalidOperationException($"Adventure file not found: {filePath}", ex);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            throw new InvalidOperationException($"This adventure is password protected or the password is incorrect.", ex);
+        }
+        catch (InvalidDataException ex)
+        {
+            throw new InvalidOperationException($"Invalid adventure file format: {ex.Message}", ex);
         }
         catch (Exception ex)
         {
-            // TODO: Proper error handling
             throw new InvalidOperationException($"Failed to load adventure: {ex.Message}", ex);
         }
     }
@@ -46,16 +54,17 @@ public class AdventureService : IAdventureService
     {
         try
         {
-            // TODO: Implement file saving using FileIO class
-            // await System.Threading.Tasks.Task.Run(() => FileIO.SaveAdventure(adventure, filePath));
-            // return true;
-
-            await System.Threading.Tasks.Task.CompletedTask;
-            return false;
+            await AdventureLoader.SaveAdventureAsync(filePath, adventure, compress: true);
+            _currentAdventure = adventure;
+            AdventureChanged?.Invoke(this, new AdventureChangedEventArgs
+            {
+                Adventure = adventure,
+                FilePath = filePath
+            });
+            return true;
         }
         catch (Exception ex)
         {
-            // TODO: Proper error handling
             throw new InvalidOperationException($"Failed to save adventure: {ex.Message}", ex);
         }
     }

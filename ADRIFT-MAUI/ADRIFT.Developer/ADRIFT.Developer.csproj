@@ -74,8 +74,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ADRIFT.Core\ADRIFT.Core.csproj" />
+    <ProjectReference Include="..\ADRIFT.Engine\ADRIFT.Engine.csproj" />
   </ItemGroup>
 
   <!-- Using clean .NET 8 models from ADRIFT.Core -->
+  <!-- Using ADRIFT.Engine for file I/O and game engine -->
 
 </Project>
