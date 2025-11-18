@@ -366,13 +366,188 @@ public static class AdventureFileIO
         return obj;
     }
 
-    // Simplified read methods for other entity types - following same pattern
+    private static async Task ReadVariablesAsync(XmlReader reader, Adventure adventure)
+    {
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "Variables")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element && reader.Name == "Variable")
+            {
+                var variable = await ReadVariableAsync(reader);
+                adventure.Variables[variable.Key] = variable;
+            }
+        }
+    }
+
+    private static async Task<Variable> ReadVariableAsync(XmlReader reader)
+    {
+        var variable = new Variable();
+        var key = reader.GetAttribute("Key");
+        if (!string.IsNullOrEmpty(key)) variable.Key = key;
+
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "Variable")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element)
+            {
+                switch (reader.Name)
+                {
+                    case "Name":
+                        variable.Name = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "Type":
+                        if (Enum.TryParse<VariableType>(await reader.ReadElementContentAsStringAsync(), out var varType))
+                            variable.Type = varType;
+                        break;
+                    case "InitialValue":
+                        variable.InitialValue = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "CurrentValue":
+                        variable.CurrentValue = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "Description":
+                        variable.Description = await reader.ReadElementContentAsStringAsync();
+                        break;
+                }
+            }
+        }
+
+        return variable;
+    }
+
+    private static async Task ReadGroupsAsync(XmlReader reader, Adventure adventure)
+    {
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "Groups")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element && reader.Name == "Group")
+            {
+                var group = await ReadGroupAsync(reader);
+                adventure.Groups[group.Key] = group;
+            }
+        }
+    }
+
+    private static async Task<Group> ReadGroupAsync(XmlReader reader)
+    {
+        var group = new Group();
+        var key = reader.GetAttribute("Key");
+        if (!string.IsNullOrEmpty(key)) group.Key = key;
+
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "Group")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element)
+            {
+                switch (reader.Name)
+                {
+                    case "Name":
+                        group.Name = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "Type":
+                        if (Enum.TryParse<GroupType>(await reader.ReadElementContentAsStringAsync(), out var groupType))
+                            group.Type = groupType;
+                        break;
+                    case "Description":
+                        group.Description = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "MemberKeys":
+                        await ReadMemberKeysAsync(reader, group);
+                        break;
+                }
+            }
+        }
+
+        return group;
+    }
+
+    private static async Task ReadMemberKeysAsync(XmlReader reader, Group group)
+    {
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "MemberKeys")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element && reader.Name == "MemberKey")
+            {
+                var memberKey = await reader.ReadElementContentAsStringAsync();
+                if (!string.IsNullOrEmpty(memberKey))
+                    group.MemberKeys.Add(memberKey);
+            }
+        }
+    }
+
+    private static async Task ReadSynonymsAsync(XmlReader reader, Adventure adventure)
+    {
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "Synonyms")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element && reader.Name == "Synonym")
+            {
+                var synonym = await ReadSynonymAsync(reader);
+                adventure.Synonyms[synonym.Key] = synonym;
+            }
+        }
+    }
+
+    private static async Task<Synonym> ReadSynonymAsync(XmlReader reader)
+    {
+        var synonym = new Synonym();
+        var key = reader.GetAttribute("Key");
+        if (!string.IsNullOrEmpty(key)) synonym.Key = key;
+
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "Synonym")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element)
+            {
+                switch (reader.Name)
+                {
+                    case "OriginalWord":
+                        synonym.OriginalWord = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "SynonymWords":
+                        await ReadSynonymWordsAsync(reader, synonym);
+                        break;
+                }
+            }
+        }
+
+        return synonym;
+    }
+
+    private static async Task ReadSynonymWordsAsync(XmlReader reader, Synonym synonym)
+    {
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "SynonymWords")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element && reader.Name == "Word")
+            {
+                var word = await reader.ReadElementContentAsStringAsync();
+                if (!string.IsNullOrEmpty(word))
+                    synonym.SynonymWords.Add(word);
+            }
+        }
+    }
+
+    // Stub methods for complex entities - to be implemented
     private static Task ReadCharactersAsync(XmlReader reader, Adventure adventure) => Task.CompletedTask;
     private static Task ReadTasksAsync(XmlReader reader, Adventure adventure) => Task.CompletedTask;
     private static Task ReadEventsAsync(XmlReader reader, Adventure adventure) => Task.CompletedTask;
-    private static Task ReadVariablesAsync(XmlReader reader, Adventure adventure) => Task.CompletedTask;
-    private static Task ReadGroupsAsync(XmlReader reader, Adventure adventure) => Task.CompletedTask;
-    private static Task ReadSynonymsAsync(XmlReader reader, Adventure adventure) => Task.CompletedTask;
     private static Task ReadHintsAsync(XmlReader reader, Adventure adventure) => Task.CompletedTask;
 
     #endregion
@@ -446,13 +621,95 @@ public static class AdventureFileIO
         await writer.WriteEndElementAsync(); // Objects
     }
 
-    // Simplified write methods for other entity types
+    private static async Task WriteVariablesAsync(XmlWriter writer, Adventure adventure)
+    {
+        if (adventure.Variables.Count == 0) return;
+
+        await writer.WriteStartElementAsync(null, "Variables", null);
+
+        foreach (var variable in adventure.Variables.Values)
+        {
+            await writer.WriteStartElementAsync(null, "Variable", null);
+            await writer.WriteAttributeStringAsync(null, "Key", null, variable.Key);
+
+            await writer.WriteElementStringAsync(null, "Name", null, variable.Name);
+            await writer.WriteElementStringAsync(null, "Type", null, variable.Type.ToString());
+            await writer.WriteElementStringAsync(null, "InitialValue", null, variable.InitialValue);
+            await writer.WriteElementStringAsync(null, "CurrentValue", null, variable.CurrentValue);
+            if (!string.IsNullOrEmpty(variable.Description))
+                await writer.WriteElementStringAsync(null, "Description", null, variable.Description);
+
+            await writer.WriteEndElementAsync(); // Variable
+        }
+
+        await writer.WriteEndElementAsync(); // Variables
+    }
+
+    private static async Task WriteGroupsAsync(XmlWriter writer, Adventure adventure)
+    {
+        if (adventure.Groups.Count == 0) return;
+
+        await writer.WriteStartElementAsync(null, "Groups", null);
+
+        foreach (var group in adventure.Groups.Values)
+        {
+            await writer.WriteStartElementAsync(null, "Group", null);
+            await writer.WriteAttributeStringAsync(null, "Key", null, group.Key);
+
+            await writer.WriteElementStringAsync(null, "Name", null, group.Name);
+            await writer.WriteElementStringAsync(null, "Type", null, group.Type.ToString());
+            if (!string.IsNullOrEmpty(group.Description))
+                await writer.WriteElementStringAsync(null, "Description", null, group.Description);
+
+            if (group.MemberKeys.Count > 0)
+            {
+                await writer.WriteStartElementAsync(null, "MemberKeys", null);
+                foreach (var memberKey in group.MemberKeys)
+                {
+                    await writer.WriteElementStringAsync(null, "MemberKey", null, memberKey);
+                }
+                await writer.WriteEndElementAsync(); // MemberKeys
+            }
+
+            await writer.WriteEndElementAsync(); // Group
+        }
+
+        await writer.WriteEndElementAsync(); // Groups
+    }
+
+    private static async Task WriteSynonymsAsync(XmlWriter writer, Adventure adventure)
+    {
+        if (adventure.Synonyms.Count == 0) return;
+
+        await writer.WriteStartElementAsync(null, "Synonyms", null);
+
+        foreach (var synonym in adventure.Synonyms.Values)
+        {
+            await writer.WriteStartElementAsync(null, "Synonym", null);
+            await writer.WriteAttributeStringAsync(null, "Key", null, synonym.Key);
+
+            await writer.WriteElementStringAsync(null, "OriginalWord", null, synonym.OriginalWord);
+
+            if (synonym.SynonymWords.Count > 0)
+            {
+                await writer.WriteStartElementAsync(null, "SynonymWords", null);
+                foreach (var word in synonym.SynonymWords)
+                {
+                    await writer.WriteElementStringAsync(null, "Word", null, word);
+                }
+                await writer.WriteEndElementAsync(); // SynonymWords
+            }
+
+            await writer.WriteEndElementAsync(); // Synonym
+        }
+
+        await writer.WriteEndElementAsync(); // Synonyms
+    }
+
+    // Stub write methods for complex entities - to be implemented
     private static Task WriteCharactersAsync(XmlWriter writer, Adventure adventure) => Task.CompletedTask;
     private static Task WriteTasksAsync(XmlWriter writer, Adventure adventure) => Task.CompletedTask;
     private static Task WriteEventsAsync(XmlWriter writer, Adventure adventure) => Task.CompletedTask;
-    private static Task WriteVariablesAsync(XmlWriter writer, Adventure adventure) => Task.CompletedTask;
-    private static Task WriteGroupsAsync(XmlWriter writer, Adventure adventure) => Task.CompletedTask;
-    private static Task WriteSynonymsAsync(XmlWriter writer, Adventure adventure) => Task.CompletedTask;
     private static Task WriteHintsAsync(XmlWriter writer, Adventure adventure) => Task.CompletedTask;
 
     #endregion
