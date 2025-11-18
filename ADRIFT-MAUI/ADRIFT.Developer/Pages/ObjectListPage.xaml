@@ -31,7 +31,7 @@
         <RefreshView Grid.Row="2" IsRefreshing="{Binding IsRefreshing}" Command="{Binding RefreshCommand}">
             <CollectionView ItemsSource="{Binding FilteredObjects}" SelectionMode="None" EmptyView="No objects found">
                 <CollectionView.ItemTemplate>
-                    <DataTemplate>
+                    <DataTemplate x:DataType="vm:ObjectItemViewModel">
                         <SwipeView>
                             <SwipeView.RightItems>
                                 <SwipeItems>

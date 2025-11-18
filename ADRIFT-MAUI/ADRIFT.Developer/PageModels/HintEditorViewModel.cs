@@ -71,9 +71,9 @@ public partial class HintEditorViewModel : ObservableObject
     {
         // Load available tasks
         // TODO: Load from adventure service
-        AvailableTasks.Add(new TaskItemViewModel { Key = "task1", Name = "Open the door" });
-        AvailableTasks.Add(new TaskItemViewModel { Key = "task2", Name = "Find the key" });
-        AvailableTasks.Add(new TaskItemViewModel { Key = "task3", Name = "Talk to the guard" });
+        AvailableTasks.Add(new TaskItemViewModel { Key = "task1", Command = "Open the door" });
+        AvailableTasks.Add(new TaskItemViewModel { Key = "task2", Command = "Find the key" });
+        AvailableTasks.Add(new TaskItemViewModel { Key = "task3", Command = "Talk to the guard" });
 
         if (!string.IsNullOrEmpty(HintKey))
         {
@@ -218,13 +218,4 @@ public partial class HintItemViewModel : ObservableObject
 
     [ObservableProperty]
     private int order = 1;
-}
-
-public partial class TaskItemViewModel : ObservableObject
-{
-    [ObservableProperty]
-    private string key = "";
-
-    [ObservableProperty]
-    private string name = "";
 }

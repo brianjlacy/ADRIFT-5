@@ -14,7 +14,8 @@ public partial class EventListViewModel : ObservableObject
 }
 public partial class EventItemViewModel : ObservableObject
 {
-    public EventItemViewModel(object e) { Key = "evt" + Guid.NewGuid().ToString("N")[..8]; Name = "Event"; Description = "Description"; Timing = "Turn-based"; }
+    public EventItemViewModel() { Key = "evt" + Guid.NewGuid().ToString("N")[..8]; Name = "Event"; Description = "Description"; Timing = "Turn-based"; }
+    public EventItemViewModel(object e) : this() { /* TODO: Map from event */ }
     [ObservableProperty] private string key = "";
     [ObservableProperty] private string name = "";
     [ObservableProperty] private string description = "";

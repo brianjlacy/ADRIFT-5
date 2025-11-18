@@ -2,7 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 
-namespace ADRIFT.ViewModels;
+namespace ADRIFT.Developer.ViewModels;
 
 public partial class LocationListViewModel : ObservableObject
 {
@@ -137,15 +137,19 @@ public partial class LocationListViewModel : ObservableObject
 // ViewModel for individual location items in the list
 public partial class LocationItemViewModel : ObservableObject
 {
-    public LocationItemViewModel(object location)
+    public LocationItemViewModel()
     {
-        // TODO: Map from clsLocation to view model properties
         Key = "loc" + Guid.NewGuid().ToString("N").Substring(0, 8);
         Name = "Sample Location";
         ShortDescription = "A sample location";
         ExitCount = 0;
         IsHidden = false;
         IsLibrary = false;
+    }
+
+    public LocationItemViewModel(object location) : this()
+    {
+        // TODO: Map from clsLocation to view model properties
     }
 
     [ObservableProperty]

@@ -100,7 +100,7 @@ public partial class ObjectListViewModel : ObservableObject
 
 public partial class ObjectItemViewModel : ObservableObject
 {
-    public ObjectItemViewModel(object obj)
+    public ObjectItemViewModel()
     {
         Key = "obj" + Guid.NewGuid().ToString("N").Substring(0, 8);
         FullName = "Sample Object";
@@ -108,6 +108,11 @@ public partial class ObjectItemViewModel : ObservableObject
         LocationName = "Unknown";
         IsStatic = false;
         IsLibrary = false;
+    }
+
+    public ObjectItemViewModel(object obj) : this()
+    {
+        // TODO: Map from object to view model properties
     }
 
     [ObservableProperty]

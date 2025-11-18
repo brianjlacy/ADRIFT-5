@@ -375,15 +375,6 @@ public partial class EventEditorViewModel : ObservableObject
     }
 }
 
-public partial class EventItemViewModel : ObservableObject
-{
-    [ObservableProperty]
-    private string key = "";
-
-    [ObservableProperty]
-    private string name = "";
-}
-
 public partial class ConditionViewModel : ObservableObject
 {
     [ObservableProperty]

@@ -9,7 +9,7 @@
         <SearchBar Grid.Row="1" Placeholder="Search variables..." Text="{Binding SearchText}" Margin="16,8" />
         <CollectionView Grid.Row="2" ItemsSource="{Binding FilteredVariables}">
             <CollectionView.ItemTemplate>
-                <DataTemplate>
+                <DataTemplate x:DataType="vm:VariableItemViewModel">
                     <Frame Margin="16,8" Padding="12">
                         <Frame.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VariableListViewModel}}, Path=EditVariableCommand}" CommandParameter="{Binding}" />

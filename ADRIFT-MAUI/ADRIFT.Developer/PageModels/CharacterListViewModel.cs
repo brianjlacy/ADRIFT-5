@@ -16,7 +16,8 @@ public partial class CharacterListViewModel : ObservableObject
 }
 public partial class CharacterItemViewModel : ObservableObject
 {
-    public CharacterItemViewModel(object c) { Key = "char" + Guid.NewGuid().ToString("N")[..8]; Name = "Character"; Description = "Description"; Location = "Location"; }
+    public CharacterItemViewModel() { Key = "char" + Guid.NewGuid().ToString("N")[..8]; Name = "Character"; Description = "Description"; Location = "Location"; }
+    public CharacterItemViewModel(object c) : this() { /* TODO: Map from character */ }
     [ObservableProperty] private string key = "";
     [ObservableProperty] private string name = "";
     [ObservableProperty] private string description = "";

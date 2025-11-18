@@ -1,36 +1,36 @@
 using ADRIFT.Core.Models;
 
-namespace ADRIFT.Services;
+namespace ADRIFT.Developer.Services;
 
 public interface IAdventureService
 {
     // Adventure management
-    Task<Adventure?> LoadAdventureAsync(string filePath);
-    Task<bool> SaveAdventureAsync(Adventure adventure, string filePath);
-    Task<Adventure> CreateNewAdventureAsync();
+    System.Threading.Tasks.Task<Adventure?> LoadAdventureAsync(string filePath);
+    System.Threading.Tasks.Task<bool> SaveAdventureAsync(Adventure adventure, string filePath);
+    System.Threading.Tasks.Task<Adventure> CreateNewAdventureAsync();
 
     // Current adventure
     Adventure? CurrentAdventure { get; }
     event EventHandler<AdventureChangedEventArgs>? AdventureChanged;
 
     // Item management
-    Task<Location> CreateLocationAsync(string name);
-    Task<AdriftObject> CreateObjectAsync(string name);
-    Task<Core.Models.Task> CreateTaskAsync(string name);
-    Task<Character> CreateCharacterAsync(string name);
-    Task<Event> CreateEventAsync(string name);
-    Task<Variable> CreateVariableAsync(string name);
+    System.Threading.Tasks.Task<Core.Models.Location> CreateLocationAsync(string name);
+    System.Threading.Tasks.Task<AdriftObject> CreateObjectAsync(string name);
+    System.Threading.Tasks.Task<Core.Models.Task> CreateTaskAsync(string name);
+    System.Threading.Tasks.Task<Character> CreateCharacterAsync(string name);
+    System.Threading.Tasks.Task<Event> CreateEventAsync(string name);
+    System.Threading.Tasks.Task<Variable> CreateVariableAsync(string name);
 
     // Queries
-    Task<IEnumerable<Location>> GetLocationsAsync();
-    Task<IEnumerable<AdriftObject>> GetObjectsAsync();
-    Task<IEnumerable<Core.Models.Task>> GetTasksAsync();
-    Task<IEnumerable<Character>> GetCharactersAsync();
-    Task<IEnumerable<Event>> GetEventsAsync();
-    Task<IEnumerable<Variable>> GetVariablesAsync();
+    System.Threading.Tasks.Task<IEnumerable<Core.Models.Location>> GetLocationsAsync();
+    System.Threading.Tasks.Task<IEnumerable<AdriftObject>> GetObjectsAsync();
+    System.Threading.Tasks.Task<IEnumerable<Core.Models.Task>> GetTasksAsync();
+    System.Threading.Tasks.Task<IEnumerable<Character>> GetCharactersAsync();
+    System.Threading.Tasks.Task<IEnumerable<Event>> GetEventsAsync();
+    System.Threading.Tasks.Task<IEnumerable<Variable>> GetVariablesAsync();
 
     // Statistics
-    Task<AdventureStatistics> GetStatisticsAsync();
+    System.Threading.Tasks.Task<AdventureStatistics> GetStatisticsAsync();
 }
 
 public class AdventureChangedEventArgs : EventArgs

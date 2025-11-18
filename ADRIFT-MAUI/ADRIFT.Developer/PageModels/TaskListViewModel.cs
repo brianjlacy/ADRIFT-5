@@ -70,13 +70,18 @@ public partial class TaskListViewModel : ObservableObject
 
 public partial class TaskItemViewModel : ObservableObject
 {
-    public TaskItemViewModel(object task)
+    public TaskItemViewModel()
     {
         Key = "task" + Guid.NewGuid().ToString("N").Substring(0, 8);
         Command = "Sample Task";
         Description = "Task description";
         TaskType = "General";
         Priority = "Normal";
+    }
+
+    public TaskItemViewModel(object task) : this()
+    {
+        // TODO: Map from task to view model properties
     }
 
     [ObservableProperty] private string key = "";

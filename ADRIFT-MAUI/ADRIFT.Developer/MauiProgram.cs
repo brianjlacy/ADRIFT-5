@@ -1,7 +1,7 @@
 using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
 
-namespace ADRIFT;
+namespace ADRIFT.Developer;
 
 public static class MauiProgram
 {

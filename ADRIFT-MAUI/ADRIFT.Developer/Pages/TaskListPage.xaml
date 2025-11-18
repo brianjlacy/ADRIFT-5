@@ -22,7 +22,7 @@
         <RefreshView Grid.Row="2" IsRefreshing="{Binding IsRefreshing}" Command="{Binding RefreshCommand}">
             <CollectionView ItemsSource="{Binding FilteredTasks}" SelectionMode="None">
                 <CollectionView.ItemTemplate>
-                    <DataTemplate>
+                    <DataTemplate x:DataType="vm:TaskItemViewModel">
                         <SwipeView>
                             <SwipeView.RightItems>
                                 <SwipeItems>

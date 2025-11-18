@@ -120,7 +120,7 @@
                         <CollectionView ItemsSource="{Binding Directions}"
                                         SelectionMode="None">
                             <CollectionView.ItemTemplate>
-                                <DataTemplate>
+                                <DataTemplate x:DataType="vm:DirectionViewModel">
                                     <Frame Margin="0,4"
                                            Padding="12"
                                            BackgroundColor="{StaticResource ADRIFTSurface}">
@@ -138,14 +138,16 @@
                                             <Button Grid.Column="2"
                                                     Text="Restrictions"
                                                     FontSize="12"
-                                                    Command="{Binding EditRestrictionsCommand}" />
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:LocationEditorViewModel}}, Path=EditDirectionRestrictionsCommand}"
+                                                    CommandParameter="{Binding}" />
 
                                             <Button Grid.Column="3"
                                                     Text="✕"
                                                     FontSize="16"
                                                     WidthRequest="40"
                                                     BackgroundColor="{StaticResource ADRIFTError}"
-                                                    Command="{Binding RemoveCommand}" />
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:LocationEditorViewModel}}, Path=RemoveDirectionCommand}"
+                                                    CommandParameter="{Binding}" />
                                         </Grid>
                                     </Frame>
                                 </DataTemplate>
@@ -170,7 +172,7 @@
                         <CollectionView ItemsSource="{Binding Properties}"
                                         SelectionMode="None">
                             <CollectionView.ItemTemplate>
-                                <DataTemplate>
+                                <DataTemplate x:DataType="vm:PropertyViewModel">
                                     <Frame Margin="0,4"
                                            Padding="12">
                                         <Grid RowDefinitions="Auto,Auto"

@@ -1,6 +1,6 @@
 using ADRIFT.Core.Models;
 
-namespace ADRIFT.Services;
+namespace ADRIFT.Developer.Services;
 
 public class AdventureService : IAdventureService
 {
@@ -10,20 +10,20 @@ public class AdventureService : IAdventureService
 
     public event EventHandler<AdventureChangedEventArgs>? AdventureChanged;
 
-    public Task<Adventure> CreateNewAdventureAsync()
+    public System.Threading.Tasks.Task<Adventure> CreateNewAdventureAsync()
     {
         var adventure = new Adventure();
         _currentAdventure = adventure;
         AdventureChanged?.Invoke(this, new AdventureChangedEventArgs { Adventure = adventure });
-        return Task.FromResult(adventure);
+        return System.Threading.Tasks.Task.FromResult(adventure);
     }
 
-    public async Task<Adventure?> LoadAdventureAsync(string filePath)
+    public async System.Threading.Tasks.Task<Adventure?> LoadAdventureAsync(string filePath)
     {
         try
         {
             // TODO: Implement file loading using FileIO class
-            // var adventure = await Task.Run(() => FileIO.LoadAdventure(filePath));
+            // var adventure = await System.Threading.Tasks.Task.Run(() => FileIO.LoadAdventure(filePath));
             // _currentAdventure = adventure;
             // AdventureChanged?.Invoke(this, new AdventureChangedEventArgs
             // {
@@ -32,7 +32,7 @@ public class AdventureService : IAdventureService
             // });
             // return adventure;
 
-            await Task.CompletedTask;
+            await System.Threading.Tasks.Task.CompletedTask;
             return null;
         }
         catch (Exception ex)
@@ -42,15 +42,15 @@ public class AdventureService : IAdventureService
         }
     }
 
-    public async Task<bool> SaveAdventureAsync(Adventure adventure, string filePath)
+    public async System.Threading.Tasks.Task<bool> SaveAdventureAsync(Adventure adventure, string filePath)
     {
         try
         {
             // TODO: Implement file saving using FileIO class
-            // await Task.Run(() => FileIO.SaveAdventure(adventure, filePath));
+            // await System.Threading.Tasks.Task.Run(() => FileIO.SaveAdventure(adventure, filePath));
             // return true;
 
-            await Task.CompletedTask;
+            await System.Threading.Tasks.Task.CompletedTask;
             return false;
         }
         catch (Exception ex)
@@ -60,96 +60,96 @@ public class AdventureService : IAdventureService
         }
     }
 
-    public Task<Location> CreateLocationAsync(string name)
+    public System.Threading.Tasks.Task<Core.Models.Location> CreateLocationAsync(string name)
     {
-        var location = new Location { Name = name };
+        var location = new Core.Models.Location { ShortDescription = name };
         // TODO: Add to current adventure
-        return Task.FromResult(location);
+        return System.Threading.Tasks.Task.FromResult(location);
     }
 
-    public Task<AdriftObject> CreateObjectAsync(string name)
+    public System.Threading.Tasks.Task<AdriftObject> CreateObjectAsync(string name)
     {
         var obj = new AdriftObject { Name = name };
-        return Task.FromResult(obj);
+        return System.Threading.Tasks.Task.FromResult(obj);
     }
 
-    public Task<Core.Models.Task> CreateTaskAsync(string name)
+    public System.Threading.Tasks.Task<Core.Models.Task> CreateTaskAsync(string name)
     {
-        var task = new Core.Models.Task { Command = name };
-        return Task.FromResult(task);
+        var task = new Core.Models.Task { Name = name };
+        return System.Threading.Tasks.Task.FromResult(task);
     }
 
-    public Task<Character> CreateCharacterAsync(string name)
+    public System.Threading.Tasks.Task<Character> CreateCharacterAsync(string name)
     {
         var character = new Character { Name = name };
-        return Task.FromResult(character);
+        return System.Threading.Tasks.Task.FromResult(character);
     }
 
-    public Task<Event> CreateEventAsync(string name)
+    public System.Threading.Tasks.Task<Event> CreateEventAsync(string name)
     {
         var evt = new Event { Description = name };
-        return Task.FromResult(evt);
+        return System.Threading.Tasks.Task.FromResult(evt);
     }
 
-    public Task<Variable> CreateVariableAsync(string name)
+    public System.Threading.Tasks.Task<Variable> CreateVariableAsync(string name)
     {
         var variable = new Variable { Name = name };
-        return Task.FromResult(variable);
+        return System.Threading.Tasks.Task.FromResult(variable);
     }
 
-    public Task<IEnumerable<Location>> GetLocationsAsync()
+    public System.Threading.Tasks.Task<IEnumerable<Core.Models.Location>> GetLocationsAsync()
     {
         if (_currentAdventure == null)
-            return Task.FromResult(Enumerable.Empty<Location>());
+            return System.Threading.Tasks.Task.FromResult(Enumerable.Empty<Core.Models.Location>());
 
-        return Task.FromResult(_currentAdventure.Locations.Values.AsEnumerable());
+        return System.Threading.Tasks.Task.FromResult(_currentAdventure.Locations.Values.AsEnumerable());
     }
 
-    public Task<IEnumerable<AdriftObject>> GetObjectsAsync()
+    public System.Threading.Tasks.Task<IEnumerable<AdriftObject>> GetObjectsAsync()
     {
         if (_currentAdventure == null)
-            return Task.FromResult(Enumerable.Empty<AdriftObject>());
+            return System.Threading.Tasks.Task.FromResult(Enumerable.Empty<AdriftObject>());
 
-        return Task.FromResult(_currentAdventure.Objects.Values.AsEnumerable());
+        return System.Threading.Tasks.Task.FromResult(_currentAdventure.Objects.Values.AsEnumerable());
     }
 
-    public Task<IEnumerable<Core.Models.Task>> GetTasksAsync()
+    public System.Threading.Tasks.Task<IEnumerable<Core.Models.Task>> GetTasksAsync()
     {
         if (_currentAdventure == null)
-            return Task.FromResult(Enumerable.Empty<Core.Models.Task>());
+            return System.Threading.Tasks.Task.FromResult(Enumerable.Empty<Core.Models.Task>());
 
-        return Task.FromResult(_currentAdventure.Tasks.Values.AsEnumerable());
+        return System.Threading.Tasks.Task.FromResult(_currentAdventure.Tasks.Values.AsEnumerable());
     }
 
-    public Task<IEnumerable<Character>> GetCharactersAsync()
+    public System.Threading.Tasks.Task<IEnumerable<Character>> GetCharactersAsync()
     {
         if (_currentAdventure == null)
-            return Task.FromResult(Enumerable.Empty<Character>());
+            return System.Threading.Tasks.Task.FromResult(Enumerable.Empty<Character>());
 
-        return Task.FromResult(_currentAdventure.Characters.Values.AsEnumerable());
+        return System.Threading.Tasks.Task.FromResult(_currentAdventure.Characters.Values.AsEnumerable());
     }
 
-    public Task<IEnumerable<Event>> GetEventsAsync()
+    public System.Threading.Tasks.Task<IEnumerable<Event>> GetEventsAsync()
     {
         if (_currentAdventure == null)
-            return Task.FromResult(Enumerable.Empty<Event>());
+            return System.Threading.Tasks.Task.FromResult(Enumerable.Empty<Event>());
 
-        return Task.FromResult(_currentAdventure.Events.Values.AsEnumerable());
+        return System.Threading.Tasks.Task.FromResult(_currentAdventure.Events.Values.AsEnumerable());
     }
 
-    public Task<IEnumerable<Variable>> GetVariablesAsync()
+    public System.Threading.Tasks.Task<IEnumerable<Variable>> GetVariablesAsync()
     {
         if (_currentAdventure == null)
-            return Task.FromResult(Enumerable.Empty<Variable>());
+            return System.Threading.Tasks.Task.FromResult(Enumerable.Empty<Variable>());
 
-        return Task.FromResult(_currentAdventure.Variables.Values.AsEnumerable());
+        return System.Threading.Tasks.Task.FromResult(_currentAdventure.Variables.Values.AsEnumerable());
     }
 
-    public Task<AdventureStatistics> GetStatisticsAsync()
+    public System.Threading.Tasks.Task<AdventureStatistics> GetStatisticsAsync()
     {
         if (_currentAdventure == null)
         {
-            return Task.FromResult(new AdventureStatistics());
+            return System.Threading.Tasks.Task.FromResult(new AdventureStatistics());
         }
 
         var stats = new AdventureStatistics
@@ -163,6 +163,6 @@ public class AdventureService : IAdventureService
             GroupCount = _currentAdventure.Groups.Count
         };
 
-        return Task.FromResult(stats);
+        return System.Threading.Tasks.Task.FromResult(stats);
     }
 }

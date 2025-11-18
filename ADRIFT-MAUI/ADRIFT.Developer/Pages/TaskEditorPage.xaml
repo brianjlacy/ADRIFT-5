@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:ADRIFT.ViewModels"
+             x:Class="ADRIFT.Views.TaskEditorPage"
+             x:DataType="viewmodels:TaskEditorViewModel"
+             Title="Task Editor">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="10">
+            <Label Text="Task Name:" FontAttributes="Bold" />
+            <Entry Text="{Binding TaskName}" Placeholder="Enter task name" />
+
+            <Label Text="Description:" FontAttributes="Bold" />
+            <Editor Text="{Binding Description}" Placeholder="Enter description" HeightRequest="100" />
+
+            <Button Text="Save" Command="{Binding SaveTaskCommand}" HorizontalOptions="Center" />
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

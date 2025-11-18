@@ -1,4 +1,4 @@
-namespace ADRIFT;
+namespace ADRIFT.Developer;
 
 public partial class AppShell : Shell
 {

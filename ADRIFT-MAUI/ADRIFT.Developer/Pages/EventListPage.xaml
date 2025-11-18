@@ -9,7 +9,7 @@
         <SearchBar Grid.Row="1" Placeholder="Search events..." Text="{Binding SearchText}" Margin="16,8" />
         <CollectionView Grid.Row="2" ItemsSource="{Binding FilteredEvents}">
             <CollectionView.ItemTemplate>
-                <DataTemplate>
+                <DataTemplate x:DataType="vm:EventItemViewModel">
                     <Frame Margin="16,8" Padding="12">
                         <Frame.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EventListViewModel}}, Path=EditEventCommand}" CommandParameter="{Binding}" />

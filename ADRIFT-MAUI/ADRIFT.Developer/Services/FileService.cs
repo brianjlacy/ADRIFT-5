@@ -1,6 +1,6 @@
 using CommunityToolkit.Maui.Storage;
 
-namespace ADRIFT.Services;
+namespace ADRIFT.Developer.Services;
 
 public class FileService : IFileService
 {

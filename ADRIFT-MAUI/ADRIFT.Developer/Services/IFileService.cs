@@ -1,4 +1,4 @@
-namespace ADRIFT.Services;
+namespace ADRIFT.Developer.Services;
 
 public interface IFileService
 {

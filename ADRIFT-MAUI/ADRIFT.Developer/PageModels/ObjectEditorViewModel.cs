@@ -251,8 +251,8 @@ public partial class ObjectEditorViewModel : ObservableObject
         AvailableLocations.Add(new LocationItemViewModel { Key = "loc1", Name = "Starting Room" });
         AvailableLocations.Add(new LocationItemViewModel { Key = "loc2", Name = "Forest Path" });
 
-        AvailableContainers.Add(new ObjectItemViewModel { Key = "obj1", Name = "Wooden Chest" });
-        AvailableContainers.Add(new ObjectItemViewModel { Key = "obj2", Name = "Leather Bag" });
+        AvailableContainers.Add(new ObjectItemViewModel { Key = "obj1", FullName = "Wooden Chest" });
+        AvailableContainers.Add(new ObjectItemViewModel { Key = "obj2", FullName = "Leather Bag" });
 
         AvailableCharacters.Add(new CharacterItemViewModel { Key = "char1", Name = "Player" });
         AvailableCharacters.Add(new CharacterItemViewModel { Key = "char2", Name = "Guard" });
@@ -354,7 +354,7 @@ public partial class ObjectEditorViewModel : ObservableObject
             return false;
         }
 
-        if (IsContainer && !int.TryParse(Capacity, out var capacityValue) || capacityValue < 0)
+        if (IsContainer && (!int.TryParse(Capacity, out var capacityValue) || capacityValue < 0))
         {
             Shell.Current.DisplayAlert("Validation Error", "Capacity must be a positive integer.", "OK");
             return false;
@@ -373,24 +373,6 @@ public partial class ObjectEditorViewModel : ObservableObject
             ObjectKey = "obj_" + Guid.NewGuid().ToString("N")[..8];
         }
     }
-}
-
-public partial class LocationItemViewModel : ObservableObject
-{
-    [ObservableProperty]
-    private string key = "";
-
-    [ObservableProperty]
-    private string name = "";
-}
-
-public partial class ObjectItemViewModel : ObservableObject
-{
-    [ObservableProperty]
-    private string key = "";
-
-    [ObservableProperty]
-    private string name = "";
 }
 
 public partial class CustomPropertyViewModel : ObservableObject

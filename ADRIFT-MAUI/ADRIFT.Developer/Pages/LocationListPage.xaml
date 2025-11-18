@@ -66,7 +66,7 @@
                             EmptyView="No locations found">
 
                 <CollectionView.ItemTemplate>
-                    <DataTemplate>
+                    <DataTemplate x:DataType="vm:LocationItemViewModel">
                         <SwipeView>
                             <!-- Swipe actions -->
                             <SwipeView.RightItems>

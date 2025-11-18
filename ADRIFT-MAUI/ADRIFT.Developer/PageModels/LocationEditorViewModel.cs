@@ -97,6 +97,20 @@ public partial class LocationEditorViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void RemoveDirection(DirectionViewModel direction)
+    {
+        Directions.Remove(direction);
+        StatusMessage = "Direction removed";
+    }
+
+    [RelayCommand]
+    private async Task EditDirectionRestrictions(DirectionViewModel direction)
+    {
+        // TODO: Show restrictions editor dialog
+        await Shell.Current.DisplayAlert("Restrictions", "Direction restrictions editor coming soon", "OK");
+    }
+
+    [RelayCommand]
     private async Task Cancel()
     {
         var result = await Shell.Current.DisplayAlert(

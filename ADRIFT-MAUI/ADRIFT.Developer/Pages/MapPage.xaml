@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ADRIFT.Views.MapPage"
+             xmlns:viewmodels="clr-namespace:ADRIFT.ViewModels"
+             x:DataType="viewmodels:MapViewModel"
+             Title="Adventure Map">
+
+    <Grid RowDefinitions="Auto,*" Padding="10">
+        <!-- Toolbar -->
+        <HorizontalStackLayout Grid.Row="0" Spacing="10" Margin="0,0,0,10">
+            <Button Text="Zoom In" Command="{Binding ZoomInCommand}" />
+            <Button Text="Zoom Out" Command="{Binding ZoomOutCommand}" />
+            <Button Text="Reset View" Command="{Binding ResetViewCommand}" />
+        </HorizontalStackLayout>
+
+        <!-- Map Canvas Area -->
+        <Border Grid.Row="1"
+                Stroke="{StaticResource Gray200}"
+                StrokeThickness="1"
+                BackgroundColor="{StaticResource Gray100}">
+            <ScrollView>
+                <VerticalStackLayout Padding="20" Spacing="10">
+                    <Label Text="Adventure Map"
+                           FontSize="24"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"/>
+                    <Label Text="Map visualization will be implemented here."
+                           HorizontalOptions="Center"
+                           TextColor="{StaticResource Gray600}"/>
+                </VerticalStackLayout>
+            </ScrollView>
+        </Border>
+    </Grid>
+
+</ContentPage>
