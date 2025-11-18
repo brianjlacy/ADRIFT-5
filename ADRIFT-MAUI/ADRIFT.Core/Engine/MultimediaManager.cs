@@ -1,5 +1,4 @@
 using ADRIFT.Core.Models;
-using Microsoft.Maui.Controls;
 
 namespace ADRIFT.Core.Engine;
 
@@ -71,9 +70,9 @@ public class MultimediaManager
     }
 
     /// <summary>
-    /// Get image source for display
+    /// Get image stream for display (platform-agnostic)
     /// </summary>
-    public ImageSource? GetImageSource(string key)
+    public Stream? GetImageStream(string key)
     {
         var data = GetImageData(key);
         if (data == null)
@@ -81,7 +80,7 @@ public class MultimediaManager
 
         try
         {
-            return ImageSource.FromStream(() => new MemoryStream(data));
+            return new MemoryStream(data);
         }
         catch
         {
@@ -119,7 +118,7 @@ public class MultimediaManager
     /// <summary>
     /// Play sound (platform-specific implementation needed)
     /// </summary>
-    public async Task PlaySoundAsync(string key, bool loop = false)
+    public async System.Threading.Tasks.Task PlaySoundAsync(string key, bool loop = false)
     {
         var sound = _adventure.Sounds.Values.FirstOrDefault(s => s.Key == key);
         if (sound == null)
@@ -127,7 +126,7 @@ public class MultimediaManager
 
         // TODO: Platform-specific audio playback
         // For now, just log that sound should be played
-        await Task.CompletedTask;
+        await System.Threading.Tasks.Task.CompletedTask;
     }
 
     /// <summary>

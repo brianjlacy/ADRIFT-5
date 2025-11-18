@@ -32,6 +32,11 @@ public class Sound : AdriftItem
     public byte[]? EmbeddedData { get; set; }
 
     /// <summary>
+    /// Base64 encoded sound data (alternative to EmbeddedData)
+    /// </summary>
+    public string Data { get; set; } = string.Empty;
+
+    /// <summary>
     /// Sound format
     /// </summary>
     public SoundFormat Format { get; set; } = SoundFormat.WAV;

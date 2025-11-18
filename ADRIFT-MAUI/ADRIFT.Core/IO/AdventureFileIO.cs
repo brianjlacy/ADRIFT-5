@@ -2,7 +2,6 @@ using System.IO.Compression;
 using System.Xml;
 using System.Xml.Serialization;
 using ADRIFT.Core.Models;
-using SystemTask = System.Threading.Tasks.Task;
 
 namespace ADRIFT.Core.IO;
 
@@ -46,7 +45,7 @@ public static class AdventureFileIO
     /// <summary>
     /// Save an adventure to a file (.taf or .xml)
     /// </summary>
-    public static async SystemTaskSaveAdventureAsync(Adventure adventure, string filePath, bool compress = true)
+    public static async System.Threading.Tasks.Task SaveAdventureAsync(Adventure adventure, string filePath, bool compress = true)
     {
         if (compress && filePath.EndsWith(".taf", StringComparison.OrdinalIgnoreCase))
         {
@@ -132,7 +131,7 @@ public static class AdventureFileIO
         return adventure;
     }
 
-    private static async SystemTaskSaveXmlAsync(Adventure adventure, string filePath)
+    private static async System.Threading.Tasks.TaskSaveXmlAsync(Adventure adventure, string filePath)
     {
         var settings = new XmlWriterSettings
         {
@@ -278,7 +277,7 @@ public static class AdventureFileIO
     /// <summary>
     /// Save a TAF file (ADRIFT 5.0 binary format with obfuscation and ZLib compression)
     /// </summary>
-    private static async SystemTaskSaveCompressedTafAsync(Adventure adventure, string filePath)
+    private static async System.Threading.Tasks.TaskSaveCompressedTafAsync(Adventure adventure, string filePath)
     {
         using var fileStream = File.Create(filePath);
         using var writer = new BinaryWriter(fileStream);
@@ -420,7 +419,7 @@ public static class AdventureFileIO
 
     #region Read Methods
 
-    private static async SystemTaskReadAdventureMetadataAsync(XmlReader reader, Adventure adventure)
+    private static async System.Threading.Tasks.TaskReadAdventureMetadataAsync(XmlReader reader, Adventure adventure)
     {
         while (await reader.ReadAsync())
         {
@@ -466,7 +465,7 @@ public static class AdventureFileIO
         }
     }
 
-    private static async SystemTaskReadLocationsAsync(XmlReader reader, Adventure adventure)
+    private static async System.Threading.Tasks.TaskReadLocationsAsync(XmlReader reader, Adventure adventure)
     {
         while (await reader.ReadAsync())
         {
@@ -518,7 +517,7 @@ public static class AdventureFileIO
         return location;
     }
 
-    private static async SystemTaskReadDirectionsAsync(XmlReader reader, Location location)
+    private static async System.Threading.Tasks.TaskReadDirectionsAsync(XmlReader reader, Location location)
     {
         while (await reader.ReadAsync())
         {
@@ -554,7 +553,7 @@ public static class AdventureFileIO
         }
     }
 
-    private static async SystemTaskReadObjectsAsync(XmlReader reader, Adventure adventure)
+    private static async System.Threading.Tasks.TaskReadObjectsAsync(XmlReader reader, Adventure adventure)
     {
         while (await reader.ReadAsync())
         {
@@ -684,7 +683,7 @@ public static class AdventureFileIO
         return obj;
     }
 
-    private static async SystemTaskReadVariablesAsync(XmlReader reader, Adventure adventure)
+    private static async System.Threading.Tasks.TaskReadVariablesAsync(XmlReader reader, Adventure adventure)
     {
         while (await reader.ReadAsync())
         {
@@ -737,7 +736,7 @@ public static class AdventureFileIO
         return variable;
     }
 
-    private static async SystemTaskReadGroupsAsync(XmlReader reader, Adventure adventure)
+    private static async System.Threading.Tasks.TaskReadGroupsAsync(XmlReader reader, Adventure adventure)
     {
         while (await reader.ReadAsync())
         {
@@ -787,7 +786,7 @@ public static class AdventureFileIO
         return group;
     }
 
-    private static async SystemTaskReadMemberKeysAsync(XmlReader reader, Group group)
+    private static async System.Threading.Tasks.TaskReadMemberKeysAsync(XmlReader reader, Group group)
     {
         while (await reader.ReadAsync())
         {
@@ -803,7 +802,7 @@ public static class AdventureFileIO
         }
     }
 
-    private static async SystemTaskReadSynonymsAsync(XmlReader reader, Adventure adventure)
+    private static async System.Threading.Tasks.TaskReadSynonymsAsync(XmlReader reader, Adventure adventure)
     {
         while (await reader.ReadAsync())
         {
@@ -846,7 +845,7 @@ public static class AdventureFileIO
         return synonym;
     }
 
-    private static async SystemTaskReadSynonymWordsAsync(XmlReader reader, Synonym synonym)
+    private static async System.Threading.Tasks.TaskReadSynonymWordsAsync(XmlReader reader, Synonym synonym)
     {
         while (await reader.ReadAsync())
         {
@@ -862,7 +861,7 @@ public static class AdventureFileIO
         }
     }
 
-    private static async SystemTaskReadHintsAsync(XmlReader reader, Adventure adventure)
+    private static async System.Threading.Tasks.TaskReadHintsAsync(XmlReader reader, Adventure adventure)
     {
         while (await reader.ReadAsync())
         {
@@ -908,7 +907,7 @@ public static class AdventureFileIO
         return hint;
     }
 
-    private static async SystemTaskReadHintTextsAsync(XmlReader reader, Hint hint)
+    private static async System.Threading.Tasks.TaskReadHintTextsAsync(XmlReader reader, Hint hint)
     {
         while (await reader.ReadAsync())
         {
@@ -929,7 +928,7 @@ public static class AdventureFileIO
         }
     }
 
-    private static async SystemTaskReadCharactersAsync(XmlReader reader, Adventure adventure)
+    private static async System.Threading.Tasks.TaskReadCharactersAsync(XmlReader reader, Adventure adventure)
     {
         while (await reader.ReadAsync())
         {
@@ -1006,7 +1005,7 @@ public static class AdventureFileIO
         return character;
     }
 
-    private static async SystemTaskReadStringListAsync(XmlReader reader, List<string> list, string containerName, string itemName)
+    private static async System.Threading.Tasks.TaskReadStringListAsync(XmlReader reader, List<string> list, string containerName, string itemName)
     {
         while (await reader.ReadAsync())
         {
@@ -1022,7 +1021,7 @@ public static class AdventureFileIO
         }
     }
 
-    private static async SystemTaskReadWalkRouteAsync(XmlReader reader, Character character)
+    private static async System.Threading.Tasks.TaskReadWalkRouteAsync(XmlReader reader, Character character)
     {
         var hasWalkRoute = reader.GetAttribute("HasWalkRoute");
         if (!string.IsNullOrEmpty(hasWalkRoute))
@@ -1072,7 +1071,7 @@ public static class AdventureFileIO
         }
     }
 
-    private static async SystemTaskReadConversationTopicsAsync(XmlReader reader, Character character)
+    private static async System.Threading.Tasks.TaskReadConversationTopicsAsync(XmlReader reader, Character character)
     {
         while (await reader.ReadAsync())
         {
@@ -1118,7 +1117,7 @@ public static class AdventureFileIO
         }
     }
 
-    private static async SystemTaskReadTasksAsync(XmlReader reader, Adventure adventure)
+    private static async System.Threading.Tasks.TaskReadTasksAsync(XmlReader reader, Adventure adventure)
     {
         while (await reader.ReadAsync())
         {
@@ -1192,7 +1191,7 @@ public static class AdventureFileIO
         return task;
     }
 
-    private static async SystemTaskReadTaskCommandsAsync(XmlReader reader, Core.Models.Task task)
+    private static async System.Threading.Tasks.TaskReadTaskCommandsAsync(XmlReader reader, Core.Models.Task task)
     {
         while (await reader.ReadAsync())
         {
@@ -1227,7 +1226,7 @@ public static class AdventureFileIO
         }
     }
 
-    private static async SystemTaskReadTaskActionsAsync(XmlReader reader, List<TaskAction> actions, string containerName)
+    private static async System.Threading.Tasks.TaskReadTaskActionsAsync(XmlReader reader, List<TaskAction> actions, string containerName)
     {
         while (await reader.ReadAsync())
         {
@@ -1258,7 +1257,7 @@ public static class AdventureFileIO
         }
     }
 
-    private static async SystemTaskReadEventsAsync(XmlReader reader, Adventure adventure)
+    private static async System.Threading.Tasks.TaskReadEventsAsync(XmlReader reader, Adventure adventure)
     {
         while (await reader.ReadAsync())
         {
@@ -1330,7 +1329,7 @@ public static class AdventureFileIO
         return evt;
     }
 
-    private static async SystemTaskReadEventActionsAsync(XmlReader reader, Event evt)
+    private static async System.Threading.Tasks.TaskReadEventActionsAsync(XmlReader reader, Event evt)
     {
         while (await reader.ReadAsync())
         {
@@ -1374,7 +1373,7 @@ public static class AdventureFileIO
         }
     }
 
-    private static async SystemTaskReadPropertiesAsync(XmlReader reader, Adventure adventure)
+    private static async System.Threading.Tasks.TaskReadPropertiesAsync(XmlReader reader, Adventure adventure)
     {
         while (await reader.ReadAsync())
         {
@@ -1434,7 +1433,7 @@ public static class AdventureFileIO
         return property;
     }
 
-    private static async SystemTaskReadPropertyStatesAsync(XmlReader reader, Property property)
+    private static async System.Threading.Tasks.TaskReadPropertyStatesAsync(XmlReader reader, Property property)
     {
         while (await reader.ReadAsync())
         {
@@ -1448,7 +1447,7 @@ public static class AdventureFileIO
         }
     }
 
-    private static async SystemTaskReadALRsAsync(XmlReader reader, Adventure adventure)
+    private static async System.Threading.Tasks.TaskReadALRsAsync(XmlReader reader, Adventure adventure)
     {
         while (await reader.ReadAsync())
         {
@@ -1500,7 +1499,7 @@ public static class AdventureFileIO
         return alr;
     }
 
-    private static async SystemTaskReadUserFunctionsAsync(XmlReader reader, Adventure adventure)
+    private static async System.Threading.Tasks.TaskReadUserFunctionsAsync(XmlReader reader, Adventure adventure)
     {
         while (await reader.ReadAsync())
         {
@@ -1549,7 +1548,7 @@ public static class AdventureFileIO
         return func;
     }
 
-    private static async SystemTaskReadFunctionArgumentsAsync(XmlReader reader, UserFunction func)
+    private static async System.Threading.Tasks.TaskReadFunctionArgumentsAsync(XmlReader reader, UserFunction func)
     {
         while (await reader.ReadAsync())
         {
@@ -1574,7 +1573,7 @@ public static class AdventureFileIO
         }
     }
 
-    private static async SystemTaskReadMacrosAsync(XmlReader reader, Adventure adventure)
+    private static async System.Threading.Tasks.TaskReadMacrosAsync(XmlReader reader, Adventure adventure)
     {
         while (await reader.ReadAsync())
         {
@@ -1629,7 +1628,7 @@ public static class AdventureFileIO
         return macro;
     }
 
-    private static async SystemTaskReadMacroCommandsAsync(XmlReader reader, Macro macro)
+    private static async System.Threading.Tasks.TaskReadMacroCommandsAsync(XmlReader reader, Macro macro)
     {
         while (await reader.ReadAsync())
         {
@@ -1643,7 +1642,7 @@ public static class AdventureFileIO
         }
     }
 
-    private static async SystemTaskReadMapAsync(XmlReader reader, Adventure adventure)
+    private static async System.Threading.Tasks.TaskReadMapAsync(XmlReader reader, Adventure adventure)
     {
         var autoLayoutAttr = reader.GetAttribute("AutoLayout");
         if (!string.IsNullOrEmpty(autoLayoutAttr) && bool.TryParse(autoLayoutAttr, out var autoLayout))
@@ -1761,7 +1760,7 @@ public static class AdventureFileIO
         return link;
     }
 
-    private static async SystemTaskReadSoundsAsync(XmlReader reader, Adventure adventure)
+    private static async System.Threading.Tasks.TaskReadSoundsAsync(XmlReader reader, Adventure adventure)
     {
         while (await reader.ReadAsync())
         {
@@ -1831,7 +1830,7 @@ public static class AdventureFileIO
 
     #region Write Methods
 
-    private static async SystemTaskWriteAdventureMetadataAsync(XmlWriter writer, Adventure adventure)
+    private static async System.Threading.Tasks.TaskWriteAdventureMetadataAsync(XmlWriter writer, Adventure adventure)
     {
         await writer.WriteStartElementAsync(null, "Metadata", null);
 
@@ -1849,7 +1848,7 @@ public static class AdventureFileIO
         await writer.WriteEndElementAsync(); // Metadata
     }
 
-    private static async SystemTaskWriteLocationsAsync(XmlWriter writer, Adventure adventure)
+    private static async System.Threading.Tasks.TaskWriteLocationsAsync(XmlWriter writer, Adventure adventure)
     {
         if (adventure.Locations.Count == 0) return;
 
@@ -1893,7 +1892,7 @@ public static class AdventureFileIO
         await writer.WriteEndElementAsync(); // Locations
     }
 
-    private static async SystemTaskWriteObjectsAsync(XmlWriter writer, Adventure adventure)
+    private static async System.Threading.Tasks.TaskWriteObjectsAsync(XmlWriter writer, Adventure adventure)
     {
         if (adventure.Objects.Count == 0) return;
 
@@ -1982,7 +1981,7 @@ public static class AdventureFileIO
         await writer.WriteEndElementAsync(); // Objects
     }
 
-    private static async SystemTaskWriteVariablesAsync(XmlWriter writer, Adventure adventure)
+    private static async System.Threading.Tasks.TaskWriteVariablesAsync(XmlWriter writer, Adventure adventure)
     {
         if (adventure.Variables.Count == 0) return;
 
@@ -2006,7 +2005,7 @@ public static class AdventureFileIO
         await writer.WriteEndElementAsync(); // Variables
     }
 
-    private static async SystemTaskWriteGroupsAsync(XmlWriter writer, Adventure adventure)
+    private static async System.Threading.Tasks.TaskWriteGroupsAsync(XmlWriter writer, Adventure adventure)
     {
         if (adventure.Groups.Count == 0) return;
 
@@ -2038,7 +2037,7 @@ public static class AdventureFileIO
         await writer.WriteEndElementAsync(); // Groups
     }
 
-    private static async SystemTaskWriteSynonymsAsync(XmlWriter writer, Adventure adventure)
+    private static async System.Threading.Tasks.TaskWriteSynonymsAsync(XmlWriter writer, Adventure adventure)
     {
         if (adventure.Synonyms.Count == 0) return;
 
@@ -2067,7 +2066,7 @@ public static class AdventureFileIO
         await writer.WriteEndElementAsync(); // Synonyms
     }
 
-    private static async SystemTaskWriteHintsAsync(XmlWriter writer, Adventure adventure)
+    private static async System.Threading.Tasks.TaskWriteHintsAsync(XmlWriter writer, Adventure adventure)
     {
         if (adventure.Hints.Count == 0) return;
 
@@ -2101,7 +2100,7 @@ public static class AdventureFileIO
         await writer.WriteEndElementAsync(); // Hints
     }
 
-    private static async SystemTaskWriteCharactersAsync(XmlWriter writer, Adventure adventure)
+    private static async System.Threading.Tasks.TaskWriteCharactersAsync(XmlWriter writer, Adventure adventure)
     {
         if (adventure.Characters.Count == 0) return;
 
@@ -2203,7 +2202,7 @@ public static class AdventureFileIO
         await writer.WriteEndElementAsync(); // Characters
     }
 
-    private static async SystemTaskWriteTasksAsync(XmlWriter writer, Adventure adventure)
+    private static async System.Threading.Tasks.TaskWriteTasksAsync(XmlWriter writer, Adventure adventure)
     {
         if (adventure.Tasks.Count == 0) return;
 
@@ -2315,7 +2314,7 @@ public static class AdventureFileIO
         await writer.WriteEndElementAsync(); // Tasks
     }
 
-    private static async SystemTaskWriteEventsAsync(XmlWriter writer, Adventure adventure)
+    private static async System.Threading.Tasks.TaskWriteEventsAsync(XmlWriter writer, Adventure adventure)
     {
         if (adventure.Events.Count == 0) return;
 
@@ -2395,7 +2394,7 @@ public static class AdventureFileIO
         await writer.WriteEndElementAsync(); // Events
     }
 
-    private static async SystemTaskWritePropertiesAsync(XmlWriter writer, Adventure adventure)
+    private static async System.Threading.Tasks.TaskWritePropertiesAsync(XmlWriter writer, Adventure adventure)
     {
         if (adventure.Properties.Count == 0) return;
 
@@ -2433,7 +2432,7 @@ public static class AdventureFileIO
         await writer.WriteEndElementAsync(); // Properties
     }
 
-    private static async SystemTaskWriteALRsAsync(XmlWriter writer, Adventure adventure)
+    private static async System.Threading.Tasks.TaskWriteALRsAsync(XmlWriter writer, Adventure adventure)
     {
         if (adventure.ALRs.Count == 0) return;
 
@@ -2456,7 +2455,7 @@ public static class AdventureFileIO
         await writer.WriteEndElementAsync(); // ALRs
     }
 
-    private static async SystemTaskWriteUserFunctionsAsync(XmlWriter writer, Adventure adventure)
+    private static async System.Threading.Tasks.TaskWriteUserFunctionsAsync(XmlWriter writer, Adventure adventure)
     {
         if (adventure.UserFunctions.Count == 0) return;
 
@@ -2492,7 +2491,7 @@ public static class AdventureFileIO
         await writer.WriteEndElementAsync(); // UserFunctions
     }
 
-    private static async SystemTaskWriteMacrosAsync(XmlWriter writer, Adventure adventure)
+    private static async System.Threading.Tasks.TaskWriteMacrosAsync(XmlWriter writer, Adventure adventure)
     {
         if (adventure.Macros.Count == 0) return;
 
@@ -2528,7 +2527,7 @@ public static class AdventureFileIO
         await writer.WriteEndElementAsync(); // Macros
     }
 
-    private static async SystemTaskWriteMapAsync(XmlWriter writer, Adventure adventure)
+    private static async System.Threading.Tasks.TaskWriteMapAsync(XmlWriter writer, Adventure adventure)
     {
         if (adventure.Map.Pages.Count == 0) return;
 
@@ -2570,7 +2569,7 @@ public static class AdventureFileIO
         await writer.WriteEndElementAsync(); // Map
     }
 
-    private static async SystemTaskWriteSoundsAsync(XmlWriter writer, Adventure adventure)
+    private static async System.Threading.Tasks.TaskWriteSoundsAsync(XmlWriter writer, Adventure adventure)
     {
         if (adventure.Sounds.Count == 0) return;
 
