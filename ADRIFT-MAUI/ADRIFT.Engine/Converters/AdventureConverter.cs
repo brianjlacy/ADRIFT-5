@@ -242,9 +242,10 @@ public static class AdventureConverter
         {
             Key = data.Key,
             Description = data.Description,
-            Commands = new List<string>(data.Commands),
-            CompletionMessage = data.CompletionMessage,
-            Score = data.Score
+            Commands = data.Commands.Select(cmd => new TaskCommand { Command = cmd }).ToList(),
+            SuccessMessage = data.CompletionMessage,
+            ScoreValue = data.Score,
+            IsRepeatable = data.RepeatableRestriction
         };
     }
 
@@ -384,9 +385,10 @@ public static class AdventureConverter
         {
             Key = task.Key,
             Description = task.Description,
-            Commands = new List<string>(task.Commands),
-            CompletionMessage = task.CompletionMessage,
-            Score = task.Score
+            Commands = task.Commands.Select(cmd => cmd.Command).ToList(),
+            CompletionMessage = task.SuccessMessage,
+            Score = task.ScoreValue,
+            RepeatableRestriction = task.IsRepeatable
         };
     }
 
