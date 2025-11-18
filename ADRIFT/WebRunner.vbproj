@@ -46,7 +46,7 @@
     <DocumentationFile>WebRunner.xml</DocumentationFile>
     <NoWarn>42353,42354,42355</NoWarn>
     <DefineConstants>www=True, Runner=True</DefineConstants>
-    <IntermediateOutputPath>C:\Users\Campbell\AppData\Local\Temp\vs1DDC.tmp\Debug\</IntermediateOutputPath>
+    <IntermediateOutputPath>C:\Users\brian\AppData\Local\Temp\vsC195.tmp\Debug\</IntermediateOutputPath>
     <Prefer32Bit>false</Prefer32Bit>
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
   </PropertyGroup>
@@ -59,7 +59,7 @@
     <DocumentationFile>WebRunner.xml</DocumentationFile>
     <NoWarn>42353,42354,42355</NoWarn>
     <DefineConstants>www=True, Runner=True</DefineConstants>
-    <IntermediateOutputPath>C:\Users\Campbell\AppData\Local\Temp\vs1DDC.tmp\Release\</IntermediateOutputPath>
+    <IntermediateOutputPath>C:\Users\brian\AppData\Local\Temp\vsC195.tmp\Release\</IntermediateOutputPath>
     <Prefer32Bit>false</Prefer32Bit>
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
   </PropertyGroup>

@@ -76,7 +76,7 @@
     <NoWarn>42016,42017,42018,42019,42032,42353,42354,42355</NoWarn>
     <DebugType>full</DebugType>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <IntermediateOutputPath>C:\Users\Campbell\AppData\Local\Temp\vs1BF5.tmp\Debug\</IntermediateOutputPath>
+    <IntermediateOutputPath>C:\Users\brian\AppData\Local\Temp\vsBF21.tmp\Debug\</IntermediateOutputPath>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -98,7 +98,7 @@
     <DebugType>none</DebugType>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <IntermediateOutputPath>C:\Users\Campbell\AppData\Local\Temp\vs1BF5.tmp\Release\</IntermediateOutputPath>
+    <IntermediateOutputPath>C:\Users\brian\AppData\Local\Temp\vsBF21.tmp\Release\</IntermediateOutputPath>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugRunner|AnyCPU' ">
@@ -120,7 +120,7 @@
     <NoWarn>42016,42017,42018,42019,42032,42353,42354,42355</NoWarn>
     <DebugType>full</DebugType>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <IntermediateOutputPath>C:\Users\Campbell\AppData\Local\Temp\vs1BF5.tmp\DebugRunner\</IntermediateOutputPath>
+    <IntermediateOutputPath>C:\Users\brian\AppData\Local\Temp\vsBF21.tmp\DebugRunner\</IntermediateOutputPath>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -136,7 +136,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DefineConstants>Generator=True</DefineConstants>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <IntermediateOutputPath>C:\Users\Campbell\AppData\Local\Temp\vs1BF5.tmp\x86\Debug\</IntermediateOutputPath>
+    <IntermediateOutputPath>C:\Users\brian\AppData\Local\Temp\vsBF21.tmp\x86\Debug\</IntermediateOutputPath>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
@@ -151,7 +151,7 @@
     </DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <IntermediateOutputPath>C:\Users\Campbell\AppData\Local\Temp\vs1BF5.tmp\x86\Release\</IntermediateOutputPath>
+    <IntermediateOutputPath>C:\Users\brian\AppData\Local\Temp\vsBF21.tmp\x86\Release\</IntermediateOutputPath>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugRunner|x86' ">
@@ -166,7 +166,7 @@
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <IntermediateOutputPath>C:\Users\Campbell\AppData\Local\Temp\vs1BF5.tmp\x86\DebugRunner\</IntermediateOutputPath>
+    <IntermediateOutputPath>C:\Users\brian\AppData\Local\Temp\vsBF21.tmp\x86\DebugRunner\</IntermediateOutputPath>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug - Runner|AnyCPU' ">
@@ -182,7 +182,7 @@
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <IntermediateOutputPath>C:\Users\Campbell\AppData\Local\Temp\vs1BF5.tmp\Debug - Runner\</IntermediateOutputPath>
+    <IntermediateOutputPath>C:\Users\brian\AppData\Local\Temp\vsBF21.tmp\Debug - Runner\</IntermediateOutputPath>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug - Runner|x86' ">
@@ -198,7 +198,7 @@
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <IntermediateOutputPath>C:\Users\Campbell\AppData\Local\Temp\vs1BF5.tmp\x86\Debug - Runner\</IntermediateOutputPath>
+    <IntermediateOutputPath>C:\Users\brian\AppData\Local\Temp\vsBF21.tmp\x86\Debug - Runner\</IntermediateOutputPath>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
