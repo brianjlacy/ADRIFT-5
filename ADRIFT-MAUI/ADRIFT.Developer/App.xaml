@@ -2,6 +2,7 @@
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:ADRIFT"
+             xmlns:converters="clr-namespace:ADRIFT.Converters"
              x:Class="ADRIFT.App">
     <Application.Resources>
         <ResourceDictionary>
@@ -9,6 +10,10 @@
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <!-- Value Converters -->
+            <converters:TabColorConverter x:Key="TabColorConverter" />
+            <converters:EqualConverter x:Key="EqualConverter" />
 
             <!-- ADRIFT Color Scheme -->
             <Color x:Key="ADRIFTPrimary">#1E88E5</Color>
