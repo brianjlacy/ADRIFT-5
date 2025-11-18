@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ADRIFT.Developer.Pages.UserFunctionEditorPage"
+             Title="User Function Editor">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Save" Clicked="OnSave" />
+        <ToolbarItem Text="Delete" Clicked="OnDelete" />
+    </ContentPage.ToolbarItems>
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="16" Padding="20">
+
+            <Frame>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Function Details" FontSize="18" FontAttributes="Bold" />
+
+                    <Label Text="Function Name:" FontAttributes="Bold" />
+                    <Entry x:Name="NameEntry" Placeholder="FunctionName (no spaces)" />
+
+                    <Label Text="Description:" FontAttributes="Bold" />
+                    <Editor x:Name="DescriptionEditor" Placeholder="What this function does" HeightRequest="60" />
+
+                    <Label Text="Output Text:" FontAttributes="Bold" />
+                    <Editor x:Name="OutputEditor"
+                            Placeholder="Text or formula to return (can use argument names)"
+                            HeightRequest="120"
+                            AutoSize="TextChanges" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Arguments" FontSize="18" FontAttributes="Bold" />
+
+                    <Label Text="Arguments (one per line: name|type):" FontAttributes="Bold" FontSize="14" />
+                    <Editor x:Name="ArgumentsEditor"
+                            Placeholder="Example:&#x0a;objectName|Object&#x0a;count|Number&#x0a;description|Text"
+                            HeightRequest="150"
+                            AutoSize="TextChanges" />
+
+                    <Label Text="Available types: Object, Character, Location, Number, Text"
+                           FontSize="12"
+                           TextColor="Gray" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame BackgroundColor="{StaticResource ADRIFTSurface}">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="💡 Usage" FontAttributes="Bold" />
+                    <Label Text="Call this function in descriptions using:"
+                           FontSize="12"
+                           TextColor="Gray" />
+                    <Label x:Name="UsageLabel"
+                           Text="{FunctionName:arg1:arg2}"
+                           FontSize="12"
+                           TextColor="Gray"
+                           FontFamily="Courier New" />
+                </VerticalStackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

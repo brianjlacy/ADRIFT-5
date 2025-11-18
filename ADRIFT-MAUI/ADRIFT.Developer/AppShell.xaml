@@ -80,6 +80,30 @@
                       Route="map" />
     </FlyoutItem>
 
+    <FlyoutItem Title="Properties" Icon="property.png">
+        <ShellContent Title="Properties"
+                      ContentTemplate="{DataTemplate views:PropertyListPage}"
+                      Route="properties" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Text Overrides" Icon="alr.png">
+        <ShellContent Title="Text Overrides"
+                      ContentTemplate="{DataTemplate views:ALRListPage}"
+                      Route="alrs" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Functions" Icon="function.png">
+        <ShellContent Title="User Functions"
+                      ContentTemplate="{DataTemplate views:UserFunctionListPage}"
+                      Route="functions" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Macros" Icon="macro.png">
+        <ShellContent Title="Macros"
+                      ContentTemplate="{DataTemplate views:MacroListPage}"
+                      Route="macros" />
+    </FlyoutItem>
+
     <!-- Menu Items -->
     <MenuItem Text="New Adventure"
               IconImageSource="new.png"
