@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using ADRIFT.Core.Models;
 
 namespace ADRIFT.Developer.ViewModels;
 
@@ -26,6 +27,11 @@ public partial class ObjectListViewModel : ObservableObject
     [ObservableProperty]
     private bool isRefreshing;
 
+    partial void OnSearchTextChanged(string value)
+    {
+        FilterObjects();
+    }
+
     public async Task LoadObjectsAsync()
     {
         try
@@ -44,6 +50,37 @@ public partial class ObjectListViewModel : ObservableObject
         finally
         {
             IsRefreshing = false;
+        }
+    }
+
+    private async void FilterObjects()
+    {
+        if (string.IsNullOrWhiteSpace(SearchText))
+        {
+            await LoadObjectsAsync();
+            return;
+        }
+
+        try
+        {
+            var allObjects = await _adventureService.GetObjectsAsync();
+            var filtered = allObjects.Where(o =>
+                o.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
+                o.ShortDescription.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
+                o.Key.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            FilteredObjects.Clear();
+            foreach (var obj in filtered)
+            {
+                FilteredObjects.Add(new ObjectItemViewModel(obj));
+            }
+
+            ObjectCount = FilteredObjects.Count;
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Error", $"Failed to filter objects: {ex.Message}", "OK");
         }
     }
 
@@ -69,8 +106,20 @@ public partial class ObjectListViewModel : ObservableObject
 
         if (result)
         {
-            FilteredObjects.Remove(obj);
-            ObjectCount = FilteredObjects.Count;
+            try
+            {
+                var adventure = _adventureService.CurrentAdventure;
+                if (adventure != null && adventure.Objects.ContainsKey(obj.Key))
+                {
+                    adventure.Objects.Remove(obj.Key);
+                    FilteredObjects.Remove(obj);
+                    ObjectCount = FilteredObjects.Count;
+                }
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert("Error", $"Failed to delete object: {ex.Message}", "OK");
+            }
         }
     }
 
@@ -83,19 +132,68 @@ public partial class ObjectListViewModel : ObservableObject
     [RelayCommand]
     private async Task Sort()
     {
-        await Shell.Current.DisplayActionSheet("Sort By", "Cancel", null,
+        var action = await Shell.Current.DisplayActionSheet("Sort By", "Cancel", null,
             "Name (A-Z)", "Name (Z-A)", "Location", "Recently Modified");
+
+        if (action != null && action != "Cancel")
+        {
+            var sorted = action switch
+            {
+                "Name (A-Z)" => FilteredObjects.OrderBy(o => o.FullName).ToList(),
+                "Name (Z-A)" => FilteredObjects.OrderByDescending(o => o.FullName).ToList(),
+                "Location" => FilteredObjects.OrderBy(o => o.LocationName).ToList(),
+                "Recently Modified" => FilteredObjects.OrderByDescending(o => o.Key).ToList(),
+                _ => FilteredObjects.ToList()
+            };
+
+            FilteredObjects.Clear();
+            foreach (var item in sorted)
+            {
+                FilteredObjects.Add(item);
+            }
+        }
     }
 
     [RelayCommand]
     private async Task Filter()
     {
-        await Shell.Current.DisplayActionSheet("Filter", "Cancel", null,
+        var action = await Shell.Current.DisplayActionSheet("Filter", "Cancel", null,
             "All Objects", "Static Only", "Dynamic Only", "Library Only");
+
+        if (action != null && action != "Cancel")
+        {
+            try
+            {
+                var allObjects = await _adventureService.GetObjectsAsync();
+                IEnumerable<AdriftObject> filtered = action switch
+                {
+                    "Static Only" => allObjects.Where(o => o.IsStatic),
+                    "Dynamic Only" => allObjects.Where(o => !o.IsStatic),
+                    "Library Only" => allObjects.Where(o => o.IsLibrary),
+                    _ => allObjects
+                };
+
+                FilteredObjects.Clear();
+                foreach (var obj in filtered)
+                {
+                    FilteredObjects.Add(new ObjectItemViewModel(obj));
+                }
+
+                ObjectCount = FilteredObjects.Count;
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert("Error", $"Failed to filter objects: {ex.Message}", "OK");
+            }
+        }
     }
 
     [RelayCommand]
-    private Task Search() => Task.CompletedTask;
+    private async Task Search()
+    {
+        FilterObjects();
+        await Task.CompletedTask;
+    }
 }
 
 public partial class ObjectItemViewModel : ObservableObject
@@ -110,9 +208,14 @@ public partial class ObjectItemViewModel : ObservableObject
         IsLibrary = false;
     }
 
-    public ObjectItemViewModel(object obj) : this()
+    public ObjectItemViewModel(AdriftObject obj) : this()
     {
-        // TODO: Map from object to view model properties
+        Key = obj.Key;
+        FullName = obj.FullName;
+        Description = obj.ShortDescription;
+        LocationName = obj.LocationKey ?? "Unknown";
+        IsStatic = obj.IsStatic;
+        IsLibrary = obj.IsLibrary;
     }
 
     [ObservableProperty]
