@@ -13,7 +13,9 @@ public partial class AppShell : Shell
         Routing.RegisterRoute("charactereditor", typeof(Views.CharacterEditorPage));
         Routing.RegisterRoute("eventeditor", typeof(Views.EventEditorPage));
         Routing.RegisterRoute("variableeditor", typeof(Views.VariableEditorPage));
+        Routing.RegisterRoute("synonymeditor", typeof(Views.SynonymEditorPage));
         Routing.RegisterRoute("groupeditor", typeof(Views.GroupEditorPage));
+        Routing.RegisterRoute("hinteditor", typeof(Views.HintEditorPage));
     }
 
     private async void OnNewAdventure(object sender, EventArgs e)
