@@ -362,4 +362,86 @@ public partial class GamePage : ContentPage
             await ShowHintProgression(hint);
         }
     }
+
+    private void OnHistoryUp(object? sender, EventArgs e)
+    {
+        if (_commandHistory.Count == 0)
+            return;
+
+        if (_historyIndex > 0)
+        {
+            _historyIndex--;
+            CommandEntry.Text = _commandHistory[_historyIndex];
+            CommandEntry.CursorPosition = CommandEntry.Text.Length;
+        }
+    }
+
+    private void OnHistoryDown(object? sender, EventArgs e)
+    {
+        if (_commandHistory.Count == 0)
+            return;
+
+        if (_historyIndex < _commandHistory.Count - 1)
+        {
+            _historyIndex++;
+            CommandEntry.Text = _commandHistory[_historyIndex];
+            CommandEntry.CursorPosition = CommandEntry.Text.Length;
+        }
+        else if (_historyIndex == _commandHistory.Count - 1)
+        {
+            // Go past last history item = clear entry
+            _historyIndex = _commandHistory.Count;
+            CommandEntry.Text = "";
+        }
+    }
+
+    private async void OnExportTranscript(object? sender, EventArgs e)
+    {
+        if (_engine == null || string.IsNullOrEmpty(OutputLabel.Text))
+        {
+            await DisplayAlert("Error", "No transcript to export.", "OK");
+            return;
+        }
+
+        try
+        {
+            // Prompt for filename
+            var filename = await DisplayPromptAsync(
+                "Export Transcript",
+                "Enter filename (without extension):",
+                initialValue: $"Transcript_{DateTime.Now:yyyyMMdd_HHmmss}");
+
+            if (string.IsNullOrWhiteSpace(filename))
+                return;
+
+            // Get documents directory
+            var documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            var adriftPath = Path.Combine(documentsPath, "ADRIFT Transcripts");
+
+            if (!Directory.Exists(adriftPath))
+                Directory.CreateDirectory(adriftPath);
+
+            var filePath = Path.Combine(adriftPath, $"{filename}.txt");
+
+            // Create transcript with metadata
+            var transcript = $"ADRIFT 5 Runner - Game Transcript\n";
+            transcript += $"Adventure: {_currentAdventure?.Title ?? "Unknown"}\n";
+            transcript += $"Author: {_currentAdventure?.Author ?? "Unknown"}\n";
+            transcript += $"Date: {DateTime.Now:yyyy-MM-dd HH:mm:ss}\n";
+            transcript += $"Final Score: {_engine.State.Score}\n";
+            transcript += $"Turns Taken: {_engine.State.TurnCount}\n";
+            transcript += $"\n{new string('=', 60)}\n\n";
+            transcript += OutputLabel.Text;
+
+            await File.WriteAllTextAsync(filePath, transcript);
+
+            await DisplayAlert("Success",
+                $"Transcript exported to:\n{filePath}",
+                "OK");
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", $"Failed to export transcript: {ex.Message}", "OK");
+        }
+    }
 }

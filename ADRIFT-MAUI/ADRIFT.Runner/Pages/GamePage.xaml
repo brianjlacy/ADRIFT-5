@@ -8,6 +8,7 @@
         <ToolbarItem Text="Save" Clicked="OnSaveGame" />
         <ToolbarItem Text="Load" Clicked="OnLoadGame" />
         <ToolbarItem Text="Hints" Clicked="OnShowHints" />
+        <ToolbarItem Text="Export" Clicked="OnExportTranscript" />
         <ToolbarItem Text="Restart" Clicked="OnRestartGame" />
     </ContentPage.ToolbarItems>
 
@@ -33,16 +34,28 @@
         </Grid>
 
         <!-- Input area -->
-        <Grid Grid.Row="2" ColumnDefinitions="*,Auto" Padding="10" ColumnSpacing="10">
+        <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto,Auto" Padding="10" ColumnSpacing="5">
+            <Button Grid.Column="0"
+                    Text="↑"
+                    Clicked="OnHistoryUp"
+                    WidthRequest="40"
+                    ToolTipProperties.Text="Previous command" />
+
             <Entry x:Name="CommandEntry"
-                   Grid.Column="0"
+                   Grid.Column="1"
                    Placeholder="Enter command..."
                    FontFamily="Courier New"
                    FontSize="14"
                    Completed="OnCommandEntered"
                    ReturnCommand="{Binding SubmitCommandCommand}" />
 
-            <Button Grid.Column="1"
+            <Button Grid.Column="2"
+                    Text="↓"
+                    Clicked="OnHistoryDown"
+                    WidthRequest="40"
+                    ToolTipProperties.Text="Next command" />
+
+            <Button Grid.Column="3"
                     Text="Send"
                     Clicked="OnCommandEntered"
                     WidthRequest="80" />
