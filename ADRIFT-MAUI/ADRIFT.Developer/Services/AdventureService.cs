@@ -1,4 +1,5 @@
 using ADRIFT.Core.Models;
+using ADRIFT.Core.IO;
 
 namespace ADRIFT.Developer.Services;
 
@@ -12,7 +13,14 @@ public class AdventureService : IAdventureService
 
     public System.Threading.Tasks.Task<Adventure> CreateNewAdventureAsync()
     {
-        var adventure = new Adventure();
+        var adventure = new Adventure
+        {
+            Title = "New Adventure",
+            Author = Environment.UserName,
+            Version = "1.0",
+            Created = DateTime.Now,
+            Modified = DateTime.Now
+        };
         _currentAdventure = adventure;
         AdventureChanged?.Invoke(this, new AdventureChangedEventArgs { Adventure = adventure });
         return System.Threading.Tasks.Task.FromResult(adventure);
@@ -22,22 +30,17 @@ public class AdventureService : IAdventureService
     {
         try
         {
-            // TODO: Implement file loading using FileIO class
-            // var adventure = await System.Threading.Tasks.Task.Run(() => FileIO.LoadAdventure(filePath));
-            // _currentAdventure = adventure;
-            // AdventureChanged?.Invoke(this, new AdventureChangedEventArgs
-            // {
-            //     Adventure = adventure,
-            //     FilePath = filePath
-            // });
-            // return adventure;
-
-            await System.Threading.Tasks.Task.CompletedTask;
-            return null;
+            var adventure = await AdventureFileIO.LoadAdventureAsync(filePath);
+            _currentAdventure = adventure;
+            AdventureChanged?.Invoke(this, new AdventureChangedEventArgs
+            {
+                Adventure = adventure,
+                FilePath = filePath
+            });
+            return adventure;
         }
         catch (Exception ex)
         {
-            // TODO: Proper error handling
             throw new InvalidOperationException($"Failed to load adventure: {ex.Message}", ex);
         }
     }
@@ -46,16 +49,17 @@ public class AdventureService : IAdventureService
     {
         try
         {
-            // TODO: Implement file saving using FileIO class
-            // await System.Threading.Tasks.Task.Run(() => FileIO.SaveAdventure(adventure, filePath));
-            // return true;
+            // Update modification timestamp
+            adventure.Modified = DateTime.Now;
 
-            await System.Threading.Tasks.Task.CompletedTask;
-            return false;
+            // Determine if we should compress based on file extension
+            bool compress = filePath.EndsWith(".taf", StringComparison.OrdinalIgnoreCase);
+
+            await AdventureFileIO.SaveAdventureAsync(adventure, filePath, compress);
+            return true;
         }
         catch (Exception ex)
         {
-            // TODO: Proper error handling
             throw new InvalidOperationException($"Failed to save adventure: {ex.Message}", ex);
         }
     }
