@@ -97,6 +97,28 @@ public class Property : AdriftItem
     public string? RestrictValue { get; set; }
 
     /// <summary>
+    /// Get current value as string (based on property type)
+    /// </summary>
+    public string CurrentValue
+    {
+        get
+        {
+            return Type switch
+            {
+                PropertyType.Integer => IntValue.ToString(),
+                PropertyType.Text => StringValue,
+                PropertyType.StateList => SelectedState ?? "",
+                PropertyType.ObjectKey => ObjectKey ?? "",
+                PropertyType.CharacterKey => CharacterKey ?? "",
+                PropertyType.LocationKey => LocationKey ?? "",
+                PropertyType.LocationGroupKey => LocationGroupKey ?? "",
+                PropertyType.SelectionOnly => Selected ? "Selected" : "Not Selected",
+                _ => ""
+            };
+        }
+    }
+
+    /// <summary>
     /// Append states to another property's state list
     /// </summary>
     public string? AppendToProperty { get; set; }

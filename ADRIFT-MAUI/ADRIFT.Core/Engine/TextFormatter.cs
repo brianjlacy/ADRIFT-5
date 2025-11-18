@@ -122,6 +122,194 @@ public class TextFormatter
     private string ProcessFunctions(string text)
     {
         // ALR functions like %GetArticle[object]%, %Upper[text]%, etc.
+        // Process in specific order to handle nested functions correctly
+
+        // ADRIFT 5 Text Functions - Complete Implementation
+
+        // ========== NAME REFERENCE FUNCTIONS (with explicit keys) ==========
+
+        // %ObjectName[key]% - Get object name by key
+        text = Regex.Replace(text, @"%ObjectName\[([^\]]+)\]%", m =>
+        {
+            var key = m.Groups[1].Value.Trim();
+            if (_adventure.Objects.TryGetValue(key, out var obj))
+                return obj.Name;
+            return m.Value;
+        }, RegexOptions.IgnoreCase);
+
+        // %CharacterName[key]% - Get character name by key
+        text = Regex.Replace(text, @"%CharacterName\[([^\]]+)\]%", m =>
+        {
+            var key = m.Groups[1].Value.Trim();
+            if (_adventure.Characters.TryGetValue(key, out var character))
+                return character.Name;
+            return m.Value;
+        }, RegexOptions.IgnoreCase);
+
+        // %LocationName[key]% - Get location name by key
+        text = Regex.Replace(text, @"%LocationName\[([^\]]+)\]%", m =>
+        {
+            var key = m.Groups[1].Value.Trim();
+            if (_adventure.Locations.TryGetValue(key, out var location))
+                return location.ShortDescription.GetText();
+            return m.Value;
+        }, RegexOptions.IgnoreCase);
+
+        // %CharacterDescriptor[key]% - Get character descriptor
+        text = Regex.Replace(text, @"%CharacterDescriptor\[([^\]]+)\]%", m =>
+        {
+            var key = m.Groups[1].Value.Trim();
+            if (_adventure.Characters.TryGetValue(key, out var character))
+                return character.Descriptor;
+            return m.Value;
+        }, RegexOptions.IgnoreCase);
+
+        // %ObjectArticle[key]% - Get object article
+        text = Regex.Replace(text, @"%ObjectArticle\[([^\]]+)\]%", m =>
+        {
+            var key = m.Groups[1].Value.Trim();
+            if (_adventure.Objects.TryGetValue(key, out var obj))
+                return obj.Article;
+            return m.Value;
+        }, RegexOptions.IgnoreCase);
+
+        // ========== LOCATION QUERY FUNCTIONS ==========
+
+        // %CharacterLocation[key]% - Where is this character?
+        text = Regex.Replace(text, @"%CharacterLocation\[([^\]]+)\]%", m =>
+        {
+            var key = m.Groups[1].Value.Trim();
+            if (_adventure.Characters.TryGetValue(key, out var character))
+            {
+                var locationKey = _state.GetCharacterLocation(key);
+                if (!string.IsNullOrEmpty(locationKey) && _adventure.Locations.TryGetValue(locationKey, out var location))
+                    return location.ShortDescription.GetText();
+            }
+            return "unknown";
+        }, RegexOptions.IgnoreCase);
+
+        // %ObjectLocation[key]% - Where is this object?
+        text = Regex.Replace(text, @"%ObjectLocation\[([^\]]+)\]%", m =>
+        {
+            var key = m.Groups[1].Value.Trim();
+            if (_adventure.Objects.TryGetValue(key, out var obj))
+            {
+                var locationKey = _state.GetObjectLocation(key);
+                if (!string.IsNullOrEmpty(locationKey) && _adventure.Locations.TryGetValue(locationKey, out var location))
+                    return location.ShortDescription.GetText();
+                else if (_state.HasObject(key))
+                    return "inventory";
+            }
+            return "unknown";
+        }, RegexOptions.IgnoreCase);
+
+        // %DisplayLocation% - Current location description
+        text = Regex.Replace(text, @"%DisplayLocation%", m =>
+        {
+            var location = _state.GetCurrentLocation();
+            return location?.LongDescription.GetText() ?? "";
+        }, RegexOptions.IgnoreCase);
+
+        // ========== LIST FUNCTIONS (with specific location keys) ==========
+
+        // %ListObjectsAtLocation[key]% - List objects at specific location
+        text = Regex.Replace(text, @"%ListObjectsAtLocation\[([^\]]+)\]%", m =>
+        {
+            var locationKey = m.Groups[1].Value.Trim();
+            return ListObjectsAtLocation(locationKey);
+        }, RegexOptions.IgnoreCase);
+
+        // %ListCharactersAtLocation[key]% - List characters at specific location
+        text = Regex.Replace(text, @"%ListCharactersAtLocation\[([^\]]+)\]%", m =>
+        {
+            var locationKey = m.Groups[1].Value.Trim();
+            return ListCharactersAtLocation(locationKey);
+        }, RegexOptions.IgnoreCase);
+
+        // ========== GAME STATE FUNCTIONS ==========
+
+        // %Player% - Player character name
+        text = Regex.Replace(text, @"%Player%", m => _state.PlayerName, RegexOptions.IgnoreCase);
+
+        // %MaxScore% - Maximum possible score
+        text = Regex.Replace(text, @"%MaxScore%", m => _adventure.MaxScore.ToString(), RegexOptions.IgnoreCase);
+
+        // %Time% - Current game time
+        text = Regex.Replace(text, @"%Time%", m => FormatGameTime(), RegexOptions.IgnoreCase);
+
+        // ========== DIRECTION FUNCTIONS ==========
+
+        // %Direction[abbrev]% - Convert direction abbreviation to full name
+        text = Regex.Replace(text, @"%Direction\[([^\]]+)\]%", m =>
+        {
+            var dir = m.Groups[1].Value.Trim().ToUpper();
+            return dir switch
+            {
+                "N" => "north",
+                "NE" => "northeast",
+                "E" => "east",
+                "SE" => "southeast",
+                "S" => "south",
+                "SW" => "southwest",
+                "W" => "west",
+                "NW" => "northwest",
+                "U" or "UP" => "up",
+                "D" or "DOWN" => "down",
+                "IN" => "in",
+                "OUT" => "out",
+                _ => dir.ToLower()
+            };
+        }, RegexOptions.IgnoreCase);
+
+        // ========== PROPERTY FUNCTIONS ==========
+
+        // %Property[key,propertyName]% - Get property value
+        text = Regex.Replace(text, @"%Property\[([^,]+),([^\]]+)\]%", m =>
+        {
+            var itemKey = m.Groups[1].Value.Trim();
+            var propertyName = m.Groups[2].Value.Trim();
+            return GetPropertyValue(itemKey, propertyName);
+        }, RegexOptions.IgnoreCase);
+
+        // ========== EXPRESSION EVALUATION ==========
+
+        // %Expr[expression]% - Evaluate mathematical expression
+        text = Regex.Replace(text, @"%Expr\[([^\]]+)\]%", m =>
+        {
+            var expression = m.Groups[1].Value.Trim();
+            return EvaluateExpression(expression);
+        }, RegexOptions.IgnoreCase);
+
+        // ========== ADVANCED CONDITIONAL (ADRIFT 5 syntax) ==========
+
+        // %if[condition]truetext%else%falsetext%ifend% - ADRIFT 5 conditional syntax
+        text = Regex.Replace(text, @"%if\[([^\]]+)\](.+?)%else%(.+?)%ifend%", m =>
+        {
+            var condition = m.Groups[1].Value.Trim();
+            var trueText = m.Groups[2].Value;
+            var falseText = m.Groups[3].Value;
+            bool result = EvaluateCondition(condition);
+            return result ? trueText : falseText;
+        }, RegexOptions.IgnoreCase);
+
+        // %if[condition]text%ifend% - ADRIFT 5 conditional without else
+        text = Regex.Replace(text, @"%if\[([^\]]+)\](.+?)%ifend%", m =>
+        {
+            var condition = m.Groups[1].Value.Trim();
+            var trueText = m.Groups[2].Value;
+            bool result = EvaluateCondition(condition);
+            return result ? trueText : "";
+        }, RegexOptions.IgnoreCase);
+
+        // ========== TEXT CASE FUNCTIONS ==========
+
+        // %Sentence[text]% - Sentence case (first letter uppercase, rest as-is)
+        text = Regex.Replace(text, @"%Sentence\[([^\]]+)\]%", m =>
+        {
+            var content = m.Groups[1].Value;
+            if (string.IsNullOrEmpty(content)) return content;
+            return char.ToUpper(content[0]) + content.Substring(1);
+        }, RegexOptions.IgnoreCase);
 
         // %Upper[text]% - Uppercase first letter
         text = Regex.Replace(text, @"%Upper\[([^\]]+)\]%", m =>
@@ -148,6 +336,26 @@ public class TextFormatter
         {
             var content = m.Groups[1].Value;
             return System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(content.ToLower());
+        }, RegexOptions.IgnoreCase);
+
+        // ========== ARTICLE FUNCTIONS ==========
+
+        // %a[object]% - "a" or "an" (indefinite article only)
+        text = Regex.Replace(text, @"%a\[([^\]]+)\]%", m =>
+        {
+            var entityRef = m.Groups[1].Value;
+            var entity = ResolveEntity(entityRef);
+            if (entity != null)
+            {
+                return StartsWithVowelSound(entity) ? "an" : "a";
+            }
+            return "a";
+        }, RegexOptions.IgnoreCase);
+
+        // %the[object]% - "the" (definite article only)
+        text = Regex.Replace(text, @"%the\[([^\]]+)\]%", m =>
+        {
+            return "the";
         }, RegexOptions.IgnoreCase);
 
         // %TheOf[object]% - "the object" or "object's"
@@ -186,6 +394,26 @@ public class TextFormatter
             }
             return entityRef;
         }, RegexOptions.IgnoreCase);
+
+        // ========== PRONOUN FUNCTIONS ==========
+
+        // Context-sensitive pronouns based on last referenced character/object
+        // %he%, %she%, %it%, %they% - Subject pronouns
+        text = Regex.Replace(text, @"%he%", m => GetSubjectPronoun("male"), RegexOptions.IgnoreCase);
+        text = Regex.Replace(text, @"%she%", m => GetSubjectPronoun("female"), RegexOptions.IgnoreCase);
+        text = Regex.Replace(text, @"%it%", m => GetSubjectPronoun("neuter"), RegexOptions.IgnoreCase);
+        text = Regex.Replace(text, @"%they%", m => GetSubjectPronoun("plural"), RegexOptions.IgnoreCase);
+
+        // %him%, %her%, %them% - Object pronouns
+        text = Regex.Replace(text, @"%him%", m => GetObjectPronoun("male"), RegexOptions.IgnoreCase);
+        text = Regex.Replace(text, @"%her%", m => GetObjectPronoun("female"), RegexOptions.IgnoreCase);
+        text = Regex.Replace(text, @"%them%", m => GetObjectPronoun("plural"), RegexOptions.IgnoreCase);
+
+        // %his%, %her%, %its%, %their% - Possessive pronouns
+        text = Regex.Replace(text, @"%his%", m => GetPossessivePronoun("male"), RegexOptions.IgnoreCase);
+        text = Regex.Replace(text, @"%her%", m => GetPossessivePronoun("female"), RegexOptions.IgnoreCase);
+        text = Regex.Replace(text, @"%its%", m => GetPossessivePronoun("neuter"), RegexOptions.IgnoreCase);
+        text = Regex.Replace(text, @"%their%", m => GetPossessivePronoun("plural"), RegexOptions.IgnoreCase);
 
         // %UCase[text]% - ALL UPPERCASE
         text = Regex.Replace(text, @"%UCase\[([^\]]+)\]%", m =>
@@ -641,7 +869,7 @@ public class TextFormatter
             {
                 var currentValue = _state.GetVariableValue(variable.Key);
 
-                if (variable.Type == VariableType.Numeric)
+                if (variable.Type == VariableType.Integer)
                 {
                     if (int.TryParse(currentValue, out var current) && int.TryParse(value, out var target))
                     {
@@ -671,5 +899,233 @@ public class TextFormatter
 
         // Default: try to parse as boolean
         return bool.TryParse(condition, out var result) && result;
+    }
+
+    /// <summary>
+    /// List objects at a specific location
+    /// </summary>
+    private string ListObjectsAtLocation(string locationKey)
+    {
+        var objects = _adventure.Objects.Values
+            .Where(o => !o.IsStatic && _state.GetObjectLocation(o.Key) == locationKey)
+            .ToList();
+
+        if (objects.Count == 0)
+            return "nothing";
+
+        if (objects.Count == 1)
+            return objects[0].FullName;
+
+        var names = objects.Select(o => o.FullName).ToList();
+        return FormatList(names);
+    }
+
+    /// <summary>
+    /// List characters at a specific location
+    /// </summary>
+    private string ListCharactersAtLocation(string locationKey)
+    {
+        var characters = _adventure.Characters.Values
+            .Where(c => _state.GetCharacterLocation(c.Key) == locationKey)
+            .ToList();
+
+        if (characters.Count == 0)
+            return "no one";
+
+        if (characters.Count == 1)
+            return characters[0].FullName;
+
+        var names = characters.Select(c => c.FullName).ToList();
+        return FormatList(names);
+    }
+
+    /// <summary>
+    /// Format current game time
+    /// </summary>
+    private string FormatGameTime()
+    {
+        // Return turn count or formatted time if adventure has time system
+        if (_adventure.UseTime)
+        {
+            var totalMinutes = _state.TimeElapsed;
+            var hours = totalMinutes / 60;
+            var minutes = totalMinutes % 60;
+            return $"{hours:D2}:{minutes:D2}";
+        }
+        return $"Turn {_state.TurnCount}";
+    }
+
+    /// <summary>
+    /// Get property value for an item
+    /// </summary>
+    private string GetPropertyValue(string itemKey, string propertyName)
+    {
+        // Check if item exists and has the property
+        var item = _adventure.GetItem(itemKey);
+        if (item == null)
+            return "";
+
+        // Try to get property from object
+        if (item is AdriftObject obj && obj.Properties.TryGetValue(propertyName, out var objProp))
+        {
+            return objProp.CurrentValue ?? "";
+        }
+
+        // Try to get property from character
+        if (item is Character character && character.Properties.TryGetValue(propertyName, out var charProp))
+        {
+            return charProp.CurrentValue ?? "";
+        }
+
+        // Try to get property from location
+        if (item is Location location && location.Properties.TryGetValue(propertyName, out var locProp))
+        {
+            return locProp.CurrentValue ?? "";
+        }
+
+        return "";
+    }
+
+    /// <summary>
+    /// Evaluate mathematical expression
+    /// </summary>
+    private string EvaluateExpression(string expression)
+    {
+        try
+        {
+            // Replace variables in expression first
+            expression = ReplaceVariablesInExpression(expression);
+
+            // Simple expression evaluator (supports +, -, *, /, parentheses)
+            var result = EvaluateSimpleExpression(expression);
+            return result.ToString();
+        }
+        catch
+        {
+            return expression; // Return original if evaluation fails
+        }
+    }
+
+    private string ReplaceVariablesInExpression(string expression)
+    {
+        return Regex.Replace(expression, @"\b([a-zA-Z_]\w*)\b", m =>
+        {
+            var varName = m.Groups[1].Value;
+            var variable = _adventure.Variables.Values.FirstOrDefault(v =>
+                v.Name.Equals(varName, StringComparison.OrdinalIgnoreCase));
+
+            if (variable != null && variable.Type == VariableType.Integer)
+            {
+                return _state.GetVariableValue(variable.Key);
+            }
+
+            return m.Value; // Keep original if not a variable
+        });
+    }
+
+    private double EvaluateSimpleExpression(string expression)
+    {
+        // Simple recursive descent parser for basic arithmetic
+        expression = expression.Replace(" ", "");
+
+        return ParseExpression(expression);
+    }
+
+    private double ParseExpression(string expr)
+    {
+        // Handle addition and subtraction
+        var parts = Regex.Split(expr, @"(?<=[^+\-*/])[+\-](?=[^+\-*/])");
+        if (parts.Length > 1)
+        {
+            double result = ParseTerm(parts[0]);
+            for (int i = 1; i < parts.Length; i++)
+            {
+                var op = expr[expr.IndexOf(parts[i]) - 1];
+                var value = ParseTerm(parts[i]);
+                result = op == '+' ? result + value : result - value;
+            }
+            return result;
+        }
+
+        return ParseTerm(expr);
+    }
+
+    private double ParseTerm(string term)
+    {
+        // Handle multiplication and division
+        var parts = term.Split(new[] { '*', '/' }, StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length > 1)
+        {
+            double result = ParseFactor(parts[0]);
+            for (int i = 1; i < parts.Length; i++)
+            {
+                var op = term[term.IndexOf(parts[i]) - 1];
+                var value = ParseFactor(parts[i]);
+                result = op == '*' ? result * value : result / value;
+            }
+            return result;
+        }
+
+        return ParseFactor(term);
+    }
+
+    private double ParseFactor(string factor)
+    {
+        // Handle parentheses
+        if (factor.StartsWith("(") && factor.EndsWith(")"))
+        {
+            return ParseExpression(factor.Substring(1, factor.Length - 2));
+        }
+
+        // Parse number
+        if (double.TryParse(factor, out var num))
+            return num;
+
+        return 0;
+    }
+
+    /// <summary>
+    /// Get subject pronoun based on gender
+    /// </summary>
+    private string GetSubjectPronoun(string gender)
+    {
+        return gender.ToLower() switch
+        {
+            "male" => "he",
+            "female" => "she",
+            "neuter" => "it",
+            "plural" => "they",
+            _ => "it"
+        };
+    }
+
+    /// <summary>
+    /// Get object pronoun based on gender
+    /// </summary>
+    private string GetObjectPronoun(string gender)
+    {
+        return gender.ToLower() switch
+        {
+            "male" => "him",
+            "female" => "her",
+            "neuter" => "it",
+            "plural" => "them",
+            _ => "it"
+        };
+    }
+
+    /// <summary>
+    /// Get possessive pronoun based on gender
+    /// </summary>
+    private string GetPossessivePronoun(string gender)
+    {
+        return gender.ToLower() switch
+        {
+            "male" => "his",
+            "female" => "her",
+            "neuter" => "its",
+            "plural" => "their",
+            _ => "its"
+        };
     }
 }

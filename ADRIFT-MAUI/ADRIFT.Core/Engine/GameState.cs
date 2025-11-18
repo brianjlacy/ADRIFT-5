@@ -41,6 +41,9 @@ public class GameState
     public string PlayerName { get; set; } = "Adventurer";
     public Dictionary<string, object> PlayerAttributes { get; set; } = new();
 
+    // Time tracking (for time-based games)
+    public int TimeElapsed { get; set; } = 0; // Minutes elapsed
+
     /// <summary>
     /// Initialize game state from an adventure
     /// </summary>
@@ -247,6 +250,30 @@ public class GameState
     }
 
     /// <summary>
+    /// Get the current location of a character
+    /// </summary>
+    public string GetCharacterLocation(string characterKey)
+    {
+        return CharacterLocations.GetValueOrDefault(characterKey, string.Empty);
+    }
+
+    /// <summary>
+    /// Get the current location of an object
+    /// </summary>
+    public string GetObjectLocation(string objectKey)
+    {
+        return ObjectLocations.GetValueOrDefault(objectKey, string.Empty);
+    }
+
+    /// <summary>
+    /// Move a character to a new location
+    /// </summary>
+    public void MoveCharacter(string characterKey, string destinationKey)
+    {
+        CharacterLocations[characterKey] = destinationKey;
+    }
+
+    /// <summary>
     /// Add text to output buffer
     /// </summary>
     public void AddOutput(string text)
@@ -292,6 +319,7 @@ public class GameState
                 this.CharacterWalkStates.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Clone())),
             PlayerName = this.PlayerName,
             PlayerAttributes = new Dictionary<string, object>(this.PlayerAttributes),
+            TimeElapsed = this.TimeElapsed,
             LastCommand = this.LastCommand
         };
     }

@@ -41,6 +41,11 @@ public class Adventure
     public string PlayerKey { get; set; } = string.Empty;
     public string StartLocationKey { get; set; } = string.Empty;
     public int MaxScore { get; set; }
+
+    /// <summary>
+    /// Use time-based system instead of turn-based
+    /// </summary>
+    public bool UseTime { get; set; }
     public Description IntroductionText { get; set; } = new();
     public Description WinText { get; set; } = new();
     public Description LoseText { get; set; } = new();
