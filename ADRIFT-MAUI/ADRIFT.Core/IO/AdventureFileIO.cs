@@ -544,11 +544,257 @@ public static class AdventureFileIO
         }
     }
 
+    private static async Task ReadHintsAsync(XmlReader reader, Adventure adventure)
+    {
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "Hints")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element && reader.Name == "Hint")
+            {
+                var hint = await ReadHintAsync(reader);
+                adventure.Hints[hint.Key] = hint;
+            }
+        }
+    }
+
+    private static async Task<Hint> ReadHintAsync(XmlReader reader)
+    {
+        var hint = new Hint();
+        var key = reader.GetAttribute("Key");
+        if (!string.IsNullOrEmpty(key)) hint.Key = key;
+
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "Hint")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element)
+            {
+                switch (reader.Name)
+                {
+                    case "Question":
+                        hint.Question = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "RelatedTaskKey":
+                        hint.RelatedTaskKey = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "HintTexts":
+                        await ReadHintTextsAsync(reader, hint);
+                        break;
+                }
+            }
+        }
+
+        return hint;
+    }
+
+    private static async Task ReadHintTextsAsync(XmlReader reader, Hint hint)
+    {
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "HintTexts")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element && reader.Name == "HintText")
+            {
+                var hintText = new HintText();
+
+                var orderAttr = reader.GetAttribute("Order");
+                if (!string.IsNullOrEmpty(orderAttr) && int.TryParse(orderAttr, out var order))
+                    hintText.Order = order;
+
+                hintText.Text = await reader.ReadElementContentAsStringAsync();
+                hint.Hints.Add(hintText);
+            }
+        }
+    }
+
+    private static async Task ReadCharactersAsync(XmlReader reader, Adventure adventure)
+    {
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "Characters")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element && reader.Name == "Character")
+            {
+                var character = await ReadCharacterAsync(reader);
+                adventure.Characters[character.Key] = character;
+            }
+        }
+    }
+
+    private static async Task<Character> ReadCharacterAsync(XmlReader reader)
+    {
+        var character = new Character();
+        var key = reader.GetAttribute("Key");
+        if (!string.IsNullOrEmpty(key)) character.Key = key;
+
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "Character")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element)
+            {
+                switch (reader.Name)
+                {
+                    case "Prefix":
+                        character.Prefix = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "Name":
+                        character.Name = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "Description":
+                        character.Description = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "Type":
+                        if (Enum.TryParse<CharacterType>(await reader.ReadElementContentAsStringAsync(), out var charType))
+                            character.Type = charType;
+                        break;
+                    case "PersonalityTraits":
+                        character.PersonalityTraits = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "InitialLocationKey":
+                        character.InitialLocationKey = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "CanMove":
+                        character.CanMove = await reader.ReadElementContentAsBooleanAsync();
+                        break;
+                    case "FollowsPlayer":
+                        character.FollowsPlayer = await reader.ReadElementContentAsBooleanAsync();
+                        break;
+                    case "GeneralGreeting":
+                        character.GeneralGreeting = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "Aliases":
+                        await ReadStringListAsync(reader, character.Aliases, "Aliases", "Alias");
+                        break;
+                    case "InventoryKeys":
+                        await ReadStringListAsync(reader, character.InventoryKeys, "InventoryKeys", "ObjectKey");
+                        break;
+                    case "WalkRoute":
+                        await ReadWalkRouteAsync(reader, character);
+                        break;
+                    case "Topics":
+                        await ReadConversationTopicsAsync(reader, character);
+                        break;
+                }
+            }
+        }
+
+        return character;
+    }
+
+    private static async Task ReadStringListAsync(XmlReader reader, List<string> list, string containerName, string itemName)
+    {
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == containerName)
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element && reader.Name == itemName)
+            {
+                var value = await reader.ReadElementContentAsStringAsync();
+                if (!string.IsNullOrEmpty(value))
+                    list.Add(value);
+            }
+        }
+    }
+
+    private static async Task ReadWalkRouteAsync(XmlReader reader, Character character)
+    {
+        var hasWalkRoute = reader.GetAttribute("HasWalkRoute");
+        if (!string.IsNullOrEmpty(hasWalkRoute))
+            character.HasWalkRoute = bool.Parse(hasWalkRoute);
+
+        var loops = reader.GetAttribute("Loops");
+        if (!string.IsNullOrEmpty(loops))
+            character.WalkLoops = bool.Parse(loops);
+
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "WalkRoute")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element && reader.Name == "Step")
+            {
+                var step = new WalkStep();
+
+                var stepNum = reader.GetAttribute("Number");
+                if (!string.IsNullOrEmpty(stepNum) && int.TryParse(stepNum, out var num))
+                    step.StepNumber = num;
+
+                while (await reader.ReadAsync())
+                {
+                    if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "Step")
+                        break;
+
+                    if (reader.NodeType == XmlNodeType.Element)
+                    {
+                        switch (reader.Name)
+                        {
+                            case "LocationKey":
+                                step.LocationKey = await reader.ReadElementContentAsStringAsync();
+                                break;
+                            case "Direction":
+                                step.Direction = await reader.ReadElementContentAsStringAsync();
+                                break;
+                            case "DelayTurns":
+                                step.DelayTurns = await reader.ReadElementContentAsIntAsync();
+                                break;
+                        }
+                    }
+                }
+
+                character.WalkSteps.Add(step);
+            }
+        }
+    }
+
+    private static async Task ReadConversationTopicsAsync(XmlReader reader, Character character)
+    {
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "Topics")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element && reader.Name == "Topic")
+            {
+                var topic = new ConversationTopic();
+
+                while (await reader.ReadAsync())
+                {
+                    if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "Topic")
+                        break;
+
+                    if (reader.NodeType == XmlNodeType.Element)
+                    {
+                        switch (reader.Name)
+                        {
+                            case "TopicName":
+                                topic.TopicName = await reader.ReadElementContentAsStringAsync();
+                                break;
+                            case "Keywords":
+                                topic.Keywords = await reader.ReadElementContentAsStringAsync();
+                                break;
+                            case "Response":
+                                topic.Response = await reader.ReadElementContentAsStringAsync();
+                                break;
+                        }
+                    }
+                }
+
+                character.Topics.Add(topic);
+            }
+        }
+    }
+
     // Stub methods for complex entities - to be implemented
-    private static Task ReadCharactersAsync(XmlReader reader, Adventure adventure) => Task.CompletedTask;
     private static Task ReadTasksAsync(XmlReader reader, Adventure adventure) => Task.CompletedTask;
     private static Task ReadEventsAsync(XmlReader reader, Adventure adventure) => Task.CompletedTask;
-    private static Task ReadHintsAsync(XmlReader reader, Adventure adventure) => Task.CompletedTask;
 
     #endregion
 
@@ -706,11 +952,145 @@ public static class AdventureFileIO
         await writer.WriteEndElementAsync(); // Synonyms
     }
 
+    private static async Task WriteHintsAsync(XmlWriter writer, Adventure adventure)
+    {
+        if (adventure.Hints.Count == 0) return;
+
+        await writer.WriteStartElementAsync(null, "Hints", null);
+
+        foreach (var hint in adventure.Hints.Values)
+        {
+            await writer.WriteStartElementAsync(null, "Hint", null);
+            await writer.WriteAttributeStringAsync(null, "Key", null, hint.Key);
+
+            await writer.WriteElementStringAsync(null, "Question", null, hint.Question);
+            if (!string.IsNullOrEmpty(hint.RelatedTaskKey))
+                await writer.WriteElementStringAsync(null, "RelatedTaskKey", null, hint.RelatedTaskKey);
+
+            if (hint.Hints.Count > 0)
+            {
+                await writer.WriteStartElementAsync(null, "HintTexts", null);
+                foreach (var hintText in hint.Hints.OrderBy(h => h.Order))
+                {
+                    await writer.WriteStartElementAsync(null, "HintText", null);
+                    await writer.WriteAttributeStringAsync(null, "Order", null, hintText.Order.ToString());
+                    await writer.WriteStringAsync(hintText.Text);
+                    await writer.WriteEndElementAsync(); // HintText
+                }
+                await writer.WriteEndElementAsync(); // HintTexts
+            }
+
+            await writer.WriteEndElementAsync(); // Hint
+        }
+
+        await writer.WriteEndElementAsync(); // Hints
+    }
+
+    private static async Task WriteCharactersAsync(XmlWriter writer, Adventure adventure)
+    {
+        if (adventure.Characters.Count == 0) return;
+
+        await writer.WriteStartElementAsync(null, "Characters", null);
+
+        foreach (var character in adventure.Characters.Values)
+        {
+            await writer.WriteStartElementAsync(null, "Character", null);
+            await writer.WriteAttributeStringAsync(null, "Key", null, character.Key);
+
+            if (!string.IsNullOrEmpty(character.Prefix))
+                await writer.WriteElementStringAsync(null, "Prefix", null, character.Prefix);
+            await writer.WriteElementStringAsync(null, "Name", null, character.Name);
+            await writer.WriteElementStringAsync(null, "Description", null, character.Description);
+            await writer.WriteElementStringAsync(null, "Type", null, character.Type.ToString());
+
+            if (!string.IsNullOrEmpty(character.PersonalityTraits))
+                await writer.WriteElementStringAsync(null, "PersonalityTraits", null, character.PersonalityTraits);
+
+            if (!string.IsNullOrEmpty(character.InitialLocationKey))
+                await writer.WriteElementStringAsync(null, "InitialLocationKey", null, character.InitialLocationKey);
+
+            if (!character.CanMove)
+                await writer.WriteElementStringAsync(null, "CanMove", null, "false");
+            if (character.FollowsPlayer)
+                await writer.WriteElementStringAsync(null, "FollowsPlayer", null, "true");
+
+            if (!string.IsNullOrEmpty(character.GeneralGreeting))
+                await writer.WriteElementStringAsync(null, "GeneralGreeting", null, character.GeneralGreeting);
+
+            // Write Aliases
+            if (character.Aliases.Count > 0)
+            {
+                await writer.WriteStartElementAsync(null, "Aliases", null);
+                foreach (var alias in character.Aliases)
+                {
+                    await writer.WriteElementStringAsync(null, "Alias", null, alias);
+                }
+                await writer.WriteEndElementAsync(); // Aliases
+            }
+
+            // Write Inventory
+            if (character.InventoryKeys.Count > 0)
+            {
+                await writer.WriteStartElementAsync(null, "InventoryKeys", null);
+                foreach (var objKey in character.InventoryKeys)
+                {
+                    await writer.WriteElementStringAsync(null, "ObjectKey", null, objKey);
+                }
+                await writer.WriteEndElementAsync(); // InventoryKeys
+            }
+
+            // Write Walk Route
+            if (character.HasWalkRoute && character.WalkSteps.Count > 0)
+            {
+                await writer.WriteStartElementAsync(null, "WalkRoute", null);
+                await writer.WriteAttributeStringAsync(null, "HasWalkRoute", null, "true");
+                if (character.WalkLoops)
+                    await writer.WriteAttributeStringAsync(null, "Loops", null, "true");
+
+                foreach (var step in character.WalkSteps.OrderBy(s => s.StepNumber))
+                {
+                    await writer.WriteStartElementAsync(null, "Step", null);
+                    await writer.WriteAttributeStringAsync(null, "Number", null, step.StepNumber.ToString());
+
+                    await writer.WriteElementStringAsync(null, "LocationKey", null, step.LocationKey);
+                    await writer.WriteElementStringAsync(null, "Direction", null, step.Direction);
+                    if (step.DelayTurns > 0)
+                        await writer.WriteElementStringAsync(null, "DelayTurns", null, step.DelayTurns.ToString());
+
+                    await writer.WriteEndElementAsync(); // Step
+                }
+
+                await writer.WriteEndElementAsync(); // WalkRoute
+            }
+
+            // Write Conversation Topics
+            if (character.Topics.Count > 0)
+            {
+                await writer.WriteStartElementAsync(null, "Topics", null);
+
+                foreach (var topic in character.Topics)
+                {
+                    await writer.WriteStartElementAsync(null, "Topic", null);
+
+                    await writer.WriteElementStringAsync(null, "TopicName", null, topic.TopicName);
+                    await writer.WriteElementStringAsync(null, "Keywords", null, topic.Keywords);
+                    await writer.WriteElementStringAsync(null, "Response", null, topic.Response);
+
+                    await writer.WriteEndElementAsync(); // Topic
+                }
+
+                await writer.WriteEndElementAsync(); // Topics
+            }
+
+            await writer.WriteEndElementAsync(); // Character
+        }
+
+        await writer.WriteEndElementAsync(); // Characters
+    }
+
     // Stub write methods for complex entities - to be implemented
-    private static Task WriteCharactersAsync(XmlWriter writer, Adventure adventure) => Task.CompletedTask;
     private static Task WriteTasksAsync(XmlWriter writer, Adventure adventure) => Task.CompletedTask;
     private static Task WriteEventsAsync(XmlWriter writer, Adventure adventure) => Task.CompletedTask;
-    private static Task WriteHintsAsync(XmlWriter writer, Adventure adventure) => Task.CompletedTask;
 
     #endregion
 }
