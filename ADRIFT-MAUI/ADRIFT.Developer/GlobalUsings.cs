@@ -1,7 +1,7 @@
 // Global usings for ADRIFT Developer
-global using ADRIFT.Services;
-global using ADRIFT.ViewModels;
-global using ADRIFT.Views;
+global using ADRIFT.Developer.Services;
+global using ADRIFT.Developer.ViewModels;
+global using ADRIFT.Developer.Pages;
 global using CommunityToolkit.Mvvm.ComponentModel;
 global using CommunityToolkit.Mvvm.Input;
 

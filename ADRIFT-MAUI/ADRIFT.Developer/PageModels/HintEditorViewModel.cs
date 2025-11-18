@@ -2,7 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 
-namespace ADRIFT.ViewModels;
+namespace ADRIFT.Developer.ViewModels;
 
 [QueryProperty(nameof(HintKey), "key")]
 public partial class HintEditorViewModel : ObservableObject

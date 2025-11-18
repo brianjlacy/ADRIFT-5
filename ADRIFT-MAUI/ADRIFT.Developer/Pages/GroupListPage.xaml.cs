@@ -1,5 +1,5 @@
-using ADRIFT.ViewModels;
-namespace ADRIFT.Views;
+using ADRIFT.Developer.ViewModels;
+namespace ADRIFT.Developer.Pages;
 public partial class GroupListPage : ContentPage
 {
     public GroupListPage(GroupListViewModel viewModel) { InitializeComponent(); BindingContext = viewModel; }

@@ -2,7 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 
-namespace ADRIFT.ViewModels;
+namespace ADRIFT.Developer.ViewModels;
 
 [QueryProperty(nameof(CharacterKey), "key")]
 public partial class CharacterEditorViewModel : ObservableObject

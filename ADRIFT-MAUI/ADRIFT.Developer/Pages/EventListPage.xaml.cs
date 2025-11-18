@@ -1,5 +1,5 @@
-using ADRIFT.ViewModels;
-namespace ADRIFT.Views;
+using ADRIFT.Developer.ViewModels;
+namespace ADRIFT.Developer.Pages;
 public partial class EventListPage : ContentPage
 {
     public EventListPage(EventListViewModel viewModel) { InitializeComponent(); BindingContext = viewModel; }

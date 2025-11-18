@@ -1,7 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
-namespace ADRIFT.ViewModels;
+namespace ADRIFT.Developer.ViewModels;
 public partial class VariableListViewModel : ObservableObject
 {
     private readonly IAdventureService _adventureService;

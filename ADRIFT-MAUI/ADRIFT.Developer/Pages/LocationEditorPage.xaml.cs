@@ -1,6 +1,6 @@
-using ADRIFT.ViewModels;
+using ADRIFT.Developer.ViewModels;
 
-namespace ADRIFT.Views;
+namespace ADRIFT.Developer.Pages;
 
 public partial class LocationEditorPage : ContentPage
 {

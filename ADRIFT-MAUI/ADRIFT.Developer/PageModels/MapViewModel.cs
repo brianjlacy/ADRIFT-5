@@ -1,7 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
-namespace ADRIFT.ViewModels;
+namespace ADRIFT.Developer.ViewModels;
 
 public partial class MapViewModel : ObservableObject
 {

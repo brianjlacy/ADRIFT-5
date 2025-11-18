@@ -33,6 +33,7 @@ public static class MauiProgram
         builder.Services.AddTransient<EventListViewModel>();
         builder.Services.AddTransient<VariableListViewModel>();
         builder.Services.AddTransient<GroupListViewModel>();
+        builder.Services.AddTransient<MapViewModel>();
 
         // Register ViewModels - Editor Pages
         builder.Services.AddTransient<LocationEditorViewModel>();
@@ -54,6 +55,7 @@ public static class MauiProgram
         builder.Services.AddTransient<EventListPage>();
         builder.Services.AddTransient<VariableListPage>();
         builder.Services.AddTransient<GroupListPage>();
+        builder.Services.AddTransient<MapPage>();
 
         // Register Views - Editor Pages
         builder.Services.AddTransient<LocationEditorPage>();
