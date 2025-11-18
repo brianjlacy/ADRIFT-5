@@ -5,6 +5,7 @@
              Title="ADRIFT Runner">
 
     <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Map" Clicked="OnToggleMap" />
         <ToolbarItem Text="Inventory" Clicked="OnToggleInventory" />
         <ToolbarItem Text="Save" Clicked="OnSaveGame" />
         <ToolbarItem Text="Load" Clicked="OnLoadGame" />
@@ -13,13 +14,34 @@
         <ToolbarItem Text="Restart" Clicked="OnRestartGame" />
     </ContentPage.ToolbarItems>
 
-    <Grid RowDefinitions="*,Auto,Auto" ColumnDefinitions="*,Auto" Padding="10">
+    <Grid RowDefinitions="Auto,*,Auto,Auto" ColumnDefinitions="*,Auto" Padding="10">
+
+        <!-- Map Panel (collapsible, at top) -->
+        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                x:Name="MapPanel"
+                IsVisible="False"
+                BackgroundColor="{DynamicResource SecondaryBackgroundColor}"
+                Stroke="{DynamicResource BorderColor}"
+                StrokeThickness="1"
+                Padding="10"
+                Margin="0,0,0,10"
+                HeightRequest="250">
+            <VerticalStackLayout Spacing="10">
+                <Label Text="Adventure Map"
+                       FontSize="16"
+                       FontAttributes="Bold"
+                       HorizontalOptions="Center" />
+                <BoxView HeightRequest="1" Color="{DynamicResource BorderColor}" />
+                <!-- Map view will be added programmatically -->
+                <Grid x:Name="MapContainer" HeightRequest="200" />
+            </VerticalStackLayout>
+        </Border>
 
         <!-- Output area with HTML rendering -->
-        <WebView x:Name="OutputWebView" Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" />
+        <WebView x:Name="OutputWebView" Grid.Row="1" Grid.Column="0" Grid.RowSpan="3" />
 
         <!-- Hidden ScrollView fallback (legacy support) -->
-        <ScrollView x:Name="OutputScroll" Grid.Row="0" Grid.Column="0" IsVisible="False">
+        <ScrollView x:Name="OutputScroll" Grid.Row="1" Grid.Column="0" IsVisible="False">
             <VerticalStackLayout x:Name="OutputStack" Spacing="10" Padding="10">
                 <Label x:Name="OutputLabel"
                        Text=""
@@ -31,7 +53,7 @@
         </ScrollView>
 
         <!-- Inventory Panel (collapsible) -->
-        <Border Grid.Row="0" Grid.Column="1" Grid.RowSpan="3"
+        <Border Grid.Row="1" Grid.Column="1" Grid.RowSpan="3"
                 x:Name="InventoryPanel"
                 IsVisible="False"
                 BackgroundColor="{DynamicResource SecondaryBackgroundColor}"
@@ -62,14 +84,14 @@
         </Border>
 
         <!-- Status bar -->
-        <Grid Grid.Row="1" Grid.Column="0" ColumnDefinitions="*,*,*" Padding="5" BackgroundColor="{DynamicResource SecondaryColor}">
+        <Grid Grid.Row="2" Grid.Column="0" ColumnDefinitions="*,*,*" Padding="5" BackgroundColor="{DynamicResource SecondaryColor}">
             <Label Grid.Column="0" x:Name="ScoreLabel" Text="Score: 0" FontSize="12" VerticalOptions="Center" />
             <Label Grid.Column="1" x:Name="TurnsLabel" Text="Turns: 0" FontSize="12" VerticalOptions="Center" HorizontalOptions="Center" />
             <Label Grid.Column="2" x:Name="LocationLabel" Text="" FontSize="12" VerticalOptions="Center" HorizontalOptions="End" />
         </Grid>
 
         <!-- Input area -->
-        <Grid Grid.Row="2" Grid.Column="0" ColumnDefinitions="Auto,*,Auto,Auto" Padding="10" ColumnSpacing="5">
+        <Grid Grid.Row="3" Grid.Column="0" ColumnDefinitions="Auto,*,Auto,Auto" Padding="10" ColumnSpacing="5">
             <Button Grid.Column="0"
                     Text="↑"
                     Clicked="OnHistoryUp"

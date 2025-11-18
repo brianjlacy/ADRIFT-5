@@ -1,5 +1,6 @@
 using ADRIFT.Core.Engine;
 using ADRIFT.Core.Models;
+using ADRIFT.Runner.Controls;
 using System.Text.Json;
 
 namespace ADRIFT.Runner.Pages;
@@ -13,6 +14,7 @@ public partial class GamePage : ContentPage
     private HintManager? _hintManager;
     private string _htmlContent = "";
     private bool _useDarkMode = true; // TODO: Make configurable
+    private MapView? _mapView;
 
     public GamePage()
     {
@@ -30,6 +32,9 @@ public partial class GamePage : ContentPage
         _engine = new GameEngine(adventure);
         _hintManager = new HintManager(adventure, _engine.State);
 
+        // Initialize map view
+        InitializeMapView();
+
         // Display introduction
         var intro = _engine.GetIntroduction();
         AppendOutput(intro);
@@ -39,6 +44,18 @@ public partial class GamePage : ContentPage
         UpdateStatusBar();
 
         CommandEntry.Focus();
+    }
+
+    private void InitializeMapView()
+    {
+        if (_currentAdventure == null || _engine == null)
+            return;
+
+        // Create and add map view to container
+        _mapView = new MapView();
+        _mapView.SetAdventure(_currentAdventure, _engine.State);
+        MapContainer.Children.Clear();
+        MapContainer.Children.Add(_mapView);
     }
 
     private void OnCommandEntered(object? sender, EventArgs e)
@@ -103,6 +120,17 @@ public partial class GamePage : ContentPage
         {
             UpdateInventoryDisplay();
         }
+
+        // Update map if visible
+        if (MapPanel.IsVisible && _mapView != null)
+        {
+            _mapView.UpdatePlayerLocation();
+        }
+    }
+
+    private void OnToggleMap(object? sender, EventArgs e)
+    {
+        MapPanel.IsVisible = !MapPanel.IsVisible;
     }
 
     private void OnToggleInventory(object? sender, EventArgs e)
