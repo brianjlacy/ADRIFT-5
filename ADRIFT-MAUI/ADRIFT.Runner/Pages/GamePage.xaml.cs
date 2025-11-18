@@ -10,6 +10,7 @@ public partial class GamePage : ContentPage
     private readonly List<string> _commandHistory = new();
     private int _historyIndex = -1;
     private Adventure? _currentAdventure;
+    private HintManager? _hintManager;
 
     public GamePage()
     {
@@ -25,11 +26,15 @@ public partial class GamePage : ContentPage
     private void StartAdventure(Adventure adventure)
     {
         _engine = new GameEngine(adventure);
+        _hintManager = new HintManager(adventure, _engine.State);
 
         // Display introduction
         var intro = _engine.GetIntroduction();
         AppendOutput(intro);
         AppendOutput("\n> ");
+
+        // Update status bar
+        UpdateStatusBar();
 
         CommandEntry.Focus();
     }
@@ -70,6 +75,9 @@ public partial class GamePage : ContentPage
             AppendOutput("\n> ");
         }
 
+        // Update status bar
+        UpdateStatusBar();
+
         // Clear input
         CommandEntry.Text = string.Empty;
 
@@ -79,6 +87,21 @@ public partial class GamePage : ContentPage
             await Task.Delay(100);
             await OutputScroll.ScrollToAsync(0, OutputLabel.Height, false);
         });
+    }
+
+    private void UpdateStatusBar()
+    {
+        if (_engine == null)
+            return;
+
+        ScoreLabel.Text = $"Score: {_engine.State.Score}";
+        TurnsLabel.Text = $"Turns: {_engine.State.TurnCount}";
+
+        var location = _engine.State.GetCurrentLocation();
+        if (location != null)
+        {
+            LocationLabel.Text = location.ShortDescription;
+        }
     }
 
     private void AppendOutput(string text)
@@ -239,6 +262,104 @@ public partial class GamePage : ContentPage
 
             // Restart the game
             StartAdventure(_currentAdventure);
+
+            // Reset hint tracking
+            _hintManager?.Reset();
+        }
+    }
+
+    private async void OnShowHints(object? sender, EventArgs e)
+    {
+        if (_engine == null || _hintManager == null)
+        {
+            await DisplayAlert("Error", "No game in progress.", "OK");
+            return;
+        }
+
+        try
+        {
+            var availableHints = _hintManager.GetAvailableHints();
+
+            if (availableHints.Count == 0)
+            {
+                await DisplayAlert("Hints", "No hints are currently available.", "OK");
+                return;
+            }
+
+            // Show list of hint questions
+            var hintQuestions = availableHints.Select(h => h.Question).ToArray();
+            var choice = await DisplayActionSheet(
+                "Select a hint:",
+                "Cancel",
+                null,
+                hintQuestions);
+
+            if (choice == null || choice == "Cancel")
+                return;
+
+            // Find the selected hint
+            var selectedHint = availableHints.FirstOrDefault(h => h.Question == choice);
+            if (selectedHint == null)
+                return;
+
+            // Show hint levels progressively
+            await ShowHintProgression(selectedHint);
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", $"Failed to display hints: {ex.Message}", "OK");
+        }
+    }
+
+    private async Task ShowHintProgression(Hint hint)
+    {
+        if (_hintManager == null)
+            return;
+
+        var currentLevel = _hintManager.GetCurrentLevel(hint.Key);
+
+        // Determine what to show next
+        string message;
+        string[] buttons;
+
+        if (currentLevel == 0)
+        {
+            // Show subtle hint with option to see more
+            message = $"[Subtle Hint]\n{hint.SubtleHint}";
+            buttons = new[] { "Show Medium Hint", "That's Enough" };
+        }
+        else if (currentLevel == 1)
+        {
+            // Show medium hint with option to see spoiler
+            message = $"[Medium Hint]\n{hint.MediumHint}";
+            buttons = new[] { "Show Spoiler", "That's Enough" };
+        }
+        else if (currentLevel == 2)
+        {
+            // Show spoiler
+            message = $"[Spoiler]\n{hint.SpoilerHint}";
+            buttons = new[] { "OK" };
+        }
+        else
+        {
+            // All hints shown
+            message = $"[All Hints Shown]\n\nSubtle: {hint.SubtleHint}\n\nMedium: {hint.MediumHint}\n\nSpoiler: {hint.SpoilerHint}";
+            buttons = new[] { "OK" };
+        }
+
+        var choice = await DisplayActionSheet(
+            hint.Question,
+            null,
+            null,
+            buttons);
+
+        if (choice == "Show Medium Hint" || choice == "Show Spoiler")
+        {
+            // Advance to next level
+            _hintManager.GetNextHintLevel(hint.Key);
+
+            // Show next level
+            await ShowHintProgression(hint);
         }
     }
 }
