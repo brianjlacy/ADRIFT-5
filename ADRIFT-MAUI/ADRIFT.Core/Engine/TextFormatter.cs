@@ -130,6 +130,11 @@ public class TextFormatter
 
         // ADRIFT 5 Text Functions - Complete Implementation
 
+        // ========== USER DEFINED FUNCTIONS (process first for nesting) ==========
+
+        // {FunctionName:arg1:arg2:...} - User defined function calls
+        text = ProcessUserFunctions(text);
+
         // ========== NAME REFERENCE FUNCTIONS (with explicit keys) ==========
 
         // %ObjectName[key]% - Get object name by key
@@ -1131,6 +1136,136 @@ public class TextFormatter
             "plural" => "their",
             _ => "its"
         };
+    }
+
+    /// <summary>
+    /// Process User Defined Functions (UDF)
+    /// Syntax: {FunctionName:arg1:arg2:...}
+    /// </summary>
+    private string ProcessUserFunctions(string text)
+    {
+        if (_adventure.UserFunctions == null || _adventure.UserFunctions.Count == 0)
+            return text;
+
+        // Pattern: {FunctionName:arg1:arg2:...}
+        // Supports nested function calls by processing innermost first
+        return Regex.Replace(text, @"\{([a-zA-Z_]\w*)(?::([^\}]+))?\}", m =>
+        {
+            var functionName = m.Groups[1].Value;
+            var argumentsText = m.Groups[2].Success ? m.Groups[2].Value : "";
+
+            // Find the function
+            var function = _adventure.UserFunctions.Values.FirstOrDefault(f =>
+                f.Name.Equals(functionName, StringComparison.OrdinalIgnoreCase));
+
+            if (function == null)
+                return m.Value; // Not a valid function, keep original
+
+            // Parse arguments
+            var arguments = ParseFunctionArguments(argumentsText);
+
+            // Build parameters dictionary for the function's output text
+            var parameters = new Dictionary<string, string>();
+
+            // Map arguments to function parameters
+            for (int i = 0; i < Math.Min(arguments.Count, function.Arguments.Count); i++)
+            {
+                var arg = function.Arguments[i];
+                var value = arguments[i];
+
+                // Resolve the argument value based on its type
+                var resolvedValue = ResolveFunctionArgument(value, arg.Type);
+                parameters[arg.Name] = resolvedValue;
+            }
+
+            // Format the function's output with the parameters
+            var output = function.Output.GetText();
+            return Format(output, parameters);
+        }, RegexOptions.IgnoreCase);
+    }
+
+    /// <summary>
+    /// Parse function arguments from colon-separated string
+    /// </summary>
+    private List<string> ParseFunctionArguments(string argumentsText)
+    {
+        if (string.IsNullOrEmpty(argumentsText))
+            return new List<string>();
+
+        // Split by colons, but handle nested functions
+        var arguments = new List<string>();
+        var current = "";
+        int braceDepth = 0;
+
+        foreach (char c in argumentsText)
+        {
+            if (c == '{')
+            {
+                braceDepth++;
+                current += c;
+            }
+            else if (c == '}')
+            {
+                braceDepth--;
+                current += c;
+            }
+            else if (c == ':' && braceDepth == 0)
+            {
+                arguments.Add(current.Trim());
+                current = "";
+            }
+            else
+            {
+                current += c;
+            }
+        }
+
+        if (!string.IsNullOrEmpty(current))
+            arguments.Add(current.Trim());
+
+        return arguments;
+    }
+
+    /// <summary>
+    /// Resolve a function argument based on its type
+    /// </summary>
+    private string ResolveFunctionArgument(string value, FunctionArgumentType type)
+    {
+        switch (type)
+        {
+            case FunctionArgumentType.Object:
+                // Try to resolve as object key or name
+                if (_adventure.Objects.TryGetValue(value, out var obj))
+                    return obj.FullName;
+                var objByName = _adventure.Objects.Values.FirstOrDefault(o =>
+                    o.Name.Equals(value, StringComparison.OrdinalIgnoreCase));
+                return objByName?.FullName ?? value;
+
+            case FunctionArgumentType.Character:
+                // Try to resolve as character key or name
+                if (_adventure.Characters.TryGetValue(value, out var character))
+                    return character.FullName;
+                var charByName = _adventure.Characters.Values.FirstOrDefault(c =>
+                    c.Name.Equals(value, StringComparison.OrdinalIgnoreCase));
+                return charByName?.FullName ?? value;
+
+            case FunctionArgumentType.Location:
+                // Try to resolve as location key
+                if (_adventure.Locations.TryGetValue(value, out var location))
+                    return location.ShortDescription.GetText();
+                return value;
+
+            case FunctionArgumentType.Number:
+                // Evaluate numeric expressions
+                if (int.TryParse(value, out _))
+                    return value;
+                return EvaluateExpression(value);
+
+            case FunctionArgumentType.Text:
+            default:
+                // Return as-is for text
+                return value;
+        }
     }
 
     /// <summary>
