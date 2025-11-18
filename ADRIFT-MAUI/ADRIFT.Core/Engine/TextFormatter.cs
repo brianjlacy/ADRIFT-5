@@ -27,7 +27,10 @@ public class TextFormatter
 
         parameters ??= new Dictionary<string, string>();
 
-        // Process ALR functions first
+        // Process property access first (e.g., %object%.Property%)
+        text = ProcessPropertyAccess(text, parameters);
+
+        // Process ALR functions
         text = ProcessFunctions(text);
 
         // Replace variables
@@ -43,6 +46,77 @@ public class TextFormatter
         text = ProcessFormatting(text);
 
         return text;
+    }
+
+    private string ProcessPropertyAccess(string text, Dictionary<string, string> parameters)
+    {
+        // Handle patterns like %object%.LongDescription%
+        return Regex.Replace(text, @"%(\w+)%\.(\w+)%", m =>
+        {
+            var entityRef = m.Groups[1].Value;
+            var propertyName = m.Groups[2].Value;
+
+            // Resolve entity key from parameters
+            var entityKey = parameters.GetValueOrDefault(entityRef, entityRef);
+
+            // Get the property value
+            if (_adventure.Objects.TryGetValue(entityKey, out var obj))
+            {
+                return GetObjectProperty(obj, propertyName);
+            }
+
+            if (_adventure.Characters.TryGetValue(entityKey, out var character))
+            {
+                return GetCharacterProperty(character, propertyName);
+            }
+
+            if (_adventure.Locations.TryGetValue(entityKey, out var location))
+            {
+                return GetLocationProperty(location, propertyName);
+            }
+
+            return m.Value; // Keep original if not found
+        });
+    }
+
+    private string GetObjectProperty(AdriftObject obj, string propertyName)
+    {
+        return propertyName.ToLower() switch
+        {
+            "name" => obj.Name,
+            "fullname" => obj.FullName,
+            "article" => obj.Article,
+            "prefix" => obj.Prefix,
+            "shortdescription" => obj.ShortDescription,
+            "longdescription" => obj.LongDescription,
+            "description" => obj.LongDescription,
+            "readingtext" => obj.ReadingText ?? "",
+            _ => ""
+        };
+    }
+
+    private string GetCharacterProperty(Character character, string propertyName)
+    {
+        return propertyName.ToLower() switch
+        {
+            "name" => character.Name,
+            "fullname" => character.FullName,
+            "description" => character.Description,
+            "greeting" => character.GeneralGreeting,
+            _ => ""
+        };
+    }
+
+    private string GetLocationProperty(Location location, string propertyName)
+    {
+        return propertyName.ToLower() switch
+        {
+            "name" => location.ShortDescription,
+            "shortdescription" => location.ShortDescription,
+            "longdescription" => location.LongDescription,
+            "description" => location.LongDescription,
+            _ => ""
+        };
     }
 
     private string ProcessFunctions(string text)

@@ -17,6 +17,10 @@ public class GameEngine
     public GameEngine(Adventure adventure)
     {
         _adventure = adventure;
+
+        // Add system tasks if not already present
+        SystemTaskGenerator.AddSystemTasks(_adventure);
+
         _parser = new CommandParser(adventure);
         Initialize();
     }
@@ -309,14 +313,26 @@ public class GameEngine
             case "moveobject":
                 if (action.Parameters.TryGetValue("Object", out var objectKey))
                 {
+                    var resolvedObjectKey = ResolveParameter(objectKey, parameters);
                     var destination = action.Parameters.GetValueOrDefault("Destination", "");
+
                     if (destination.Equals("Inventory", StringComparison.OrdinalIgnoreCase))
                     {
-                        _state.AddToInventory(ResolveParameter(objectKey, parameters));
+                        _state.AddToInventory(resolvedObjectKey);
+                    }
+                    else if (destination.Equals("CurrentLocation", StringComparison.OrdinalIgnoreCase))
+                    {
+                        _state.MoveObject(resolvedObjectKey, _state.CurrentLocationKey);
+                    }
+                    else if (destination.StartsWith("%") && destination.EndsWith("%"))
+                    {
+                        // Resolve parameter (e.g., %character%)
+                        var resolvedDest = ResolveParameter(destination, parameters);
+                        _state.MoveObject(resolvedObjectKey, resolvedDest);
                     }
                     else
                     {
-                        _state.MoveObject(ResolveParameter(objectKey, parameters), destination);
+                        _state.MoveObject(resolvedObjectKey, destination);
                     }
                 }
                 break;
@@ -359,6 +375,52 @@ public class GameEngine
                 if (action.Parameters.TryGetValue("Location", out var locationKey))
                 {
                     _state.CurrentLocationKey = locationKey;
+                }
+                break;
+
+            case "removeobject":
+                // Remove an object from the game (e.g., consumed, destroyed)
+                if (action.Parameters.TryGetValue("Object", out var removeObjKey))
+                {
+                    var resolvedKey = ResolveParameter(removeObjKey, parameters);
+                    _state.RemoveFromInventory(resolvedKey);
+                    _state.ObjectLocations.Remove(resolvedKey);
+                }
+                break;
+
+            case "showconversation":
+                // Show character conversation/greeting
+                if (action.Parameters.TryGetValue("Character", out var charKey))
+                {
+                    var resolvedCharKey = ResolveParameter(charKey, parameters);
+                    if (_adventure.Characters.TryGetValue(resolvedCharKey, out var character))
+                    {
+                        if (!string.IsNullOrEmpty(character.GeneralGreeting))
+                        {
+                            _state.AddOutput(character.GeneralGreeting);
+                        }
+                        else
+                        {
+                            _state.AddOutput($"{character.FullName} has nothing to say.");
+                        }
+                    }
+                }
+                break;
+
+            case "removerestriction":
+                // Remove a restriction from a direction (for secret passages, etc.)
+                if (action.Parameters.TryGetValue("Location", out var locKey) &&
+                    action.Parameters.TryGetValue("Direction", out var directionName))
+                {
+                    if (_adventure.Locations.TryGetValue(locKey, out var location))
+                    {
+                        var direction = location.Directions.FirstOrDefault(d =>
+                            d.DirectionName.Equals(directionName, StringComparison.OrdinalIgnoreCase));
+                        if (direction != null)
+                        {
+                            direction.RestrictionDescription = null;
+                        }
+                    }
                 }
                 break;
         }
