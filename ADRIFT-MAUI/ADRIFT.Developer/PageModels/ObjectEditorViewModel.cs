@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using ADRIFT.Core.Models;
 
 namespace ADRIFT.Developer.ViewModels;
 
@@ -246,49 +247,75 @@ public partial class ObjectEditorViewModel : ObservableObject
 
     public async Task InitializeAsync()
     {
-        // Load available locations, objects, and characters
-        // TODO: Load from adventure service
-        AvailableLocations.Add(new LocationItemViewModel { Key = "loc1", Name = "Starting Room" });
-        AvailableLocations.Add(new LocationItemViewModel { Key = "loc2", Name = "Forest Path" });
-
-        AvailableContainers.Add(new ObjectItemViewModel { Key = "obj1", FullName = "Wooden Chest" });
-        AvailableContainers.Add(new ObjectItemViewModel { Key = "obj2", FullName = "Leather Bag" });
-
-        AvailableCharacters.Add(new CharacterItemViewModel { Key = "char1", Name = "Player" });
-        AvailableCharacters.Add(new CharacterItemViewModel { Key = "char2", Name = "Guard" });
-
-        if (!string.IsNullOrEmpty(ObjectKey))
+        try
         {
-            // Edit mode - load existing object
-            IsEditMode = true;
-            PageTitle = "Edit Object";
+            var adventure = _adventureService.CurrentAdventure;
+            if (adventure == null) return;
 
-            // TODO: Load object from adventure service
-            // For now, using sample data
-            Article = "a";
-            Prefix = "rusty";
-            Name = "sword";
-            Aliases = "blade, weapon";
-            ShortDescription = "A rusty old sword";
-            LongDescription = "This is an ancient sword covered in rust. Despite its age, it still looks functional.";
-            SelectedLocation = AvailableLocations.FirstOrDefault();
-            SelectedSize = "Normal";
-            Weight = "2.5";
-            IsWearable = true;
+            // Load available locations
+            AvailableLocations.Clear();
+            foreach (var loc in adventure.Locations.Values)
+            {
+                AvailableLocations.Add(new LocationItemViewModel(loc));
+            }
+
+            // Load available containers
+            AvailableContainers.Clear();
+            foreach (var obj in adventure.Objects.Values.Where(o => o.IsContainer))
+            {
+                AvailableContainers.Add(new ObjectItemViewModel(obj));
+            }
+
+            // Load available characters
+            AvailableCharacters.Clear();
+            foreach (var ch in adventure.Characters.Values)
+            {
+                AvailableCharacters.Add(new CharacterItemViewModel(ch));
+            }
+
+            if (!string.IsNullOrEmpty(ObjectKey) && adventure.Objects.TryGetValue(ObjectKey, out var existingObj))
+            {
+                // Edit mode - load existing object
+                IsEditMode = true;
+                PageTitle = "Edit Object";
+
+                Article = existingObj.Article;
+                Prefix = existingObj.Prefix;
+                Name = existingObj.Name;
+                Aliases = string.Join(", ", existingObj.Aliases);
+                ShortDescription = existingObj.ShortDescription;
+                LongDescription = existingObj.LongDescription;
+
+                if (!string.IsNullOrEmpty(existingObj.LocationKey))
+                {
+                    SelectedLocation = AvailableLocations.FirstOrDefault(l => l.Key == existingObj.LocationKey);
+                }
+
+                SelectedSize = existingObj.Size.ToString();
+                Weight = existingObj.Weight.ToString();
+                IsStatic = existingObj.IsStatic;
+                IsContainer = existingObj.IsContainer;
+                IsSurface = existingObj.IsSurface;
+                IsWearable = existingObj.IsWearable;
+            }
+            else
+            {
+                // New object mode
+                ObjectKey = "obj_" + Guid.NewGuid().ToString("N").Substring(0, 8);
+                IsEditMode = false;
+                PageTitle = "New Object";
+                Article = "a";
+                Name = "";
+                Weight = "1.0";
+                SelectedSize = "Normal";
+            }
+
+            UpdateFullObjectName();
         }
-        else
+        catch (Exception ex)
         {
-            // New object mode
-            IsEditMode = false;
-            PageTitle = "New Object";
-            Article = "a";
-            Name = "";
-            Weight = "1.0";
-            SelectedSize = "Normal";
+            await Shell.Current.DisplayAlert("Error", $"Failed to initialize: {ex.Message}", "OK");
         }
-
-        UpdateFullObjectName();
-        await Task.CompletedTask;
     }
 
     [RelayCommand]
@@ -365,12 +392,71 @@ public partial class ObjectEditorViewModel : ObservableObject
 
     private async Task SaveObject()
     {
-        // TODO: Save object to adventure service
-        await Task.Delay(100);
-
-        if (string.IsNullOrEmpty(ObjectKey))
+        try
         {
-            ObjectKey = "obj_" + Guid.NewGuid().ToString("N")[..8];
+            var adventure = _adventureService.CurrentAdventure;
+            if (adventure == null)
+            {
+                await Shell.Current.DisplayAlert("Error", "No adventure loaded", "OK");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(ObjectKey))
+            {
+                ObjectKey = "obj_" + Guid.NewGuid().ToString("N").Substring(0, 8);
+            }
+
+            var obj = new AdriftObject
+            {
+                Key = ObjectKey,
+                Article = Article,
+                Prefix = Prefix,
+                Name = Name,
+                ShortDescription = ShortDescription,
+                LongDescription = LongDescription,
+                LocationKey = SelectedLocation?.Key,
+                IsStatic = IsStatic,
+                IsContainer = IsContainer,
+                IsSurface = IsSurface,
+                IsWearable = IsWearable,
+                LastModified = DateTime.Now
+            };
+
+            // Parse aliases
+            if (!string.IsNullOrWhiteSpace(Aliases))
+            {
+                obj.Aliases.Clear();
+                foreach (var alias in Aliases.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                {
+                    obj.Aliases.Add(alias.Trim());
+                }
+            }
+
+            // Parse size
+            if (Enum.TryParse<ObjectSize>(SelectedSize, out var size))
+            {
+                obj.Size = size;
+            }
+
+            // Parse weight
+            if (double.TryParse(Weight, out var weight))
+            {
+                obj.Weight = weight;
+            }
+
+            // Add or update in adventure
+            if (adventure.Objects.ContainsKey(ObjectKey))
+            {
+                adventure.Objects[ObjectKey] = obj;
+            }
+            else
+            {
+                adventure.Objects.Add(ObjectKey, obj);
+            }
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Error", $"Failed to save object: {ex.Message}", "OK");
         }
     }
 }
