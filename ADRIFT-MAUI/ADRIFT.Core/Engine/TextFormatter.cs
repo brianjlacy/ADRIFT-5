@@ -45,6 +45,10 @@ public class TextFormatter
         // Process formatting tags
         text = ProcessFormatting(text);
 
+        // Apply ALR (Alternate Reality Layer) text overrides LAST
+        // This allows ALRs to override any generated text
+        text = ProcessALRs(text);
+
         return text;
     }
 
@@ -1127,5 +1131,86 @@ public class TextFormatter
             "plural" => "their",
             _ => "its"
         };
+    }
+
+    /// <summary>
+    /// Process ALR (Alternate Reality Layer) text overrides
+    /// Applies find/replace transformations in priority order
+    /// </summary>
+    private string ProcessALRs(string text)
+    {
+        if (_adventure.ALRs == null || _adventure.ALRs.Count == 0)
+            return text;
+
+        // Get all ALRs sorted by Order (ascending - lower order = higher priority)
+        var sortedALRs = _adventure.ALRs.Values
+            .OrderBy(alr => alr.Order)
+            .ToList();
+
+        // Apply each ALR in order
+        foreach (var alr in sortedALRs)
+        {
+            if (string.IsNullOrEmpty(alr.OldText))
+                continue;
+
+            // Get the replacement text (with alternate descriptions evaluated)
+            var newText = alr.NewText.GetText();
+
+            // Apply the find/replace based on options
+            text = ApplyALR(text, alr.OldText, newText, alr.CaseSensitive, alr.WholeWordsOnly);
+        }
+
+        return text;
+    }
+
+    /// <summary>
+    /// Apply a single ALR transformation
+    /// </summary>
+    private string ApplyALR(string text, string oldText, string newText, bool caseSensitive, bool wholeWordsOnly)
+    {
+        if (string.IsNullOrEmpty(oldText))
+            return text;
+
+        // Build regex pattern based on options
+        string pattern;
+
+        if (wholeWordsOnly)
+        {
+            // Match whole words only using word boundaries
+            pattern = @"\b" + Regex.Escape(oldText) + @"\b";
+        }
+        else
+        {
+            // Match any occurrence
+            pattern = Regex.Escape(oldText);
+        }
+
+        // Apply replacement with appropriate case sensitivity
+        var options = caseSensitive ? RegexOptions.None : RegexOptions.IgnoreCase;
+
+        try
+        {
+            text = Regex.Replace(text, pattern, newText, options);
+        }
+        catch (Exception)
+        {
+            // If regex fails, fall back to simple string replace
+            if (caseSensitive)
+            {
+                text = text.Replace(oldText, newText);
+            }
+            else
+            {
+                // Case-insensitive replace for fallback
+                int index = text.IndexOf(oldText, StringComparison.OrdinalIgnoreCase);
+                while (index >= 0)
+                {
+                    text = text.Remove(index, oldText.Length).Insert(index, newText);
+                    index = text.IndexOf(oldText, index + newText.Length, StringComparison.OrdinalIgnoreCase);
+                }
+            }
+        }
+
+        return text;
     }
 }
