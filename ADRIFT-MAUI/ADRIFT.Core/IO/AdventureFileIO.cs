@@ -26,17 +26,20 @@ public static class AdventureFileIO
         // Read file bytes
         var fileBytes = await File.ReadAllBytesAsync(filePath);
 
-        // Check if it's a compressed TAF file
-        if (fileBytes.Length >= 3 &&
-            fileBytes[0] == 'T' && fileBytes[1] == 'A' && fileBytes[2] == 'F')
+        // Check if it's a TAF file by looking at the first 12 bytes
+        // TAF files start with an obfuscated version string, not "TAF" header
+        if (fileBytes.Length >= 12)
         {
-            return await LoadCompressedTafAsync(fileBytes);
+            // Check if it looks like an obfuscated TAF file
+            if (TafObfuscator.IsKnownVersionPattern(fileBytes.Take(12).ToArray()) ||
+                filePath.EndsWith(".taf", StringComparison.OrdinalIgnoreCase))
+            {
+                return await LoadTafAsync(fileBytes, filePath);
+            }
         }
-        else
-        {
-            // Try loading as XML
-            return await LoadXmlAsync(filePath);
-        }
+
+        // Try loading as XML
+        return await LoadXmlAsync(filePath);
     }
 
     /// <summary>
@@ -147,69 +150,245 @@ public static class AdventureFileIO
 
     #endregion
 
-    #region TAF Loading/Saving (Compressed)
+    #region TAF Loading/Saving (Binary Format)
 
-    private static async Task<Adventure> LoadCompressedTafAsync(byte[] fileBytes)
+    /// <summary>
+    /// Load a TAF file (ADRIFT 5.0 binary format with obfuscation and ZLib compression)
+    /// </summary>
+    private static async Task<Adventure> LoadTafAsync(byte[] fileBytes, string filePath)
     {
-        // Skip TAF header (first 3 bytes)
-        using var compressedStream = new MemoryStream(fileBytes, 3, fileBytes.Length - 3);
-        using var decompressedStream = new MemoryStream();
+        if (fileBytes.Length < 26)
+            throw new InvalidDataException("File too small to be a valid TAF file");
 
-        // Decompress using GZip
-        using (var gzipStream = new GZipStream(compressedStream, CompressionMode.Decompress))
+        using var memStream = new MemoryStream(fileBytes);
+        using var reader = new BinaryReader(memStream);
+
+        // Read and deobfuscate version (first 12 bytes)
+        var versionBytes = reader.ReadBytes(12);
+        var versionString = TafObfuscator.GetVersionString(versionBytes);
+
+        if (!versionString.StartsWith("Version "))
+            throw new InvalidDataException("Not a valid ADRIFT TAF file");
+
+        // Parse version number
+        var versionNum = double.Parse(versionString.Replace("Version ", ""),
+            System.Globalization.CultureInfo.InvariantCulture);
+
+        // Read password from end of file (last 14 bytes: 12 bytes password + 2 bytes CRLF)
+        memStream.Seek(fileBytes.Length - 14, SeekOrigin.Begin);
+        var passwordBytes = reader.ReadBytes(12);
+        var decodedPassword = TafObfuscator.Deobfuscate(passwordBytes, fileBytes.Length - 13);
+        var passwordString = System.Text.Encoding.UTF8.GetString(decodedPassword);
+
+        // Reset to after version header
+        memStream.Seek(12, SeekOrigin.Begin);
+
+        // Read Babel metadata size (4 hex characters) for version 5.0.20+
+        int babelLength = 0;
+        string babelMetadata = null;
+
+        if (versionNum >= 5.0)
         {
-            await gzipStream.CopyToAsync(decompressedStream);
-        }
+            var sizeBytes = reader.ReadBytes(4);
+            var sizeHex = System.Text.Encoding.UTF8.GetString(sizeBytes);
 
-        decompressedStream.Position = 0;
-
-        // Parse decompressed XML
-        using var reader = XmlReader.Create(decompressedStream);
-        var adventure = new Adventure();
-
-        while (await reader.ReadAsync())
-        {
-            if (reader.NodeType == XmlNodeType.Element && reader.Name == "Adventure")
+            if (sizeHex == "0000" || System.Text.Encoding.UTF8.GetString(reader.ReadBytes(4)) == "<ifi")
             {
-                await ReadAdventureMetadataAsync(reader, adventure);
-                break;
+                // Has Babel metadata or is newer format
+                memStream.Seek(12, SeekOrigin.Begin);
+                sizeBytes = reader.ReadBytes(4);
+                sizeHex = System.Text.Encoding.UTF8.GetString(sizeBytes);
+
+                if (IsHexString(sizeHex))
+                {
+                    babelLength = Convert.ToInt32(sizeHex, 16);
+                    if (babelLength > 0 && babelLength < fileBytes.Length)
+                    {
+                        var babelBytes = reader.ReadBytes(babelLength);
+                        babelMetadata = System.Text.Encoding.UTF8.GetString(babelBytes);
+                    }
+                    babelLength += 4; // Include size header
+                }
+            }
+            else
+            {
+                // Pre-5.0.20 format, no metadata
+                memStream.Seek(12, SeekOrigin.Begin);
             }
         }
+
+        // Calculate compressed data position and length
+        int dataStart = 12 + babelLength;
+        int dataLength = (int)(fileBytes.Length - dataStart - 26); // Subtract footer (14 bytes + some padding)
+
+        if (dataLength <= 0)
+            throw new InvalidDataException("Invalid TAF file structure");
+
+        // Read compressed and obfuscated data
+        memStream.Seek(dataStart, SeekOrigin.Begin);
+        var compressedObfuscatedData = reader.ReadBytes(dataLength);
+
+        // Deobfuscate the compressed data
+        var deobfuscated = TafObfuscator.Deobfuscate(compressedObfuscatedData, dataStart + 1);
+
+        // Decompress using ZLib
+        using var deobfuscatedStream = new MemoryStream(deobfuscated);
+        using var zlibStream = new ZLibStream(deobfuscatedStream, CompressionMode.Decompress);
+        using var decompressedStream = new MemoryStream();
+
+        await zlibStream.CopyToAsync(decompressedStream);
+        decompressedStream.Position = 0;
+
+        // Parse the decompressed XML
+        var adventure = await LoadXmlFromStreamAsync(decompressedStream);
+
+        // Set adventure metadata
+        adventure.Version = versionString.Replace("Version ", "");
+        adventure.FullPath = filePath;
+        adventure.Filename = Path.GetFileName(filePath);
 
         return adventure;
     }
 
+    /// <summary>
+    /// Save a TAF file (ADRIFT 5.0 binary format with obfuscation and ZLib compression)
+    /// </summary>
     private static async Task SaveCompressedTafAsync(Adventure adventure, string filePath)
     {
         using var fileStream = File.Create(filePath);
+        using var writer = new BinaryWriter(fileStream);
 
-        // Write TAF header
-        await fileStream.WriteAsync(new byte[] { (byte)'T', (byte)'A', (byte)'F' });
+        // Write obfuscated version header
+        var versionString = $"Version {adventure.Version}";
+        var versionBytes = TafObfuscator.ObfuscateFromString(versionString, 1);
+        writer.Write(versionBytes);
 
-        // Compress XML content
-        using var gzipStream = new GZipStream(fileStream, CompressionLevel.Optimal);
-        using var writer = XmlWriter.Create(gzipStream, new XmlWriterSettings
+        // Write Babel metadata size (simplified - write "0000" for now)
+        writer.Write(System.Text.Encoding.UTF8.GetBytes("0000"));
+
+        // Create XML in memory
+        using var xmlStream = new MemoryStream();
+        using (var xmlWriter = XmlWriter.Create(xmlStream, new XmlWriterSettings
         {
             Indent = false,
             Encoding = System.Text.Encoding.UTF8
+        }))
+        {
+            await xmlWriter.WriteStartDocumentAsync();
+            await xmlWriter.WriteStartElementAsync(null, "Adventure", null);
+
+            await WriteAdventureMetadataAsync(xmlWriter, adventure);
+            await WriteLocationsAsync(xmlWriter, adventure);
+            await WriteObjectsAsync(xmlWriter, adventure);
+            await WriteCharactersAsync(xmlWriter, adventure);
+            await WriteTasksAsync(xmlWriter, adventure);
+            await WriteEventsAsync(xmlWriter, adventure);
+            await WriteVariablesAsync(xmlWriter, adventure);
+            await WriteGroupsAsync(xmlWriter, adventure);
+            await WriteSynonymsAsync(xmlWriter, adventure);
+            await WriteHintsAsync(xmlWriter, adventure);
+
+            await xmlWriter.WriteEndElementAsync();
+            await xmlWriter.WriteEndDocumentAsync();
+        }
+
+        var xmlBytes = xmlStream.ToArray();
+
+        // Compress using ZLib
+        using var compressedStream = new MemoryStream();
+        using (var zlibStream = new ZLibStream(compressedStream, CompressionLevel.Optimal))
+        {
+            await zlibStream.WriteAsync(xmlBytes, 0, xmlBytes.Length);
+        }
+
+        var compressedBytes = compressedStream.ToArray();
+
+        // Obfuscate compressed data
+        var obfuscatedData = TafObfuscator.Obfuscate(compressedBytes, 16 + 1);
+
+        // Write obfuscated compressed data
+        writer.Write(obfuscatedData);
+
+        // Write password footer
+        var password = string.IsNullOrWhiteSpace(adventure.Password) ? "        " : adventure.Password;
+        while (password.Length < 8) password += " ";
+        var passwordString = password.Substring(0, 4) + "Wild" + password.Substring(4, 4);
+
+        var passwordBytes = TafObfuscator.ObfuscateFromString(passwordString,
+            obfuscatedData.Length + 16 + 1);
+        writer.Write(passwordBytes);
+
+        // Write CRLF
+        writer.Write(new byte[] { 0x0D, 0x0A });
+    }
+
+    /// <summary>
+    /// Helper to check if a string is valid hexadecimal
+    /// </summary>
+    private static bool IsHexString(string str)
+    {
+        if (string.IsNullOrEmpty(str)) return false;
+        foreach (char c in str)
+        {
+            if (!Uri.IsHexDigit(c)) return false;
+        }
+        return true;
+    }
+
+    /// <summary>
+    /// Load adventure XML from a stream
+    /// </summary>
+    private static async Task<Adventure> LoadXmlFromStreamAsync(Stream stream)
+    {
+        using var reader = XmlReader.Create(stream, new XmlReaderSettings
+        {
+            IgnoreWhitespace = true,
+            IgnoreComments = true
         });
 
-        await writer.WriteStartDocumentAsync();
-        await writer.WriteStartElementAsync(null, "Adventure", null);
+        var adventure = new Adventure();
 
-        await WriteAdventureMetadataAsync(writer, adventure);
-        await WriteLocationsAsync(writer, adventure);
-        await WriteObjectsAsync(writer, adventure);
-        await WriteCharactersAsync(writer, adventure);
-        await WriteTasksAsync(writer, adventure);
-        await WriteEventsAsync(writer, adventure);
-        await WriteVariablesAsync(writer, adventure);
-        await WriteGroupsAsync(writer, adventure);
-        await WriteSynonymsAsync(writer, adventure);
-        await WriteHintsAsync(writer, adventure);
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.Element)
+            {
+                switch (reader.Name)
+                {
+                    case "Adventure":
+                        await ReadAdventureMetadataAsync(reader, adventure);
+                        break;
+                    case "Locations":
+                        await ReadLocationsAsync(reader, adventure);
+                        break;
+                    case "Objects":
+                        await ReadObjectsAsync(reader, adventure);
+                        break;
+                    case "Characters":
+                        await ReadCharactersAsync(reader, adventure);
+                        break;
+                    case "Tasks":
+                        await ReadTasksAsync(reader, adventure);
+                        break;
+                    case "Events":
+                        await ReadEventsAsync(reader, adventure);
+                        break;
+                    case "Variables":
+                        await ReadVariablesAsync(reader, adventure);
+                        break;
+                    case "Groups":
+                        await ReadGroupsAsync(reader, adventure);
+                        break;
+                    case "Synonyms":
+                        await ReadSynonymsAsync(reader, adventure);
+                        break;
+                    case "Hints":
+                        await ReadHintsAsync(reader, adventure);
+                        break;
+                }
+            }
+        }
 
-        await writer.WriteEndElementAsync();
-        await writer.WriteEndDocumentAsync();
+        return adventure;
     }
 
     #endregion
