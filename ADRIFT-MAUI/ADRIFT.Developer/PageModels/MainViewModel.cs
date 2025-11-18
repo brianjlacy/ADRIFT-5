@@ -56,6 +56,12 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private bool hasUnsavedChanges;
 
+    [ObservableProperty]
+    private string? currentFilePath;
+
+    [ObservableProperty]
+    private string statusMessage = "Ready";
+
     private void LoadAdventure()
     {
         var adventure = _adventureService.CurrentAdventure;
@@ -253,4 +259,223 @@ public partial class MainViewModel : ObservableObject
 
         await Shell.Current.DisplayAlert("Statistics", stats, "OK");
     }
+
+    #region File Operations
+
+    [RelayCommand]
+    private async Task NewAdventure()
+    {
+        // Check for unsaved changes
+        if (HasUnsavedChanges)
+        {
+            var result = await Shell.Current.DisplayAlert(
+                "Unsaved Changes",
+                "You have unsaved changes. Do you want to continue and lose these changes?",
+                "Continue", "Cancel");
+
+            if (!result)
+                return;
+        }
+
+        try
+        {
+            var adventure = await _adventureService.CreateNewAdventureAsync();
+            CurrentFilePath = null;
+            HasUnsavedChanges = false;
+            LoadAdventure();
+            StatusMessage = "New adventure created";
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Error", $"Failed to create new adventure: {ex.Message}", "OK");
+        }
+    }
+
+    [RelayCommand]
+    private async Task OpenAdventure()
+    {
+        // Check for unsaved changes
+        if (HasUnsavedChanges)
+        {
+            var result = await Shell.Current.DisplayAlert(
+                "Unsaved Changes",
+                "You have unsaved changes. Do you want to save before opening another adventure?",
+                "Save", "Don't Save");
+
+            if (result)
+            {
+                await SaveAdventure();
+            }
+        }
+
+        try
+        {
+            var customFileType = new FilePickerFileType(
+                new Dictionary<DevicePlatform, IEnumerable<string>>
+                {
+                    { DevicePlatform.WinUI, new[] { ".taf", ".xml" } },
+                    { DevicePlatform.macOS, new[] { "taf", "xml" } },
+                    { DevicePlatform.MacCatalyst, new[] { "taf", "xml" } },
+                });
+
+            var options = new PickOptions
+            {
+                FileTypes = customFileType,
+                PickerTitle = "Open ADRIFT Adventure"
+            };
+
+            var result = await FilePicker.Default.PickAsync(options);
+
+            if (result != null)
+            {
+                StatusMessage = "Loading adventure...";
+                var adventure = await _adventureService.LoadAdventureAsync(result.FullPath);
+
+                if (adventure != null)
+                {
+                    CurrentFilePath = result.FullPath;
+                    HasUnsavedChanges = false;
+                    LoadAdventure();
+                    StatusMessage = $"Loaded {Path.GetFileName(result.FullPath)}";
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = "Failed to load adventure";
+            await Shell.Current.DisplayAlert("Error", $"Failed to open adventure: {ex.Message}", "OK");
+        }
+    }
+
+    [RelayCommand]
+    private async Task SaveAdventure()
+    {
+        if (string.IsNullOrEmpty(CurrentFilePath))
+        {
+            await SaveAdventureAs();
+            return;
+        }
+
+        try
+        {
+            var adventure = _adventureService.CurrentAdventure;
+            if (adventure == null)
+            {
+                await Shell.Current.DisplayAlert("Error", "No adventure to save", "OK");
+                return;
+            }
+
+            StatusMessage = "Saving adventure...";
+            await _adventureService.SaveAdventureAsync(adventure, CurrentFilePath);
+            HasUnsavedChanges = false;
+            LoadAdventure(); // Refresh to update LastModified
+            StatusMessage = $"Saved {Path.GetFileName(CurrentFilePath)}";
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = "Failed to save adventure";
+            await Shell.Current.DisplayAlert("Error", $"Failed to save adventure: {ex.Message}", "OK");
+        }
+    }
+
+    [RelayCommand]
+    private async Task SaveAdventureAs()
+    {
+        try
+        {
+            var adventure = _adventureService.CurrentAdventure;
+            if (adventure == null)
+            {
+                await Shell.Current.DisplayAlert("Error", "No adventure to save", "OK");
+                return;
+            }
+
+            // MAUI doesn't have a built-in SaveFilePicker yet, so we use a prompt
+            var fileName = await Shell.Current.DisplayPromptAsync(
+                "Save Adventure",
+                "Enter file name (without extension):",
+                initialValue: string.IsNullOrWhiteSpace(adventure.Title) ? "MyAdventure" : adventure.Title,
+                placeholder: "MyAdventure");
+
+            if (string.IsNullOrWhiteSpace(fileName))
+                return;
+
+            var formatChoice = await Shell.Current.DisplayActionSheet(
+                "Select Format",
+                "Cancel",
+                null,
+                "Compressed TAF (.taf)",
+                "XML (.xml)");
+
+            if (formatChoice == null || formatChoice == "Cancel")
+                return;
+
+            var extension = formatChoice.Contains("TAF") ? ".taf" : ".xml";
+
+            // Use app's documents directory
+            var documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            var adriftPath = Path.Combine(documentsPath, "ADRIFT Adventures");
+
+            if (!Directory.Exists(adriftPath))
+                Directory.CreateDirectory(adriftPath);
+
+            var filePath = Path.Combine(adriftPath, fileName + extension);
+
+            // Check if file exists
+            if (File.Exists(filePath))
+            {
+                var overwrite = await Shell.Current.DisplayAlert(
+                    "File Exists",
+                    $"The file '{fileName}{extension}' already exists. Do you want to overwrite it?",
+                    "Yes", "No");
+
+                if (!overwrite)
+                {
+                    await SaveAdventureAs(); // Try again
+                    return;
+                }
+            }
+
+            StatusMessage = "Saving adventure...";
+            await _adventureService.SaveAdventureAsync(adventure, filePath);
+            CurrentFilePath = filePath;
+            HasUnsavedChanges = false;
+            LoadAdventure(); // Refresh to update LastModified
+            StatusMessage = $"Saved as {Path.GetFileName(filePath)}";
+
+            await Shell.Current.DisplayAlert("Success", $"Adventure saved to:\n{filePath}", "OK");
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = "Failed to save adventure";
+            await Shell.Current.DisplayAlert("Error", $"Failed to save adventure: {ex.Message}", "OK");
+        }
+    }
+
+    [RelayCommand]
+    private async Task CloseAdventure()
+    {
+        // Check for unsaved changes
+        if (HasUnsavedChanges)
+        {
+            var result = await Shell.Current.DisplayAlert(
+                "Unsaved Changes",
+                "You have unsaved changes. Do you want to save before closing?",
+                "Save", "Don't Save");
+
+            if (result)
+            {
+                await SaveAdventure();
+            }
+        }
+
+        // Reset to empty state
+        await _adventureService.CreateNewAdventureAsync();
+        CurrentFilePath = null;
+        HasUnsavedChanges = false;
+        LoadAdventure();
+        StatusMessage = "Adventure closed";
+    }
+
+    #endregion
 }
