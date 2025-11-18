@@ -74,7 +74,8 @@
     <PackageReference Include="Syncfusion.Maui.TreeView" Version="27.1.48" />
 
     <!-- For rich text editing -->
-    <PackageReference Include="DevExpress.Maui.Controls" Version="24.1.3" />
+    <!-- DevExpress requires a license -- NOT an acceptable solution! -->
+    <!-- <PackageReference Include="DevExpress.Maui.Controls" Version="24.1.3" /> -->
 
     <!-- Compression (from original project) -->
     <PackageReference Include="SharpZipLib" Version="1.4.2" />

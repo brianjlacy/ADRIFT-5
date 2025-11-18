@@ -12107,67 +12107,69 @@ NextGroup:;
 
 private enum ComboEnum
     {
-        Dynamic;
-        WithState;
-        WithStateOrOpenable;
-        Surface;
-        Container;
-        Wearable;
-        Sittable;
-        Standable;
-        Lieable;
+        Dynamic,
+        WithState,
+        WithStateOrOpenable,
+        Surface,
+        Container,
+        Wearable,
+        Sittable,
+        Standable,
+        Lieable
     }
     private string GetObKey(int iComboIndex, ComboEnum eCombo)
     {
 
-        private int iMatching;
-        private int i = 1;
-        private string sKey;
-        private clsObject ob = null;
+        int iMatching = 0;
+        int i = 1;
+        string sKey;
+        clsObject ob = null;
 
         try
         {
 
             while (iMatching <= iComboIndex && i < Adventure.htblObjects.Count + 1)
             {
-                sKey = "Object" & i
-                ob = Adventure.htblObjects(sKey)
+                sKey = "Object" + i;
+                ob = Adventure.htblObjects[sKey];
                 switch (eCombo)
                 {
                     case ComboEnum.Dynamic:
-                        {
-                        If ! ob.IsStatic Then iMatching += 1
+                        if (!ob.IsStatic) iMatching += 1;
+                        break;
                     case ComboEnum.WithState:
-                        {
-                        If salWithStates.Contains(sKey) Then iMatching += 1
+                        if (salWithStates.Contains(sKey)) iMatching += 1;
+                        break;
                     case ComboEnum.WithStateOrOpenable:
-                        {
-                        If salWithStates.Contains(sKey) || ob.Openable Then iMatching += 1
+                        if (salWithStates.Contains(sKey) || ob.Openable) iMatching += 1;
+                        break;
                     case ComboEnum.Surface:
-                        {
-                        If ob.HasSurface Then iMatching += 1
+                        if (ob.HasSurface) iMatching += 1;
+                        break;
                     case ComboEnum.Container:
-                        {
-                        If ob.IsContainer Then iMatching += 1
+                        if (ob.IsContainer) iMatching += 1;
+                        break;
                     case ComboEnum.Wearable:
-                        {
-                        If ob.IsWearable Then iMatching += 1
+                        if (ob.IsWearable) iMatching += 1;
+                        break;
                     case ComboEnum.Sittable:
-                        {
-                        If ob.IsSittable Then iMatching += 1
+                        if (ob.IsSittable) iMatching += 1;
+                        break;
                     case ComboEnum.Standable:
-                        {
-                        If ob.IsStandable Then iMatching += 1
+                        if (ob.IsStandable) iMatching += 1;
+                        break;
                     case ComboEnum.Lieable:
-                        {
-                        If ob.IsLieable Then iMatching += 1
+                        if (ob.IsLieable) iMatching += 1;
+                        break;
                 }
                 i += 1;
             }
-            if (ob IsNot null)
+            if (ob != null)
             {
                 return ob.Key;
-            Else
+            }
+            else
+            {
                 return "";
             }
         }

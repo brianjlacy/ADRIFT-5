@@ -198,3 +198,5 @@ ModelManifest.xml
 /.vs/slnx.sqlite
 /ADRIFT Installer/ADRIFT Installer.msi
 /ADRIFT Installer/setup.exe
+.vscode
+.vs
