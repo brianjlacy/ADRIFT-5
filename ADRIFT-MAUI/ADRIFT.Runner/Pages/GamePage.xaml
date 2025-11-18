@@ -4,6 +4,12 @@
              x:Class="ADRIFT.Runner.Pages.GamePage"
              Title="ADRIFT Runner">
 
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Save" Clicked="OnSaveGame" />
+        <ToolbarItem Text="Load" Clicked="OnLoadGame" />
+        <ToolbarItem Text="Restart" Clicked="OnRestartGame" />
+    </ContentPage.ToolbarItems>
+
     <Grid RowDefinitions="*,Auto" Padding="10">
 
         <!-- Output area -->
