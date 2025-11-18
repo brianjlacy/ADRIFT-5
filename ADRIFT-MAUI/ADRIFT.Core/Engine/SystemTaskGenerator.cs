@@ -349,6 +349,60 @@ public static class SystemTaskGenerator
 
             adventure.Tasks.Add(waitTask.Key, waitTask);
         }
+
+        // Ask character about topic
+        if (!HasTask(adventure, "System_Ask"))
+        {
+            var askTask = new Core.Models.Task
+            {
+                Key = "System_Ask",
+                Name = "Ask about topic",
+                Description = "Ask a character about a topic",
+                Type = TaskType.System,
+                Priority = 6,
+                IsRepeatable = true
+            };
+
+            askTask.Commands.Add(new TaskCommand { Command = "ask %character% about %text%" });
+
+            askTask.SuccessActions.Add(new TaskAction
+            {
+                Order = 1,
+                ActionType = "AskAbout",
+                Parameters = new Dictionary<string, string> { { "Character", "%character%" }, { "Topic", "%text%" } }
+            });
+
+            askTask.SuccessMessage = ""; // ConversationManager handles output
+
+            adventure.Tasks.Add(askTask.Key, askTask);
+        }
+
+        // Tell character about topic
+        if (!HasTask(adventure, "System_Tell"))
+        {
+            var tellTask = new Core.Models.Task
+            {
+                Key = "System_Tell",
+                Name = "Tell about topic",
+                Description = "Tell a character about a topic",
+                Type = TaskType.System,
+                Priority = 6,
+                IsRepeatable = true
+            };
+
+            tellTask.Commands.Add(new TaskCommand { Command = "tell %character% about %text%" });
+
+            tellTask.SuccessActions.Add(new TaskAction
+            {
+                Order = 1,
+                ActionType = "TellAbout",
+                Parameters = new Dictionary<string, string> { { "Character", "%character%" }, { "Topic", "%text%" } }
+            });
+
+            tellTask.SuccessMessage = ""; // ConversationManager handles output
+
+            adventure.Tasks.Add(tellTask.Key, tellTask);
+        }
     }
 
     private static bool HasTask(Adventure adventure, string taskKey)

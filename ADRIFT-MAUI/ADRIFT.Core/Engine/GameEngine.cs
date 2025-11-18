@@ -393,17 +393,35 @@ public class GameEngine
                 if (action.Parameters.TryGetValue("Character", out var charKey))
                 {
                     var resolvedCharKey = ResolveParameter(charKey, parameters);
-                    if (_adventure.Characters.TryGetValue(resolvedCharKey, out var character))
-                    {
-                        if (!string.IsNullOrEmpty(character.GeneralGreeting))
-                        {
-                            _state.AddOutput(character.GeneralGreeting);
-                        }
-                        else
-                        {
-                            _state.AddOutput($"{character.FullName} has nothing to say.");
-                        }
-                    }
+                    var conversationMgr = new ConversationManager(_adventure, _state);
+                    var response = conversationMgr.ProcessConversation(resolvedCharKey);
+                    _state.AddOutput(response);
+                }
+                break;
+
+            case "askabout":
+                // Ask character about a topic
+                if (action.Parameters.TryGetValue("Character", out var askCharKey) &&
+                    action.Parameters.TryGetValue("Topic", out var askTopic))
+                {
+                    var resolvedCharKey = ResolveParameter(askCharKey, parameters);
+                    var resolvedTopic = ResolveParameter(askTopic, parameters);
+                    var conversationMgr = new ConversationManager(_adventure, _state);
+                    var response = conversationMgr.AskAbout(resolvedCharKey, resolvedTopic);
+                    _state.AddOutput(response);
+                }
+                break;
+
+            case "tellabout":
+                // Tell character about a topic
+                if (action.Parameters.TryGetValue("Character", out var tellCharKey) &&
+                    action.Parameters.TryGetValue("Topic", out var tellTopic))
+                {
+                    var resolvedCharKey = ResolveParameter(tellCharKey, parameters);
+                    var resolvedTopic = ResolveParameter(tellTopic, parameters);
+                    var conversationMgr = new ConversationManager(_adventure, _state);
+                    var response = conversationMgr.TellAbout(resolvedCharKey, resolvedTopic);
+                    _state.AddOutput(response);
                 }
                 break;
 

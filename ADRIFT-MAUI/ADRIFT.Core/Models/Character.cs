@@ -26,6 +26,7 @@ public class Character : AdriftItem
     // Conversation
     public List<ConversationTopic> Topics { get; set; } = new();
     public string GeneralGreeting { get; set; } = string.Empty;
+    public string UnknownTopicResponse { get; set; } = string.Empty; // Response when topic not found
 
     public string FullName => string.IsNullOrWhiteSpace(Prefix) ? Name : $"{Prefix} {Name}";
     public override string DisplayName => FullName;
@@ -54,4 +55,5 @@ public class ConversationTopic
     public string TopicName { get; set; } = string.Empty;
     public string Keywords { get; set; } = string.Empty;
     public string Response { get; set; } = string.Empty;
+    public string TellResponse { get; set; } = string.Empty; // Response when player tells about this topic
 }
