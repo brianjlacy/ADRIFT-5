@@ -224,7 +224,7 @@ public partial class TaskEditorViewModel : ObservableObject
             task.Commands.Clear();
             foreach (var cmdVm in Commands)
             {
-                task.Commands.Add(new CommandPattern
+                task.Commands.Add(new Core.Models.TaskCommand
                 {
                     Command = cmdVm.Command
                 });
