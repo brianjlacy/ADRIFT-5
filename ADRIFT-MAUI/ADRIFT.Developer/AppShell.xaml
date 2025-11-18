@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="ADRIFT.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:ADRIFT"
+    xmlns:views="clr-namespace:ADRIFT.Views"
+    Shell.FlyoutBehavior="Flyout"
+    Title="ADRIFT Developer">
+
+    <Shell.FlyoutHeader>
+        <Grid BackgroundColor="{StaticResource ADRIFTPrimary}" HeightRequest="120">
+            <Label Text="ADRIFT 5"
+                   FontSize="28"
+                   FontAttributes="Bold"
+                   TextColor="White"
+                   VerticalOptions="Center"
+                   HorizontalOptions="Center"/>
+            <Label Text="Adventure Development &amp; Runner"
+                   FontSize="12"
+                   TextColor="White"
+                   VerticalOptions="End"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,10"/>
+        </Grid>
+    </Shell.FlyoutHeader>
+
+    <!-- Main Content -->
+    <FlyoutItem Title="Project" Icon="folder.png">
+        <ShellContent Title="Overview"
+                      ContentTemplate="{DataTemplate views:MainPage}"
+                      Route="main" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Locations" Icon="location.png">
+        <ShellContent Title="Locations"
+                      ContentTemplate="{DataTemplate views:LocationListPage}"
+                      Route="locations" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Objects" Icon="object.png">
+        <ShellContent Title="Objects"
+                      ContentTemplate="{DataTemplate views:ObjectListPage}"
+                      Route="objects" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Tasks" Icon="task.png">
+        <ShellContent Title="Tasks"
+                      ContentTemplate="{DataTemplate views:TaskListPage}"
+                      Route="tasks" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Characters" Icon="character.png">
+        <ShellContent Title="Characters"
+                      ContentTemplate="{DataTemplate views:CharacterListPage}"
+                      Route="characters" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Events" Icon="event.png">
+        <ShellContent Title="Events"
+                      ContentTemplate="{DataTemplate views:EventListPage}"
+                      Route="events" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Variables" Icon="variable.png">
+        <ShellContent Title="Variables"
+                      ContentTemplate="{DataTemplate views:VariableListPage}"
+                      Route="variables" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Groups" Icon="group.png">
+        <ShellContent Title="Groups"
+                      ContentTemplate="{DataTemplate views:GroupListPage}"
+                      Route="groups" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Map" Icon="map.png">
+        <ShellContent Title="Map"
+                      ContentTemplate="{DataTemplate views:MapPage}"
+                      Route="map" />
+    </FlyoutItem>
+
+    <!-- Menu Items -->
+    <MenuItem Text="New Adventure"
+              IconImageSource="new.png"
+              Clicked="OnNewAdventure" />
+
+    <MenuItem Text="Open Adventure"
+              IconImageSource="open.png"
+              Clicked="OnOpenAdventure" />
+
+    <MenuItem Text="Save Adventure"
+              IconImageSource="save.png"
+              Clicked="OnSaveAdventure" />
+
+    <MenuItem Text="Settings"
+              IconImageSource="settings.png"
+              Clicked="OnSettings" />
+
+    <MenuItem Text="About"
+              IconImageSource="info.png"
+              Clicked="OnAbout" />
+
+</Shell>
