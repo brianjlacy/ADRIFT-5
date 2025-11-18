@@ -380,6 +380,7 @@ public static class AdventureFileIO
             {
                 switch (reader.Name)
                 {
+                    // Basic identification
                     case "Article":
                         obj.Article = await reader.ReadElementContentAsStringAsync();
                         break;
@@ -389,14 +390,88 @@ public static class AdventureFileIO
                     case "Name":
                         obj.Name = await reader.ReadElementContentAsStringAsync();
                         break;
+                    case "Aliases":
+                        await ReadStringListAsync(reader, obj.Aliases, "Aliases", "Alias");
+                        break;
+
+                    // Descriptions
                     case "ShortDescription":
                         obj.ShortDescription = await reader.ReadElementContentAsStringAsync();
                         break;
                     case "LongDescription":
                         obj.LongDescription = await reader.ReadElementContentAsStringAsync();
                         break;
+
+                    // Location
+                    case "LocationType":
+                        if (Enum.TryParse<ObjectLocation>(await reader.ReadElementContentAsStringAsync(), out var locType))
+                            obj.LocationType = locType;
+                        break;
+                    case "LocationKey":
+                        obj.LocationKey = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "ContainerKey":
+                        obj.ContainerKey = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "CharacterKey":
+                        obj.CharacterKey = await reader.ReadElementContentAsStringAsync();
+                        break;
+
+                    // Physical properties
+                    case "Size":
+                        if (Enum.TryParse<ObjectSize>(await reader.ReadElementContentAsStringAsync(), out var size))
+                            obj.Size = size;
+                        break;
+                    case "Weight":
+                        obj.Weight = await reader.ReadElementContentAsDoubleAsync();
+                        break;
+
+                    // Capabilities
                     case "IsStatic":
                         obj.IsStatic = await reader.ReadElementContentAsBooleanAsync();
+                        break;
+                    case "IsContainer":
+                        obj.IsContainer = await reader.ReadElementContentAsBooleanAsync();
+                        break;
+                    case "IsSurface":
+                        obj.IsSurface = await reader.ReadElementContentAsBooleanAsync();
+                        break;
+                    case "IsWearable":
+                        obj.IsWearable = await reader.ReadElementContentAsBooleanAsync();
+                        break;
+                    case "IsEdible":
+                        obj.IsEdible = await reader.ReadElementContentAsBooleanAsync();
+                        break;
+                    case "IsLightSource":
+                        obj.IsLightSource = await reader.ReadElementContentAsBooleanAsync();
+                        break;
+                    case "IsReadable":
+                        obj.IsReadable = await reader.ReadElementContentAsBooleanAsync();
+                        break;
+
+                    // Container properties
+                    case "Capacity":
+                        obj.Capacity = await reader.ReadElementContentAsIntAsync();
+                        break;
+                    case "IsOpenable":
+                        obj.IsOpenable = await reader.ReadElementContentAsBooleanAsync();
+                        break;
+                    case "IsLockable":
+                        obj.IsLockable = await reader.ReadElementContentAsBooleanAsync();
+                        break;
+                    case "IsOpen":
+                        obj.IsOpen = await reader.ReadElementContentAsBooleanAsync();
+                        break;
+                    case "IsLocked":
+                        obj.IsLocked = await reader.ReadElementContentAsBooleanAsync();
+                        break;
+
+                    // Advanced
+                    case "ReadingText":
+                        obj.ReadingText = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "IsLibrary":
+                        obj.IsLibrary = await reader.ReadElementContentAsBooleanAsync();
                         break;
                 }
             }
@@ -1164,13 +1239,77 @@ public static class AdventureFileIO
             await writer.WriteStartElementAsync(null, "Object", null);
             await writer.WriteAttributeStringAsync(null, "Key", null, obj.Key);
 
+            // Basic identification
             await writer.WriteElementStringAsync(null, "Article", null, obj.Article);
             await writer.WriteElementStringAsync(null, "Prefix", null, obj.Prefix);
             await writer.WriteElementStringAsync(null, "Name", null, obj.Name);
+
+            // Aliases
+            if (obj.Aliases.Count > 0)
+            {
+                await writer.WriteStartElementAsync(null, "Aliases", null);
+                foreach (var alias in obj.Aliases)
+                {
+                    await writer.WriteElementStringAsync(null, "Alias", null, alias);
+                }
+                await writer.WriteEndElementAsync(); // Aliases
+            }
+
+            // Descriptions
             await writer.WriteElementStringAsync(null, "ShortDescription", null, obj.ShortDescription);
             await writer.WriteElementStringAsync(null, "LongDescription", null, obj.LongDescription);
+
+            // Location
+            await writer.WriteElementStringAsync(null, "LocationType", null, obj.LocationType.ToString());
+            if (!string.IsNullOrEmpty(obj.LocationKey))
+                await writer.WriteElementStringAsync(null, "LocationKey", null, obj.LocationKey);
+            if (!string.IsNullOrEmpty(obj.ContainerKey))
+                await writer.WriteElementStringAsync(null, "ContainerKey", null, obj.ContainerKey);
+            if (!string.IsNullOrEmpty(obj.CharacterKey))
+                await writer.WriteElementStringAsync(null, "CharacterKey", null, obj.CharacterKey);
+
+            // Physical properties
+            await writer.WriteElementStringAsync(null, "Size", null, obj.Size.ToString());
+            if (obj.Weight != 1.0)
+                await writer.WriteElementStringAsync(null, "Weight", null, obj.Weight.ToString());
+
+            // Capabilities
             if (obj.IsStatic)
                 await writer.WriteElementStringAsync(null, "IsStatic", null, "true");
+            if (obj.IsContainer)
+                await writer.WriteElementStringAsync(null, "IsContainer", null, "true");
+            if (obj.IsSurface)
+                await writer.WriteElementStringAsync(null, "IsSurface", null, "true");
+            if (obj.IsWearable)
+                await writer.WriteElementStringAsync(null, "IsWearable", null, "true");
+            if (obj.IsEdible)
+                await writer.WriteElementStringAsync(null, "IsEdible", null, "true");
+            if (obj.IsLightSource)
+                await writer.WriteElementStringAsync(null, "IsLightSource", null, "true");
+            if (obj.IsReadable)
+                await writer.WriteElementStringAsync(null, "IsReadable", null, "true");
+
+            // Container properties
+            if (obj.IsContainer || obj.IsOpenable || obj.IsLockable)
+            {
+                if (obj.Capacity != 10)
+                    await writer.WriteElementStringAsync(null, "Capacity", null, obj.Capacity.ToString());
+                if (obj.IsOpenable)
+                    await writer.WriteElementStringAsync(null, "IsOpenable", null, "true");
+                if (obj.IsLockable)
+                    await writer.WriteElementStringAsync(null, "IsLockable", null, "true");
+                if (obj.IsOpenable && !obj.IsOpen)
+                    await writer.WriteElementStringAsync(null, "IsOpen", null, "false");
+                if (obj.IsLocked)
+                    await writer.WriteElementStringAsync(null, "IsLocked", null, "true");
+            }
+
+            // Advanced
+            if (!string.IsNullOrEmpty(obj.ReadingText))
+                await writer.WriteElementStringAsync(null, "ReadingText", null, obj.ReadingText);
+
+            if (obj.IsLibrary)
+                await writer.WriteElementStringAsync(null, "IsLibrary", null, "true");
 
             await writer.WriteEndElementAsync(); // Object
         }
