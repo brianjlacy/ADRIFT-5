@@ -66,6 +66,9 @@ public class GameEngine
         // Increment turn counter
         _state.TurnCount++;
 
+        // Process character movements (walk routes and following)
+        ProcessCharacterMovement();
+
         // Process turn-based events
         ProcessTurnBasedEvents();
 
@@ -442,6 +445,12 @@ public class GameEngine
                 }
                 break;
         }
+    }
+
+    private void ProcessCharacterMovement()
+    {
+        var movementManager = new CharacterMovementManager(_adventure, _state);
+        movementManager.ProcessTurn();
     }
 
     private void ProcessTurnBasedEvents()

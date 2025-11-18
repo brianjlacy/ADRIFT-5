@@ -30,6 +30,9 @@ public class GameState
     // Object states
     public Dictionary<string, bool> ObjectStates { get; set; } = new(); // ObjectKey.PropertyName -> Value
 
+    // Character walk state
+    public Dictionary<string, CharacterWalkState> CharacterWalkStates { get; set; } = new(); // CharacterKey -> Walk state
+
     // Output buffer
     public List<string> OutputBuffer { get; set; } = new();
     public string LastCommand { get; set; } = string.Empty;
@@ -69,12 +72,24 @@ public class GameState
             }
         }
 
-        // Initialize character locations
+        // Initialize character locations and walk states
         foreach (var character in adventure.Characters.Values)
         {
             if (!string.IsNullOrEmpty(character.InitialLocationKey))
             {
                 state.CharacterLocations[character.Key] = character.InitialLocationKey;
+            }
+
+            // Initialize walk state if character has a walk route
+            if (character.HasWalkRoute && character.WalkSteps.Count > 0)
+            {
+                var walkStep = character.WalkSteps.OrderBy(s => s.StepNumber).FirstOrDefault();
+                state.CharacterWalkStates[character.Key] = new CharacterWalkState
+                {
+                    CurrentStepIndex = 0,
+                    TurnsUntilNextMove = walkStep?.DelayTurns ?? 0,
+                    IsActive = true
+                };
             }
         }
 
@@ -273,9 +288,31 @@ public class GameState
             EventTurnCounters = new Dictionary<string, int>(this.EventTurnCounters),
             VariableValues = new Dictionary<string, string>(this.VariableValues),
             ObjectStates = new Dictionary<string, bool>(this.ObjectStates),
+            CharacterWalkStates = new Dictionary<string, CharacterWalkState>(
+                this.CharacterWalkStates.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Clone())),
             PlayerName = this.PlayerName,
             PlayerAttributes = new Dictionary<string, object>(this.PlayerAttributes),
             LastCommand = this.LastCommand
+        };
+    }
+}
+
+/// <summary>
+/// Tracks the walk state for a character with a walk route
+/// </summary>
+public class CharacterWalkState
+{
+    public int CurrentStepIndex { get; set; }
+    public int TurnsUntilNextMove { get; set; }
+    public bool IsActive { get; set; }
+
+    public CharacterWalkState Clone()
+    {
+        return new CharacterWalkState
+        {
+            CurrentStepIndex = this.CurrentStepIndex,
+            TurnsUntilNextMove = this.TurnsUntilNextMove,
+            IsActive = this.IsActive
         };
     }
 }
