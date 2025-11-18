@@ -196,7 +196,7 @@
                             <HorizontalStackLayout Spacing="12">
                                 <CheckBox IsChecked="{Binding IsEdible}" Color="{StaticResource ADRIFTPrimary}" />
                                 <Label Text="Edible/Drinkable" VerticalOptions="Center" />
-                            </HorizontalStackAlignment>
+                            </HorizontalStackLayout>
                         </VerticalStackLayout>
                     </Frame>
 

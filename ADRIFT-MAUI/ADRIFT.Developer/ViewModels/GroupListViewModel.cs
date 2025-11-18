@@ -12,7 +12,7 @@ public partial class GroupListViewModel : ObservableObject
     [RelayCommand] private async Task AddGroup() => await Shell.Current.GoToAsync("groupeditor");
     [RelayCommand] private async Task EditGroup(GroupItemViewModel g) => await Shell.Current.GoToAsync($"groupeditor?key={g.Key}");
 }
-public partial class GroupItemViewModel : ObservableProperty
+public partial class GroupItemViewModel : ObservableObject
 {
     public GroupItemViewModel() { Key = "grp" + Guid.NewGuid().ToString("N")[..8]; Name = "Group"; MemberCount = 0; GroupType = "Objects"; }
     [ObservableProperty] private string key = "";

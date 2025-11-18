@@ -393,15 +393,6 @@ public partial class ObjectItemViewModel : ObservableObject
     private string name = "";
 }
 
-public partial class CharacterItemViewModel : ObservableObject
-{
-    [ObservableProperty]
-    private string key = "";
-
-    [ObservableProperty]
-    private string name = "";
-}
-
 public partial class CustomPropertyViewModel : ObservableObject
 {
     [ObservableProperty]

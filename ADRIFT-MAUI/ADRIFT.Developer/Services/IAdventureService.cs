@@ -1,31 +1,33 @@
+using ADRIFT.Core.Models;
+
 namespace ADRIFT.Services;
 
 public interface IAdventureService
 {
     // Adventure management
-    Task<clsAdventure?> LoadAdventureAsync(string filePath);
-    Task<bool> SaveAdventureAsync(clsAdventure adventure, string filePath);
-    Task<clsAdventure> CreateNewAdventureAsync();
+    Task<Adventure?> LoadAdventureAsync(string filePath);
+    Task<bool> SaveAdventureAsync(Adventure adventure, string filePath);
+    Task<Adventure> CreateNewAdventureAsync();
 
     // Current adventure
-    clsAdventure? CurrentAdventure { get; }
+    Adventure? CurrentAdventure { get; }
     event EventHandler<AdventureChangedEventArgs>? AdventureChanged;
 
     // Item management
-    Task<clsLocation> CreateLocationAsync(string name);
-    Task<clsObject> CreateObjectAsync(string name);
-    Task<clsTask> CreateTaskAsync(string name);
-    Task<clsCharacter> CreateCharacterAsync(string name);
-    Task<clsEvent> CreateEventAsync(string name);
-    Task<clsVariable> CreateVariableAsync(string name);
+    Task<Location> CreateLocationAsync(string name);
+    Task<AdriftObject> CreateObjectAsync(string name);
+    Task<Core.Models.Task> CreateTaskAsync(string name);
+    Task<Character> CreateCharacterAsync(string name);
+    Task<Event> CreateEventAsync(string name);
+    Task<Variable> CreateVariableAsync(string name);
 
     // Queries
-    Task<IEnumerable<clsLocation>> GetLocationsAsync();
-    Task<IEnumerable<clsObject>> GetObjectsAsync();
-    Task<IEnumerable<clsTask>> GetTasksAsync();
-    Task<IEnumerable<clsCharacter>> GetCharactersAsync();
-    Task<IEnumerable<clsEvent>> GetEventsAsync();
-    Task<IEnumerable<clsVariable>> GetVariablesAsync();
+    Task<IEnumerable<Location>> GetLocationsAsync();
+    Task<IEnumerable<AdriftObject>> GetObjectsAsync();
+    Task<IEnumerable<Core.Models.Task>> GetTasksAsync();
+    Task<IEnumerable<Character>> GetCharactersAsync();
+    Task<IEnumerable<Event>> GetEventsAsync();
+    Task<IEnumerable<Variable>> GetVariablesAsync();
 
     // Statistics
     Task<AdventureStatistics> GetStatisticsAsync();
@@ -33,7 +35,7 @@ public interface IAdventureService
 
 public class AdventureChangedEventArgs : EventArgs
 {
-    public clsAdventure? Adventure { get; init; }
+    public Adventure? Adventure { get; init; }
     public string? FilePath { get; init; }
 }
 

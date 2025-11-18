@@ -1,22 +1,24 @@
+using ADRIFT.Core.Models;
+
 namespace ADRIFT.Services;
 
 public class AdventureService : IAdventureService
 {
-    private clsAdventure? _currentAdventure;
+    private Adventure? _currentAdventure;
 
-    public clsAdventure? CurrentAdventure => _currentAdventure;
+    public Adventure? CurrentAdventure => _currentAdventure;
 
     public event EventHandler<AdventureChangedEventArgs>? AdventureChanged;
 
-    public Task<clsAdventure> CreateNewAdventureAsync()
+    public Task<Adventure> CreateNewAdventureAsync()
     {
-        var adventure = new clsAdventure();
+        var adventure = new Adventure();
         _currentAdventure = adventure;
         AdventureChanged?.Invoke(this, new AdventureChangedEventArgs { Adventure = adventure });
         return Task.FromResult(adventure);
     }
 
-    public async Task<clsAdventure?> LoadAdventureAsync(string filePath)
+    public async Task<Adventure?> LoadAdventureAsync(string filePath)
     {
         try
         {
@@ -40,7 +42,7 @@ public class AdventureService : IAdventureService
         }
     }
 
-    public async Task<bool> SaveAdventureAsync(clsAdventure adventure, string filePath)
+    public async Task<bool> SaveAdventureAsync(Adventure adventure, string filePath)
     {
         try
         {
@@ -58,95 +60,89 @@ public class AdventureService : IAdventureService
         }
     }
 
-    public Task<clsLocation> CreateLocationAsync(string name)
+    public Task<Location> CreateLocationAsync(string name)
     {
-        var location = new clsLocation { /* TODO: Initialize */ };
+        var location = new Location { Name = name };
         // TODO: Add to current adventure
         return Task.FromResult(location);
     }
 
-    public Task<clsObject> CreateObjectAsync(string name)
+    public Task<AdriftObject> CreateObjectAsync(string name)
     {
-        var obj = new clsObject { /* TODO: Initialize */ };
+        var obj = new AdriftObject { Name = name };
         return Task.FromResult(obj);
     }
 
-    public Task<clsTask> CreateTaskAsync(string name)
+    public Task<Core.Models.Task> CreateTaskAsync(string name)
     {
-        var task = new clsTask { /* TODO: Initialize */ };
+        var task = new Core.Models.Task { Command = name };
         return Task.FromResult(task);
     }
 
-    public Task<clsCharacter> CreateCharacterAsync(string name)
+    public Task<Character> CreateCharacterAsync(string name)
     {
-        var character = new clsCharacter { /* TODO: Initialize */ };
+        var character = new Character { Name = name };
         return Task.FromResult(character);
     }
 
-    public Task<clsEvent> CreateEventAsync(string name)
+    public Task<Event> CreateEventAsync(string name)
     {
-        var evt = new clsEvent { /* TODO: Initialize */ };
+        var evt = new Event { Description = name };
         return Task.FromResult(evt);
     }
 
-    public Task<clsVariable> CreateVariableAsync(string name)
+    public Task<Variable> CreateVariableAsync(string name)
     {
-        var variable = new clsVariable { /* TODO: Initialize */ };
+        var variable = new Variable { Name = name };
         return Task.FromResult(variable);
     }
 
-    public Task<IEnumerable<clsLocation>> GetLocationsAsync()
+    public Task<IEnumerable<Location>> GetLocationsAsync()
     {
         if (_currentAdventure == null)
-            return Task.FromResult(Enumerable.Empty<clsLocation>());
+            return Task.FromResult(Enumerable.Empty<Location>());
 
-        // TODO: Return actual locations from adventure
-        return Task.FromResult(Enumerable.Empty<clsLocation>());
+        return Task.FromResult(_currentAdventure.Locations.Values.AsEnumerable());
     }
 
-    public Task<IEnumerable<clsObject>> GetObjectsAsync()
+    public Task<IEnumerable<AdriftObject>> GetObjectsAsync()
     {
         if (_currentAdventure == null)
-            return Task.FromResult(Enumerable.Empty<clsObject>());
+            return Task.FromResult(Enumerable.Empty<AdriftObject>());
 
-        // TODO: Return actual objects from adventure
-        return Task.FromResult(Enumerable.Empty<clsObject>());
+        return Task.FromResult(_currentAdventure.Objects.Values.AsEnumerable());
     }
 
-    public Task<IEnumerable<clsTask>> GetTasksAsync()
+    public Task<IEnumerable<Core.Models.Task>> GetTasksAsync()
     {
         if (_currentAdventure == null)
-            return Task.FromResult(Enumerable.Empty<clsTask>());
+            return Task.FromResult(Enumerable.Empty<Core.Models.Task>());
 
-        // TODO: Return actual tasks from adventure
-        return Task.FromResult(Enumerable.Empty<clsTask>());
+        return Task.FromResult(_currentAdventure.Tasks.Values.AsEnumerable());
     }
 
-    public Task<IEnumerable<clsCharacter>> GetCharactersAsync()
+    public Task<IEnumerable<Character>> GetCharactersAsync()
     {
         if (_currentAdventure == null)
-            return Task.FromResult(Enumerable.Empty<clsCharacter>());
+            return Task.FromResult(Enumerable.Empty<Character>());
 
-        // TODO: Return actual characters from adventure
-        return Task.FromResult(Enumerable.Empty<clsCharacter>());
+        return Task.FromResult(_currentAdventure.Characters.Values.AsEnumerable());
     }
 
-    public Task<IEnumerable<clsEvent>> GetEventsAsync()
+    public Task<IEnumerable<Event>> GetEventsAsync()
     {
         if (_currentAdventure == null)
-            return Task.FromResult(Enumerable.Empty<clsEvent>());
+            return Task.FromResult(Enumerable.Empty<Event>());
 
-        // TODO: Return actual events from adventure
-        return Task.FromResult(Enumerable.Empty<clsEvent>());
+        return Task.FromResult(_currentAdventure.Events.Values.AsEnumerable());
     }
 
-    public Task<IEnumerable<clsVariable>> GetVariablesAsync()
+    public Task<IEnumerable<Variable>> GetVariablesAsync()
     {
         if (_currentAdventure == null)
-            return Task.FromResult(Enumerable.Empty<clsVariable>());
+            return Task.FromResult(Enumerable.Empty<Variable>());
 
-        // TODO: Return actual variables from adventure
-        return Task.FromResult(Enumerable.Empty<clsVariable>());
+        return Task.FromResult(_currentAdventure.Variables.Values.AsEnumerable());
     }
 
     public Task<AdventureStatistics> GetStatisticsAsync()
@@ -156,16 +152,15 @@ public class AdventureService : IAdventureService
             return Task.FromResult(new AdventureStatistics());
         }
 
-        // TODO: Calculate actual statistics
         var stats = new AdventureStatistics
         {
-            LocationCount = 0,
-            ObjectCount = 0,
-            TaskCount = 0,
-            CharacterCount = 0,
-            EventCount = 0,
-            VariableCount = 0,
-            GroupCount = 0
+            LocationCount = _currentAdventure.Locations.Count,
+            ObjectCount = _currentAdventure.Objects.Count,
+            TaskCount = _currentAdventure.Tasks.Count,
+            CharacterCount = _currentAdventure.Characters.Count,
+            EventCount = _currentAdventure.Events.Count,
+            VariableCount = _currentAdventure.Variables.Count,
+            GroupCount = _currentAdventure.Groups.Count
         };
 
         return Task.FromResult(stats);
