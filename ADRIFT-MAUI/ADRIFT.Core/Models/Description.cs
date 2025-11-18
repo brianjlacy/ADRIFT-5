@@ -86,36 +86,3 @@ public enum DisplayWhen
     OnEntry,
     OnExamine
 }
-
-/// <summary>
-/// A restriction/condition that must be met for something to happen
-/// </summary>
-public class Restriction
-{
-    public RestrictionType Type { get; set; }
-    public string Expression { get; set; } = string.Empty;
-    public bool MustBeTrue { get; set; } = true;
-
-    /// <summary>
-    /// Evaluates if this restriction is met
-    /// </summary>
-    public bool IsMet()
-    {
-        // TODO: Implement expression evaluation
-        // For now, always return true
-        return true;
-    }
-}
-
-/// <summary>
-/// Types of restrictions
-/// </summary>
-public enum RestrictionType
-{
-    Expression,      // General expression that evaluates to true/false
-    Location,        // Player must be at a specific location
-    ObjectLocation,  // Object must be at a specific location
-    Property,        // Property must have a specific value
-    Task,           // Task must be complete/incomplete
-    Variable        // Variable must have a specific value
-}

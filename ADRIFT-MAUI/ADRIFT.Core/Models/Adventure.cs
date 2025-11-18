@@ -29,6 +29,7 @@ public class Adventure
     public Dictionary<string, ALR> ALRs { get; set; } = new();
     public Dictionary<string, UserFunction> UserFunctions { get; set; } = new();
     public Dictionary<string, Sound> Sounds { get; set; } = new();
+    public Dictionary<string, Graphic> Graphics { get; set; } = new();
     public Dictionary<string, MediaResource> MediaResources { get; set; } = new();
 
     // Macros (may be global or per-adventure)

@@ -25,6 +25,10 @@ public class Task : AdriftItem
     // Actions (execute on success)
     public List<Action> Actions { get; set; } = new();
 
+    // Success and Failure actions (simplified action system)
+    public List<TaskAction> SuccessActions { get; set; } = new();
+    public List<TaskAction> FailureActions { get; set; } = new();
+
     // Output messages
     public Description CompletionMessage { get; set; } = new(); // Shown on success
     public Description FailureMessage { get; set; } = new(); // Shown on restriction failure
