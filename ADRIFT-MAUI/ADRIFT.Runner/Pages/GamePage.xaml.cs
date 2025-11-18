@@ -11,6 +11,8 @@ public partial class GamePage : ContentPage
     private int _historyIndex = -1;
     private Adventure? _currentAdventure;
     private HintManager? _hintManager;
+    private string _htmlContent = "";
+    private bool _useDarkMode = true; // TODO: Make configurable
 
     public GamePage()
     {
@@ -80,13 +82,6 @@ public partial class GamePage : ContentPage
 
         // Clear input
         CommandEntry.Text = string.Empty;
-
-        // Scroll to bottom
-        MainThread.BeginInvokeOnMainThread(async () =>
-        {
-            await Task.Delay(100);
-            await OutputScroll.ScrollToAsync(0, OutputLabel.Height, false);
-        });
     }
 
     private void UpdateStatusBar()
@@ -102,10 +97,70 @@ public partial class GamePage : ContentPage
         {
             LocationLabel.Text = location.ShortDescription;
         }
+
+        // Update inventory display if visible
+        if (InventoryPanel.IsVisible)
+        {
+            UpdateInventoryDisplay();
+        }
+    }
+
+    private void OnToggleInventory(object? sender, EventArgs e)
+    {
+        InventoryPanel.IsVisible = !InventoryPanel.IsVisible;
+
+        if (InventoryPanel.IsVisible)
+        {
+            UpdateInventoryDisplay();
+        }
+    }
+
+    private void UpdateInventoryDisplay()
+    {
+        if (_engine == null)
+            return;
+
+        InventoryList.Clear();
+
+        var inventory = _engine.State.Inventory;
+
+        if (inventory.Count == 0)
+        {
+            EmptyInventoryLabel.IsVisible = true;
+        }
+        else
+        {
+            EmptyInventoryLabel.IsVisible = false;
+
+            foreach (var item in inventory)
+            {
+                var itemLabel = new Label
+                {
+                    Text = $"• {item.FullName}",
+                    FontSize = 12,
+                    Padding = new Thickness(5)
+                };
+
+                InventoryList.Add(itemLabel);
+            }
+        }
     }
 
     private void AppendOutput(string text)
     {
+        if (string.IsNullOrEmpty(text))
+            return;
+
+        // Update HTML content
+        _htmlContent = HtmlFormatter.AppendHtml(_htmlContent, text, _useDarkMode);
+
+        // Update WebView
+        OutputWebView.Source = new HtmlWebViewSource
+        {
+            Html = _htmlContent
+        };
+
+        // Also update label for transcript export
         if (string.IsNullOrEmpty(OutputLabel.Text))
         {
             OutputLabel.Text = text;
@@ -225,6 +280,7 @@ public partial class GamePage : ContentPage
 
                 // Clear and re-display
                 OutputLabel.Text = "";
+                _htmlContent = "";
                 AppendOutput($"Game loaded from '{choice}'\n\n");
 
                 // Show current location
@@ -233,6 +289,7 @@ public partial class GamePage : ContentPage
                 AppendOutput("\n> ");
 
                 CommandEntry.IsEnabled = true;
+                UpdateStatusBar();
                 await DisplayAlert("Success", "Game loaded successfully.", "OK");
             }
         }
@@ -259,6 +316,7 @@ public partial class GamePage : ContentPage
         {
             // Clear output
             OutputLabel.Text = "";
+            _htmlContent = "";
 
             // Restart the game
             StartAdventure(_currentAdventure);
