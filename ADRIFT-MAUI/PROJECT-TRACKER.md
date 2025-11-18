@@ -2,7 +2,7 @@
 
 **Last Updated**: 2025-11-18
 **Status**: 🚧 Active Development
-**Overall Progress**: 31%
+**Overall Progress**: 37%
 
 ---
 
@@ -13,7 +13,7 @@ Infrastructure:     ████████████████████
 Core Services:      ████████████████████ 100%
 List Pages:         ████████████████████ 100% ✅
 Simple Editors:     ████████████████████ 100% ✅
-Medium Editors:     ██░░░░░░░░░░░░░░░░░░  10% (1/10 - LocationEditor example)
+Medium Editors:     ████████░░░░░░░░░░░░  40% (4/10)
 Complex Editors:    ░░░░░░░░░░░░░░░░░░░░   0%
 Custom Controls:    ░░░░░░░░░░░░░░░░░░░░   0%
 Testing:            ░░░░░░░░░░░░░░░░░░░░   0%
@@ -206,11 +206,11 @@ Priority: Easiest to hardest
 
 ## 🏗️ Phase 5: Medium Editor Pages
 
-**Status**: 🚧 10% Complete (1/10)
+**Status**: 🚧 40% Complete (4/10)
 **Duration**: Week 11-16
 **Target**: 2026-02-09
 
-### Medium Complexity Editors (1/10)
+### Medium Complexity Editors (4/10)
 
 - [x] **LocationEditorPage** ✅ (Example implementation)
   - Tabs: Description, Directions, Properties, Advanced
@@ -219,26 +219,37 @@ Priority: Easiest to hardest
   - Property management
   - ViewModel: LocationEditorViewModel.cs
 
-- [ ] **ObjectEditorPage**
+- [x] **ObjectEditorPage** ✅
   - Tabs: Description, Location, Properties, Advanced
-  - Article/prefix/noun editing
-  - Location picker
-  - State properties
-  - Size/weight inputs
+  - Article/prefix/noun editing with full name preview
+  - Location picker with type selection (At Location/Inside Object/Held by Character)
+  - Physical properties (Size, Weight)
+  - Object capabilities (Static, Container, Surface, Wearable, Edible)
+  - Container properties (Capacity, Openable, Lockable)
+  - Custom properties system
+  - Advanced options (Light source, Readable with text)
 
-- [ ] **CharacterEditorPage**
-  - Tabs: Description, Location, Walk, Conversation
-  - Character properties
-  - Walk route editor
-  - Conversation topics
-  - Inventory management
+- [x] **CharacterEditorPage** ✅
+  - Tabs: Description, Location, Walk, Topics
+  - Character name with prefix and aliases
+  - Character type selection (NPC, Companion, Enemy, etc.)
+  - Personality traits
+  - Movement settings (Can Move, Follows Player)
+  - Inventory management with add/remove
+  - Walk route editor with steps and looping
+  - Conversation topics with responses
+  - General greeting text
 
-- [ ] **EventEditorPage**
+- [x] **EventEditorPage** ✅
   - Tabs: Description, When, Actions
-  - Sub-events list
-  - Timing configuration
-  - Action editor
-  - Trigger conditions
+  - Event type selection (Time-based, Triggered, Repeating)
+  - Trigger type (After Time, On Condition, Immediate)
+  - Time-based settings (Delay turns, Repeat interval)
+  - Trigger conditions with add/remove
+  - Parent event support for sub-events
+  - Event actions with ordering (move up/down)
+  - Action sequencing
+  - Event output text
 
 - [ ] **PropertyEditorPage**
   - Property name
@@ -593,7 +604,7 @@ Priority: Easiest to hardest
 - [x] AdventureService
 - [x] FileService
 
-### Pages (15/50)
+### Pages (18/50)
 - [x] MainPage (Dashboard)
 - [x] LocationEditorPage (Example)
 - [x] LocationListPage
@@ -607,12 +618,15 @@ Priority: Easiest to hardest
 - [x] SynonymEditorPage
 - [x] GroupEditorPage
 - [x] HintEditorPage
-- [ ] 9 Medium editors
+- [x] ObjectEditorPage
+- [x] CharacterEditorPage
+- [x] EventEditorPage
+- [ ] 6 more Medium editors
 - [ ] 3 Complex editors
 - [ ] 10 Runner pages
 - [ ] 15 Supporting pages
 
-### ViewModels (15/50)
+### ViewModels (18/50)
 - [x] MainViewModel
 - [x] LocationEditorViewModel
 - [x] LocationListViewModel
@@ -626,7 +640,10 @@ Priority: Easiest to hardest
 - [x] SynonymEditorViewModel
 - [x] GroupEditorViewModel
 - [x] HintEditorViewModel
-- [ ] 35 more ViewModels
+- [x] ObjectEditorViewModel
+- [x] CharacterEditorViewModel
+- [x] EventEditorViewModel
+- [ ] 32 more ViewModels
 
 ### Custom Controls (0/8)
 - [ ] 8 custom controls
@@ -663,10 +680,10 @@ Priority: Easiest to hardest
 ### Code Statistics
 
 **Current**:
-- Files: 55
-- Lines of Code: ~7,200
-- XAML Pages: 15
-- ViewModels: 15
+- Files: 61
+- Lines of Code: ~10,500
+- XAML Pages: 18
+- ViewModels: 18
 - Services: 4
 - Documentation: ~15,000 words
 
@@ -719,17 +736,34 @@ Priority: Easiest to hardest
 
 ## 🔄 Recent Changes
 
+### 2025-11-18 (Session 4)
+- ✅ Started Phase 5: Medium Editor Pages (4/10 complete, 40%)
+- ✅ Created ObjectEditorPage with comprehensive object properties
+  * 4 tabs: Description, Location, Properties, Advanced
+  * Full name composition (article + prefix + name)
+  * Location type selection with dynamic UI
+  * Physical properties and object capabilities
+  * Container system with capacity and locks
+  * Custom properties and advanced options
+- ✅ Created CharacterEditorPage with full NPC management
+  * 4 tabs: Description, Location, Walk, Topics
+  * Character types and personality traits
+  * Inventory management system
+  * Walk route editor with step ordering
+  * Conversation topics with responses
+- ✅ Created EventEditorPage with timing and actions
+  * 3 tabs: Description, When, Actions
+  * Multiple event types and trigger systems
+  * Time-based and condition-based triggers
+  * Action sequencing with ordering
+  * Sub-event support
+- ✅ Implemented all ViewModels with MVVM pattern
+- ✅ Updated PROJECT-TRACKER.md (31% → 37% complete)
+
 ### 2025-11-18 (Session 3)
 - ✅ Completed Phase 4: Simple Editor Pages (4/4)
-- ✅ Created VariableEditorPage with dynamic keyboard and validation
-- ✅ Created SynonymEditorPage with duplicate detection
-- ✅ Created GroupEditorPage with member selection and checkboxes
-- ✅ Created HintEditorPage with hint ordering (move up/down)
-- ✅ Implemented all editor ViewModels with MVVM pattern
-- ✅ Added navigation routes for all editors in AppShell.xaml.cs
-- ✅ Registered all pages and ViewModels in MauiProgram.cs
+- ✅ Created VariableEditorPage, SynonymEditorPage, GroupEditorPage, HintEditorPage
 - ✅ Updated PROJECT-TRACKER.md (23% → 31% complete)
-- 🎯 Ready to start Phase 5: Medium Editor Pages
 
 ### 2025-11-18 (Session 2)
 - ✅ Completed Phase 3: List Pages (7/7)

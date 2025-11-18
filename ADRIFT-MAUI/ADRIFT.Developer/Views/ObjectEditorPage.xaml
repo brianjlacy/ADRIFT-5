@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ADRIFT.ViewModels"
+             x:Class="ADRIFT.Views.ObjectEditorPage"
+             x:DataType="vm:ObjectEditorViewModel"
+             Title="Object Editor">
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
+        <!-- Header -->
+        <Frame Grid.Row="0" BackgroundColor="{StaticResource ADRIFTPrimary}" Padding="16" Margin="0" CornerRadius="0">
+            <VerticalStackLayout Spacing="4">
+                <Label Text="{Binding PageTitle}" FontSize="20" FontAttributes="Bold" TextColor="White" />
+                <Label Text="{Binding ObjectSummary}" FontSize="14" TextColor="White" Opacity="0.9" />
+            </VerticalStackLayout>
+        </Frame>
+
+        <!-- Tab buttons -->
+        <ScrollView Grid.Row="1" Orientation="Horizontal" Margin="0">
+            <HorizontalStackLayout Spacing="0" Padding="0">
+                <Button Text="Description"
+                        Command="{Binding SelectTabCommand}"
+                        CommandParameter="Description"
+                        BackgroundColor="{Binding DescriptionTabColor}"
+                        TextColor="White"
+                        CornerRadius="0"
+                        Margin="0" />
+                <Button Text="Location"
+                        Command="{Binding SelectTabCommand}"
+                        CommandParameter="Location"
+                        BackgroundColor="{Binding LocationTabColor}"
+                        TextColor="White"
+                        CornerRadius="0"
+                        Margin="0" />
+                <Button Text="Properties"
+                        Command="{Binding SelectTabCommand}"
+                        CommandParameter="Properties"
+                        BackgroundColor="{Binding PropertiesTabColor}"
+                        TextColor="White"
+                        CornerRadius="0"
+                        Margin="0" />
+                <Button Text="Advanced"
+                        Command="{Binding SelectTabCommand}"
+                        CommandParameter="Advanced"
+                        BackgroundColor="{Binding AdvancedTabColor}"
+                        TextColor="White"
+                        CornerRadius="0"
+                        Margin="0" />
+            </HorizontalStackLayout>
+        </ScrollView>
+
+        <!-- Tab content -->
+        <ScrollView Grid.Row="2">
+            <VerticalStackLayout Padding="16" Spacing="16">
+                <!-- Description Tab -->
+                <VerticalStackLayout Spacing="16" IsVisible="{Binding IsDescriptionTabVisible}">
+                    <!-- Name Section -->
+                    <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Object Name" FontSize="16" FontAttributes="Bold" />
+                            <Grid ColumnDefinitions="Auto,*,*" ColumnSpacing="8">
+                                <Entry Grid.Column="0" Text="{Binding Article}" Placeholder="a/an/the" WidthRequest="80" />
+                                <Entry Grid.Column="1" Text="{Binding Prefix}" Placeholder="Prefix" />
+                                <Entry Grid.Column="2" Text="{Binding Name}" Placeholder="Name" />
+                            </Grid>
+                            <Label Text="{Binding FullObjectName}" FontSize="14" FontAttributes="Italic" TextColor="Gray" />
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Aliases -->
+                    <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Aliases (Alternative Names)" FontSize="16" FontAttributes="Bold" />
+                            <Entry Text="{Binding Aliases}" Placeholder="Enter aliases separated by commas..." />
+                            <Label Text="e.g., sword, blade, weapon" FontSize="12" TextColor="Gray" />
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Short Description -->
+                    <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Short Description" FontSize="16" FontAttributes="Bold" />
+                            <Editor Text="{Binding ShortDescription}"
+                                    Placeholder="Brief description shown in lists..."
+                                    HeightRequest="80"
+                                    AutoSize="TextChanges" />
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Long Description -->
+                    <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Long Description" FontSize="16" FontAttributes="Bold" />
+                            <Editor Text="{Binding LongDescription}"
+                                    Placeholder="Detailed description shown when examining..."
+                                    HeightRequest="150"
+                                    AutoSize="TextChanges" />
+                        </VerticalStackLayout>
+                    </Frame>
+                </VerticalStackLayout>
+
+                <!-- Location Tab -->
+                <VerticalStackLayout Spacing="16" IsVisible="{Binding IsLocationTabVisible}">
+                    <!-- Initial Location -->
+                    <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Initial Location" FontSize="16" FontAttributes="Bold" />
+                            <Picker Title="Select location"
+                                    ItemsSource="{Binding AvailableLocations}"
+                                    ItemDisplayBinding="{Binding Name}"
+                                    SelectedItem="{Binding SelectedLocation}" />
+                            <Label Text="Where the object starts in the game" FontSize="12" TextColor="Gray" />
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Location Type -->
+                    <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Location Type" FontSize="16" FontAttributes="Bold" />
+                            <Picker Title="Select type"
+                                    ItemsSource="{Binding LocationTypes}"
+                                    SelectedItem="{Binding SelectedLocationType}" />
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Contained In (if inside another object) -->
+                    <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}"
+                           IsVisible="{Binding IsInsideObject}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Contained In Object" FontSize="16" FontAttributes="Bold" />
+                            <Picker Title="Select container"
+                                    ItemsSource="{Binding AvailableContainers}"
+                                    ItemDisplayBinding="{Binding Name}"
+                                    SelectedItem="{Binding SelectedContainer}" />
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Held By (if held by character) -->
+                    <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}"
+                           IsVisible="{Binding IsHeldByCharacter}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Held By Character" FontSize="16" FontAttributes="Bold" />
+                            <Picker Title="Select character"
+                                    ItemsSource="{Binding AvailableCharacters}"
+                                    ItemDisplayBinding="{Binding Name}"
+                                    SelectedItem="{Binding SelectedCharacter}" />
+                        </VerticalStackLayout>
+                    </Frame>
+                </VerticalStackLayout>
+
+                <!-- Properties Tab -->
+                <VerticalStackLayout Spacing="16" IsVisible="{Binding IsPropertiesTabVisible}">
+                    <!-- Physical Properties -->
+                    <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                        <VerticalStackLayout Spacing="12">
+                            <Label Text="Physical Properties" FontSize="16" FontAttributes="Bold" />
+
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                                <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                    <Label Text="Size" FontSize="14" />
+                                    <Picker ItemsSource="{Binding SizeOptions}"
+                                            SelectedItem="{Binding SelectedSize}" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                    <Label Text="Weight (kg)" FontSize="14" />
+                                    <Entry Text="{Binding Weight}" Keyboard="Numeric" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Object Capabilities -->
+                    <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                        <VerticalStackLayout Spacing="12">
+                            <Label Text="Object Capabilities" FontSize="16" FontAttributes="Bold" />
+
+                            <HorizontalStackLayout Spacing="12">
+                                <CheckBox IsChecked="{Binding IsStatic}" Color="{StaticResource ADRIFTPrimary}" />
+                                <Label Text="Static (cannot be moved)" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+
+                            <HorizontalStackLayout Spacing="12">
+                                <CheckBox IsChecked="{Binding IsContainer}" Color="{StaticResource ADRIFTPrimary}" />
+                                <Label Text="Container (can hold other objects)" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+
+                            <HorizontalStackLayout Spacing="12">
+                                <CheckBox IsChecked="{Binding IsSurface}" Color="{StaticResource ADRIFTPrimary}" />
+                                <Label Text="Surface (objects can be placed on it)" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+
+                            <HorizontalStackLayout Spacing="12">
+                                <CheckBox IsChecked="{Binding IsWearable}" Color="{StaticResource ADRIFTPrimary}" />
+                                <Label Text="Wearable" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+
+                            <HorizontalStackLayout Spacing="12">
+                                <CheckBox IsChecked="{Binding IsEdible}" Color="{StaticResource ADRIFTPrimary}" />
+                                <Label Text="Edible/Drinkable" VerticalOptions="Center" />
+                            </HorizontalStackAlignment>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Container Properties (if container) -->
+                    <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}"
+                           IsVisible="{Binding IsContainer}">
+                        <VerticalStackLayout Spacing="12">
+                            <Label Text="Container Properties" FontSize="16" FontAttributes="Bold" />
+
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="Capacity (max items)" FontSize="14" />
+                                <Entry Text="{Binding Capacity}" Keyboard="Numeric" />
+                            </VerticalStackLayout>
+
+                            <HorizontalStackLayout Spacing="12">
+                                <CheckBox IsChecked="{Binding IsOpenable}" Color="{StaticResource ADRIFTPrimary}" />
+                                <Label Text="Can be opened/closed" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+
+                            <HorizontalStackLayout Spacing="12" IsVisible="{Binding IsOpenable}">
+                                <CheckBox IsChecked="{Binding IsLockable}" Color="{StaticResource ADRIFTPrimary}" />
+                                <Label Text="Can be locked/unlocked" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </Frame>
+                </VerticalStackLayout>
+
+                <!-- Advanced Tab -->
+                <VerticalStackLayout Spacing="16" IsVisible="{Binding IsAdvancedTabVisible}">
+                    <!-- Custom Properties -->
+                    <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                        <VerticalStackLayout Spacing="12">
+                            <Label Text="Custom Properties" FontSize="16" FontAttributes="Bold" />
+                            <Button Text="+ Add Custom Property"
+                                    Command="{Binding AddCustomPropertyCommand}"
+                                    BackgroundColor="{StaticResource ADRIFTSecondary}" />
+
+                            <CollectionView ItemsSource="{Binding CustomProperties}"
+                                            IsVisible="{Binding HasCustomProperties}">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:CustomPropertyViewModel">
+                                        <Frame Padding="8" Margin="0,4">
+                                            <Grid ColumnDefinitions="*,Auto">
+                                                <Label Grid.Column="0" Text="{Binding DisplayText}" />
+                                                <Button Grid.Column="1" Text="×"
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ObjectEditorViewModel}}, Path=RemoveCustomPropertyCommand}"
+                                                        CommandParameter="{Binding}"
+                                                        BackgroundColor="Red"
+                                                        WidthRequest="40" />
+                                            </Grid>
+                                        </Frame>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Advanced Options -->
+                    <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                        <VerticalStackLayout Spacing="12">
+                            <Label Text="Advanced Options" FontSize="16" FontAttributes="Bold" />
+
+                            <HorizontalStackLayout Spacing="12">
+                                <CheckBox IsChecked="{Binding IsLightSource}" Color="{StaticResource ADRIFTPrimary}" />
+                                <Label Text="Light source" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+
+                            <HorizontalStackLayout Spacing="12">
+                                <CheckBox IsChecked="{Binding IsReadable}" Color="{StaticResource ADRIFTPrimary}" />
+                                <Label Text="Readable (has text)" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Reading Text (if readable) -->
+                    <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}"
+                           IsVisible="{Binding IsReadable}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Reading Text" FontSize="16" FontAttributes="Bold" />
+                            <Editor Text="{Binding ReadingText}"
+                                    Placeholder="Text shown when object is read..."
+                                    HeightRequest="100"
+                                    AutoSize="TextChanges" />
+                        </VerticalStackLayout>
+                    </Frame>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Action buttons -->
+        <Grid Grid.Row="3"
+              ColumnDefinitions="*,Auto,Auto"
+              Padding="16"
+              BackgroundColor="{StaticResource ADRIFTLight}"
+              ColumnSpacing="12">
+            <Button Grid.Column="0"
+                    Text="Cancel"
+                    Command="{Binding CancelCommand}"
+                    BackgroundColor="Gray" />
+            <Button Grid.Column="1"
+                    Text="Apply"
+                    Command="{Binding ApplyCommand}"
+                    BackgroundColor="{StaticResource ADRIFTSecondary}"
+                    IsVisible="{Binding IsEditMode}" />
+            <Button Grid.Column="2"
+                    Text="OK"
+                    Command="{Binding SaveAndCloseCommand}"
+                    BackgroundColor="{StaticResource ADRIFTPrimary}" />
+        </Grid>
+    </Grid>
+</ContentPage>
