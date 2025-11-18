@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:vm="clr-namespace:ADRIFT.ViewModels"
-             x:Class="ADRIFT.Views.EventEditorPage"
+             xmlns:vm="clr-namespace:ADRIFT.Developer.ViewModels"
+             x:Class="ADRIFT.Developer.Views.EventEditorPage"
              x:DataType="vm:EventEditorViewModel"
              Title="Event Editor">
     <Grid RowDefinitions="Auto,Auto,*,Auto">

@@ -1,5 +1,5 @@
-using ADRIFT.ViewModels;
-namespace ADRIFT.Views;
+using ADRIFT.Developer.ViewModels;
+namespace ADRIFT.Developer.Views;
 public partial class CharacterListPage : ContentPage
 {
     public CharacterListPage(CharacterListViewModel viewModel) { InitializeComponent(); BindingContext = viewModel; }

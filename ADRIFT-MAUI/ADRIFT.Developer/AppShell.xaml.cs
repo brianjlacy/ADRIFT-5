@@ -7,15 +7,15 @@ public partial class AppShell : Shell
         InitializeComponent();
 
         // Register routes for navigation
-        Routing.RegisterRoute("locationeditor", typeof(Views.LocationEditorPage));
-        Routing.RegisterRoute("objecteditor", typeof(Views.ObjectEditorPage));
-        Routing.RegisterRoute("taskeditor", typeof(Views.TaskEditorPage));
-        Routing.RegisterRoute("charactereditor", typeof(Views.CharacterEditorPage));
-        Routing.RegisterRoute("eventeditor", typeof(Views.EventEditorPage));
-        Routing.RegisterRoute("variableeditor", typeof(Views.VariableEditorPage));
-        Routing.RegisterRoute("synonymeditor", typeof(Views.SynonymEditorPage));
-        Routing.RegisterRoute("groupeditor", typeof(Views.GroupEditorPage));
-        Routing.RegisterRoute("hinteditor", typeof(Views.HintEditorPage));
+        Routing.RegisterRoute("locationeditor", typeof(Developer.Views.LocationEditorPage));
+        Routing.RegisterRoute("objecteditor", typeof(Developer.Views.ObjectEditorPage));
+        Routing.RegisterRoute("taskeditor", typeof(Developer.Views.TaskEditorPage));
+        Routing.RegisterRoute("charactereditor", typeof(Developer.Views.CharacterEditorPage));
+        Routing.RegisterRoute("eventeditor", typeof(Developer.Views.EventEditorPage));
+        Routing.RegisterRoute("variableeditor", typeof(Developer.Views.VariableEditorPage));
+        Routing.RegisterRoute("synonymeditor", typeof(Developer.Views.SynonymEditorPage));
+        Routing.RegisterRoute("groupeditor", typeof(Developer.Views.GroupEditorPage));
+        Routing.RegisterRoute("hinteditor", typeof(Developer.Views.HintEditorPage));
     }
 
     private async void OnNewAdventure(object sender, EventArgs e)

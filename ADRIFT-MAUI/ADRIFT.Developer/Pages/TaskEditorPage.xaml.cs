@@ -1,4 +1,4 @@
-namespace ADRIFT.Views;
+namespace ADRIFT.Developer.Views;
 
 public partial class TaskEditorPage : ContentPage
 {
