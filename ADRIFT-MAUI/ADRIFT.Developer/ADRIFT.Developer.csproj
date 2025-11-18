@@ -85,8 +85,6 @@
     <ProjectReference Include="..\ADRIFT.Core\ADRIFT.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Include="..\ADRIFT-CSharp\ADRIFT\Item Classes\*.cs" Link="Models\%(Filename)%(Extension)" />
-  </ItemGroup>
+  <!-- Using clean .NET 8 models from ADRIFT.Core -->
 
 </Project>

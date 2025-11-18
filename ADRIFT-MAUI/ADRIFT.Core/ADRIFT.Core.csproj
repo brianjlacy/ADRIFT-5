@@ -11,16 +11,7 @@
     <PackageReference Include="SharpZipLib" Version="1.4.2" />
   </ItemGroup>
 
-  <ItemGroup>
-    <!-- Include all core business logic classes from the C# conversion -->
-    <Compile Include="..\..\ADRIFT-CSharp\ADRIFT\Item Classes\*.cs" Link="Models\%(Filename)%(Extension)" />
-    <Compile Include="..\..\ADRIFT-CSharp\ADRIFT\clsAdventure.cs" Link="Core\clsAdventure.cs" />
-    <Compile Include="..\..\ADRIFT-CSharp\ADRIFT\Actions.cs" Link="Core\Actions.cs" />
-    <Compile Include="..\..\ADRIFT-CSharp\ADRIFT\Babel.cs" Link="Core\Babel.cs" />
-    <Compile Include="..\..\ADRIFT-CSharp\ADRIFT\Blorb.cs" Link="Core\Blorb.cs" />
-    <Compile Include="..\..\ADRIFT-CSharp\ADRIFT\FileIO.cs" Link="Core\FileIO.cs" />
-    <Compile Include="..\..\ADRIFT-CSharp\ADRIFT\Global.cs" Link="Core\Global.cs" />
-    <Compile Include="..\..\ADRIFT-CSharp\ADRIFT\StronglyTypedCollections.cs" Link="Core\StronglyTypedCollections.cs" />
-  </ItemGroup>
+  <!-- Using clean .NET 8 models in Models/ directory -->
+  <!-- No references to old VB/C# mixed code -->
 
 </Project>
