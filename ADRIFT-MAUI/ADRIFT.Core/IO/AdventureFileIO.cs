@@ -792,9 +792,261 @@ public static class AdventureFileIO
         }
     }
 
-    // Stub methods for complex entities - to be implemented
-    private static Task ReadTasksAsync(XmlReader reader, Adventure adventure) => Task.CompletedTask;
-    private static Task ReadEventsAsync(XmlReader reader, Adventure adventure) => Task.CompletedTask;
+    private static async Task ReadTasksAsync(XmlReader reader, Adventure adventure)
+    {
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "Tasks")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element && reader.Name == "Task")
+            {
+                var task = await ReadTaskAsync(reader);
+                adventure.Tasks[task.Key] = task;
+            }
+        }
+    }
+
+    private static async Task<Core.Models.Task> ReadTaskAsync(XmlReader reader)
+    {
+        var task = new Core.Models.Task();
+        var key = reader.GetAttribute("Key");
+        if (!string.IsNullOrEmpty(key)) task.Key = key;
+
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "Task")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element)
+            {
+                switch (reader.Name)
+                {
+                    case "Name":
+                        task.Name = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "Description":
+                        task.Description = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "Type":
+                        if (Enum.TryParse<TaskType>(await reader.ReadElementContentAsStringAsync(), out var taskType))
+                            task.Type = taskType;
+                        break;
+                    case "Priority":
+                        task.Priority = await reader.ReadElementContentAsIntAsync();
+                        break;
+                    case "IsRepeatable":
+                        task.IsRepeatable = await reader.ReadElementContentAsBooleanAsync();
+                        break;
+                    case "ScoreValue":
+                        task.ScoreValue = await reader.ReadElementContentAsIntAsync();
+                        break;
+                    case "SuccessMessage":
+                        task.SuccessMessage = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "FailureMessage":
+                        task.FailureMessage = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "Commands":
+                        await ReadTaskCommandsAsync(reader, task);
+                        break;
+                    case "Restrictions":
+                        await ReadStringListAsync(reader, task.Restrictions, "Restrictions", "Restriction");
+                        break;
+                    case "SuccessActions":
+                        await ReadTaskActionsAsync(reader, task.SuccessActions, "SuccessActions");
+                        break;
+                    case "FailureActions":
+                        await ReadTaskActionsAsync(reader, task.FailureActions, "FailureActions");
+                        break;
+                }
+            }
+        }
+
+        return task;
+    }
+
+    private static async Task ReadTaskCommandsAsync(XmlReader reader, Core.Models.Task task)
+    {
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "Commands")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element && reader.Name == "Command")
+            {
+                var taskCommand = new TaskCommand();
+
+                while (await reader.ReadAsync())
+                {
+                    if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "Command")
+                        break;
+
+                    if (reader.NodeType == XmlNodeType.Element)
+                    {
+                        switch (reader.Name)
+                        {
+                            case "CommandText":
+                                taskCommand.Command = await reader.ReadElementContentAsStringAsync();
+                                break;
+                            case "Synonyms":
+                                await ReadStringListAsync(reader, taskCommand.Synonyms, "Synonyms", "Synonym");
+                                break;
+                        }
+                    }
+                }
+
+                task.Commands.Add(taskCommand);
+            }
+        }
+    }
+
+    private static async Task ReadTaskActionsAsync(XmlReader reader, List<TaskAction> actions, string containerName)
+    {
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == containerName)
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element && reader.Name == "Action")
+            {
+                var action = new TaskAction();
+                action.ActionType = reader.GetAttribute("Type") ?? string.Empty;
+
+                while (await reader.ReadAsync())
+                {
+                    if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "Action")
+                        break;
+
+                    if (reader.NodeType == XmlNodeType.Element && reader.Name == "Parameter")
+                    {
+                        var paramName = reader.GetAttribute("Name");
+                        var paramValue = await reader.ReadElementContentAsStringAsync();
+                        if (!string.IsNullOrEmpty(paramName))
+                            action.Parameters[paramName] = paramValue;
+                    }
+                }
+
+                actions.Add(action);
+            }
+        }
+    }
+
+    private static async Task ReadEventsAsync(XmlReader reader, Adventure adventure)
+    {
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "Events")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element && reader.Name == "Event")
+            {
+                var evt = await ReadEventAsync(reader);
+                adventure.Events[evt.Key] = evt;
+            }
+        }
+    }
+
+    private static async Task<Event> ReadEventAsync(XmlReader reader)
+    {
+        var evt = new Event();
+        var key = reader.GetAttribute("Key");
+        if (!string.IsNullOrEmpty(key)) evt.Key = key;
+
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "Event")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element)
+            {
+                switch (reader.Name)
+                {
+                    case "Name":
+                        evt.Name = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "Description":
+                        evt.Description = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "Type":
+                        if (Enum.TryParse<EventType>(await reader.ReadElementContentAsStringAsync(), out var eventType))
+                            evt.Type = eventType;
+                        break;
+                    case "Trigger":
+                        if (Enum.TryParse<TriggerType>(await reader.ReadElementContentAsStringAsync(), out var triggerType))
+                            evt.Trigger = triggerType;
+                        break;
+                    case "DelayTurns":
+                        evt.DelayTurns = await reader.ReadElementContentAsIntAsync();
+                        break;
+                    case "RepeatTurns":
+                        evt.RepeatTurns = await reader.ReadElementContentAsIntAsync();
+                        break;
+                    case "OutputText":
+                        evt.OutputText = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "ParentEventKey":
+                        evt.ParentEventKey = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "TriggerConditions":
+                        await ReadStringListAsync(reader, evt.TriggerConditions, "TriggerConditions", "Condition");
+                        break;
+                    case "SubEventKeys":
+                        await ReadStringListAsync(reader, evt.SubEventKeys, "SubEventKeys", "EventKey");
+                        break;
+                    case "Actions":
+                        await ReadEventActionsAsync(reader, evt);
+                        break;
+                }
+            }
+        }
+
+        return evt;
+    }
+
+    private static async Task ReadEventActionsAsync(XmlReader reader, Event evt)
+    {
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "Actions")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element && reader.Name == "Action")
+            {
+                var action = new EventAction();
+
+                var orderAttr = reader.GetAttribute("Order");
+                if (!string.IsNullOrEmpty(orderAttr) && int.TryParse(orderAttr, out var order))
+                    action.Order = order;
+
+                action.ActionType = reader.GetAttribute("Type") ?? string.Empty;
+
+                while (await reader.ReadAsync())
+                {
+                    if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "Action")
+                        break;
+
+                    if (reader.NodeType == XmlNodeType.Element)
+                    {
+                        switch (reader.Name)
+                        {
+                            case "Description":
+                                action.Description = await reader.ReadElementContentAsStringAsync();
+                                break;
+                            case "Parameter":
+                                var paramName = reader.GetAttribute("Name");
+                                var paramValue = await reader.ReadElementContentAsStringAsync();
+                                if (!string.IsNullOrEmpty(paramName))
+                                    action.Parameters[paramName] = paramValue;
+                                break;
+                        }
+                    }
+                }
+
+                evt.Actions.Add(action);
+            }
+        }
+    }
 
     #endregion
 
@@ -1088,9 +1340,197 @@ public static class AdventureFileIO
         await writer.WriteEndElementAsync(); // Characters
     }
 
-    // Stub write methods for complex entities - to be implemented
-    private static Task WriteTasksAsync(XmlWriter writer, Adventure adventure) => Task.CompletedTask;
-    private static Task WriteEventsAsync(XmlWriter writer, Adventure adventure) => Task.CompletedTask;
+    private static async Task WriteTasksAsync(XmlWriter writer, Adventure adventure)
+    {
+        if (adventure.Tasks.Count == 0) return;
+
+        await writer.WriteStartElementAsync(null, "Tasks", null);
+
+        foreach (var task in adventure.Tasks.Values)
+        {
+            await writer.WriteStartElementAsync(null, "Task", null);
+            await writer.WriteAttributeStringAsync(null, "Key", null, task.Key);
+
+            await writer.WriteElementStringAsync(null, "Name", null, task.Name);
+            await writer.WriteElementStringAsync(null, "Description", null, task.Description);
+            await writer.WriteElementStringAsync(null, "Type", null, task.Type.ToString());
+            await writer.WriteElementStringAsync(null, "Priority", null, task.Priority.ToString());
+
+            if (task.IsRepeatable)
+                await writer.WriteElementStringAsync(null, "IsRepeatable", null, "true");
+            if (task.ScoreValue > 0)
+                await writer.WriteElementStringAsync(null, "ScoreValue", null, task.ScoreValue.ToString());
+
+            if (!string.IsNullOrEmpty(task.SuccessMessage))
+                await writer.WriteElementStringAsync(null, "SuccessMessage", null, task.SuccessMessage);
+            if (!string.IsNullOrEmpty(task.FailureMessage))
+                await writer.WriteElementStringAsync(null, "FailureMessage", null, task.FailureMessage);
+
+            // Write Commands
+            if (task.Commands.Count > 0)
+            {
+                await writer.WriteStartElementAsync(null, "Commands", null);
+                foreach (var command in task.Commands)
+                {
+                    await writer.WriteStartElementAsync(null, "Command", null);
+
+                    await writer.WriteElementStringAsync(null, "CommandText", null, command.Command);
+
+                    if (command.Synonyms.Count > 0)
+                    {
+                        await writer.WriteStartElementAsync(null, "Synonyms", null);
+                        foreach (var synonym in command.Synonyms)
+                        {
+                            await writer.WriteElementStringAsync(null, "Synonym", null, synonym);
+                        }
+                        await writer.WriteEndElementAsync(); // Synonyms
+                    }
+
+                    await writer.WriteEndElementAsync(); // Command
+                }
+                await writer.WriteEndElementAsync(); // Commands
+            }
+
+            // Write Restrictions
+            if (task.Restrictions.Count > 0)
+            {
+                await writer.WriteStartElementAsync(null, "Restrictions", null);
+                foreach (var restriction in task.Restrictions)
+                {
+                    await writer.WriteElementStringAsync(null, "Restriction", null, restriction);
+                }
+                await writer.WriteEndElementAsync(); // Restrictions
+            }
+
+            // Write Success Actions
+            if (task.SuccessActions.Count > 0)
+            {
+                await writer.WriteStartElementAsync(null, "SuccessActions", null);
+                foreach (var action in task.SuccessActions)
+                {
+                    await writer.WriteStartElementAsync(null, "Action", null);
+                    await writer.WriteAttributeStringAsync(null, "Type", null, action.ActionType);
+
+                    foreach (var param in action.Parameters)
+                    {
+                        await writer.WriteStartElementAsync(null, "Parameter", null);
+                        await writer.WriteAttributeStringAsync(null, "Name", null, param.Key);
+                        await writer.WriteStringAsync(param.Value);
+                        await writer.WriteEndElementAsync(); // Parameter
+                    }
+
+                    await writer.WriteEndElementAsync(); // Action
+                }
+                await writer.WriteEndElementAsync(); // SuccessActions
+            }
+
+            // Write Failure Actions
+            if (task.FailureActions.Count > 0)
+            {
+                await writer.WriteStartElementAsync(null, "FailureActions", null);
+                foreach (var action in task.FailureActions)
+                {
+                    await writer.WriteStartElementAsync(null, "Action", null);
+                    await writer.WriteAttributeStringAsync(null, "Type", null, action.ActionType);
+
+                    foreach (var param in action.Parameters)
+                    {
+                        await writer.WriteStartElementAsync(null, "Parameter", null);
+                        await writer.WriteAttributeStringAsync(null, "Name", null, param.Key);
+                        await writer.WriteStringAsync(param.Value);
+                        await writer.WriteEndElementAsync(); // Parameter
+                    }
+
+                    await writer.WriteEndElementAsync(); // Action
+                }
+                await writer.WriteEndElementAsync(); // FailureActions
+            }
+
+            await writer.WriteEndElementAsync(); // Task
+        }
+
+        await writer.WriteEndElementAsync(); // Tasks
+    }
+
+    private static async Task WriteEventsAsync(XmlWriter writer, Adventure adventure)
+    {
+        if (adventure.Events.Count == 0) return;
+
+        await writer.WriteStartElementAsync(null, "Events", null);
+
+        foreach (var evt in adventure.Events.Values)
+        {
+            await writer.WriteStartElementAsync(null, "Event", null);
+            await writer.WriteAttributeStringAsync(null, "Key", null, evt.Key);
+
+            await writer.WriteElementStringAsync(null, "Name", null, evt.Name);
+            await writer.WriteElementStringAsync(null, "Description", null, evt.Description);
+            await writer.WriteElementStringAsync(null, "Type", null, evt.Type.ToString());
+            await writer.WriteElementStringAsync(null, "Trigger", null, evt.Trigger.ToString());
+
+            if (evt.DelayTurns > 0)
+                await writer.WriteElementStringAsync(null, "DelayTurns", null, evt.DelayTurns.ToString());
+            if (evt.RepeatTurns > 0)
+                await writer.WriteElementStringAsync(null, "RepeatTurns", null, evt.RepeatTurns.ToString());
+
+            if (!string.IsNullOrEmpty(evt.OutputText))
+                await writer.WriteElementStringAsync(null, "OutputText", null, evt.OutputText);
+            if (!string.IsNullOrEmpty(evt.ParentEventKey))
+                await writer.WriteElementStringAsync(null, "ParentEventKey", null, evt.ParentEventKey);
+
+            // Write Trigger Conditions
+            if (evt.TriggerConditions.Count > 0)
+            {
+                await writer.WriteStartElementAsync(null, "TriggerConditions", null);
+                foreach (var condition in evt.TriggerConditions)
+                {
+                    await writer.WriteElementStringAsync(null, "Condition", null, condition);
+                }
+                await writer.WriteEndElementAsync(); // TriggerConditions
+            }
+
+            // Write Sub Event Keys
+            if (evt.SubEventKeys.Count > 0)
+            {
+                await writer.WriteStartElementAsync(null, "SubEventKeys", null);
+                foreach (var eventKey in evt.SubEventKeys)
+                {
+                    await writer.WriteElementStringAsync(null, "EventKey", null, eventKey);
+                }
+                await writer.WriteEndElementAsync(); // SubEventKeys
+            }
+
+            // Write Actions
+            if (evt.Actions.Count > 0)
+            {
+                await writer.WriteStartElementAsync(null, "Actions", null);
+                foreach (var action in evt.Actions.OrderBy(a => a.Order))
+                {
+                    await writer.WriteStartElementAsync(null, "Action", null);
+                    await writer.WriteAttributeStringAsync(null, "Order", null, action.Order.ToString());
+                    await writer.WriteAttributeStringAsync(null, "Type", null, action.ActionType);
+
+                    if (!string.IsNullOrEmpty(action.Description))
+                        await writer.WriteElementStringAsync(null, "Description", null, action.Description);
+
+                    foreach (var param in action.Parameters)
+                    {
+                        await writer.WriteStartElementAsync(null, "Parameter", null);
+                        await writer.WriteAttributeStringAsync(null, "Name", null, param.Key);
+                        await writer.WriteStringAsync(param.Value);
+                        await writer.WriteEndElementAsync(); // Parameter
+                    }
+
+                    await writer.WriteEndElementAsync(); // Action
+                }
+                await writer.WriteEndElementAsync(); // Actions
+            }
+
+            await writer.WriteEndElementAsync(); // Event
+        }
+
+        await writer.WriteEndElementAsync(); // Events
+    }
 
     #endregion
 }
