@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using ADRIFT.Core.Models;
 
 namespace ADRIFT.Developer.ViewModels;
 
@@ -190,55 +191,83 @@ public partial class EventEditorViewModel : ObservableObject
 
     public async Task InitializeAsync()
     {
-        // Load available parent events
-        // TODO: Load from adventure service
-        AvailableParentEvents.Add(new EventItemViewModel { Key = "evt1", Name = "Timer Event" });
-        AvailableParentEvents.Add(new EventItemViewModel { Key = "evt2", Name = "Location Change" });
-
-        if (!string.IsNullOrEmpty(EventKey))
+        try
         {
-            // Edit mode - load existing event
-            IsEditMode = true;
-            PageTitle = "Edit Event";
+            var adventure = _adventureService.CurrentAdventure;
+            if (adventure == null) return;
 
-            // TODO: Load event from adventure service
-            // For now, using sample data
-            EventName = "Castle Gate Opens";
-            SelectedEventType = "Triggered";
-            Description = "The castle gate slowly creaks open when the guard is given the password.";
-            SelectedTriggerType = "On Condition";
-            OutputText = "The heavy castle gate swings open with a loud creak.";
+            // Load available parent events
+            AvailableParentEvents.Clear();
+            foreach (var evt in adventure.Events.Values)
+            {
+                AvailableParentEvents.Add(new EventItemViewModel
+                {
+                    Key = evt.Key,
+                    Name = evt.Name
+                });
+            }
 
-            // Sample conditions
-            TriggerConditions.Add(new ConditionViewModel
+            if (!string.IsNullOrEmpty(EventKey) && adventure.Events.TryGetValue(EventKey, out var existingEvent))
             {
-                Description = "Player has said password to guard"
-            });
+                // Edit mode - load existing event
+                IsEditMode = true;
+                PageTitle = "Edit Event";
 
-            // Sample actions
-            EventActions.Add(new EventActionViewModel
+                EventName = existingEvent.Name;
+                Description = existingEvent.Description;
+                SelectedEventType = existingEvent.Type.ToString();
+                SelectedTriggerType = existingEvent.Trigger.ToString();
+                DelayTurns = existingEvent.DelayTurns.ToString();
+                RepeatTurns = existingEvent.RepeatTurns.ToString();
+                OutputText = existingEvent.OutputText;
+
+                // Load parent event
+                if (!string.IsNullOrEmpty(existingEvent.ParentEventKey))
+                {
+                    SelectedParentEvent = AvailableParentEvents.FirstOrDefault(e => e.Key == existingEvent.ParentEventKey);
+                }
+
+                // Load conditions
+                TriggerConditions.Clear();
+                foreach (var condition in existingEvent.TriggerConditions)
+                {
+                    TriggerConditions.Add(new ConditionViewModel
+                    {
+                        Description = condition
+                    });
+                }
+
+                // Load actions
+                EventActions.Clear();
+                foreach (var action in existingEvent.Actions.OrderBy(a => a.Order))
+                {
+                    EventActions.Add(new EventActionViewModel
+                    {
+                        Order = action.Order,
+                        ActionType = action.ActionType,
+                        Description = action.Description
+                    });
+                }
+            }
+            else
             {
-                ActionType = "Move Object",
-                Description = "Move 'castle gate' to 'open' state"
-            });
-            EventActions.Add(new EventActionViewModel
-            {
-                ActionType = "Display Message",
-                Description = "Show gate opening message"
-            });
+                // New event mode
+                EventKey = "evt_" + Guid.NewGuid().ToString("N").Substring(0, 8);
+                IsEditMode = false;
+                PageTitle = "New Event";
+                EventName = "";
+                DelayTurns = "0";
+                RepeatTurns = "0";
+                SelectedEventType = "Triggered";
+                SelectedTriggerType = "OnCondition";
+            }
+
+            UpdateEventSummary();
         }
-        else
+        catch (Exception ex)
         {
-            // New event mode
-            IsEditMode = false;
-            PageTitle = "New Event";
-            EventName = "";
-            DelayTurns = "0";
-            RepeatTurns = "0";
+            await Shell.Current.DisplayAlert("Error", $"Failed to initialize: {ex.Message}", "OK");
         }
-
-        UpdateEventSummary();
-        await Task.CompletedTask;
     }
 
     [RelayCommand]
@@ -365,12 +394,89 @@ public partial class EventEditorViewModel : ObservableObject
 
     private async Task SaveEvent()
     {
-        // TODO: Save event to adventure service
-        await Task.Delay(100);
-
-        if (string.IsNullOrEmpty(EventKey))
+        try
         {
-            EventKey = "evt_" + Guid.NewGuid().ToString("N")[..8];
+            var adventure = _adventureService.CurrentAdventure;
+            if (adventure == null)
+            {
+                await Shell.Current.DisplayAlert("Error", "No adventure loaded", "OK");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(EventKey))
+            {
+                EventKey = "evt_" + Guid.NewGuid().ToString("N").Substring(0, 8);
+            }
+
+            var evt = new Event
+            {
+                Key = EventKey,
+                Name = EventName,
+                Description = Description,
+                OutputText = OutputText,
+                ParentEventKey = SelectedParentEvent?.Key,
+                LastModified = DateTime.Now
+            };
+
+            // Parse event type
+            if (Enum.TryParse<EventType>(SelectedEventType, out var eventType))
+            {
+                evt.Type = eventType;
+            }
+
+            // Parse trigger type
+            if (Enum.TryParse<TriggerType>(SelectedTriggerType, out var triggerType))
+            {
+                evt.Trigger = triggerType;
+            }
+
+            // Parse time values
+            if (int.TryParse(DelayTurns, out var delay))
+            {
+                evt.DelayTurns = delay;
+            }
+
+            if (int.TryParse(RepeatTurns, out var repeat))
+            {
+                evt.RepeatTurns = repeat;
+            }
+
+            // Save conditions
+            evt.TriggerConditions.Clear();
+            foreach (var condition in TriggerConditions)
+            {
+                if (!string.IsNullOrWhiteSpace(condition.Description))
+                {
+                    evt.TriggerConditions.Add(condition.Description);
+                }
+            }
+
+            // Save actions
+            evt.Actions.Clear();
+            foreach (var actionVm in EventActions)
+            {
+                var action = new EventAction
+                {
+                    Order = actionVm.Order,
+                    ActionType = actionVm.ActionType,
+                    Description = actionVm.Description
+                };
+                evt.Actions.Add(action);
+            }
+
+            // Add or update in adventure
+            if (adventure.Events.ContainsKey(EventKey))
+            {
+                adventure.Events[EventKey] = evt;
+            }
+            else
+            {
+                adventure.Events.Add(EventKey, evt);
+            }
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Error", $"Failed to save event: {ex.Message}", "OK");
         }
     }
 }

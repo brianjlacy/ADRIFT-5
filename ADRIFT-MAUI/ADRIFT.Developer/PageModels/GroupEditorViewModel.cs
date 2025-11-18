@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using ADRIFT.Core.Models;
 
 namespace ADRIFT.Developer.ViewModels;
 
@@ -88,125 +89,120 @@ public partial class GroupEditorViewModel : ObservableObject
 
     public async Task InitializeAsync()
     {
-        if (!string.IsNullOrEmpty(GroupKey))
+        try
         {
-            // Edit mode - load existing group
-            IsEditMode = true;
-            PageTitle = "Edit Group";
+            var adventure = _adventureService.CurrentAdventure;
+            if (adventure == null) return;
 
-            // TODO: Load group from adventure service
-            // For now, using sample data
-            GroupName = "Sample Group";
-            SelectedGroupType = "Characters";
-            Description = "This is a sample group for demonstration";
-
-            LoadAvailableMembers();
-
-            // Mark some members as selected
-            if (_allMembers.Count > 0)
+            if (!string.IsNullOrEmpty(GroupKey) && adventure.Groups.TryGetValue(GroupKey, out var existingGroup))
             {
-                _allMembers[0].IsSelected = true;
-                if (_allMembers.Count > 2)
-                    _allMembers[2].IsSelected = true;
+                // Edit mode - load existing group
+                IsEditMode = true;
+                PageTitle = "Edit Group";
+
+                GroupName = existingGroup.Name;
+                SelectedGroupType = existingGroup.Type.ToString();
+                Description = existingGroup.Description;
+
+                // Load available members first
+                LoadAvailableMembers();
+
+                // Mark selected members
+                foreach (var memberKey in existingGroup.MemberKeys)
+                {
+                    var member = _allMembers.FirstOrDefault(m => m.Key == memberKey);
+                    if (member != null)
+                    {
+                        member.IsSelected = true;
+                    }
+                }
+            }
+            else
+            {
+                // New group mode
+                GroupKey = "grp_" + Guid.NewGuid().ToString("N").Substring(0, 8);
+                IsEditMode = false;
+                PageTitle = "New Group";
+                GroupName = "";
+                SelectedGroupType = "Characters";
+                Description = "";
+
+                LoadAvailableMembers();
             }
         }
-        else
+        catch (Exception ex)
         {
-            // New group mode
-            IsEditMode = false;
-            PageTitle = "New Group";
-            GroupName = "";
-            SelectedGroupType = "Characters";
-            Description = "";
-
-            LoadAvailableMembers();
+            await Shell.Current.DisplayAlert("Error", $"Failed to initialize: {ex.Message}", "OK");
         }
-
-        await Task.CompletedTask;
     }
 
     private void LoadAvailableMembers()
     {
-        // TODO: Load actual items from adventure service based on SelectedGroupType
-        // For now, generate sample data
+        var adventure = _adventureService.CurrentAdventure;
+        if (adventure == null) return;
 
         _allMembers.Clear();
 
         switch (SelectedGroupType)
         {
             case "Characters":
-                _allMembers.Add(new GroupMemberItemViewModel(this)
+                foreach (var character in adventure.Characters.Values)
                 {
-                    Key = "char1",
-                    Name = "Guard Captain",
-                    Description = "The leader of the city guard"
-                });
-                _allMembers.Add(new GroupMemberItemViewModel(this)
-                {
-                    Key = "char2",
-                    Name = "Merchant",
-                    Description = "Sells various goods"
-                });
-                _allMembers.Add(new GroupMemberItemViewModel(this)
-                {
-                    Key = "char3",
-                    Name = "Villager",
-                    Description = "A typical village resident"
-                });
+                    _allMembers.Add(new GroupMemberItemViewModel(this)
+                    {
+                        Key = character.Key,
+                        Name = character.FullName,
+                        Description = character.Description
+                    });
+                }
                 break;
 
             case "Objects":
-                _allMembers.Add(new GroupMemberItemViewModel(this)
+                foreach (var obj in adventure.Objects.Values)
                 {
-                    Key = "obj1",
-                    Name = "Golden Key",
-                    Description = "Opens the treasure room"
-                });
-                _allMembers.Add(new GroupMemberItemViewModel(this)
-                {
-                    Key = "obj2",
-                    Name = "Ancient Sword",
-                    Description = "A powerful weapon"
-                });
-                _allMembers.Add(new GroupMemberItemViewModel(this)
-                {
-                    Key = "obj3",
-                    Name = "Health Potion",
-                    Description = "Restores health"
-                });
+                    _allMembers.Add(new GroupMemberItemViewModel(this)
+                    {
+                        Key = obj.Key,
+                        Name = obj.FullName,
+                        Description = obj.ShortDescription
+                    });
+                }
                 break;
 
             case "Locations":
-                _allMembers.Add(new GroupMemberItemViewModel(this)
+                foreach (var location in adventure.Locations.Values)
                 {
-                    Key = "loc1",
-                    Name = "Castle Courtyard",
-                    Description = "The main entrance area"
-                });
-                _allMembers.Add(new GroupMemberItemViewModel(this)
-                {
-                    Key = "loc2",
-                    Name = "Throne Room",
-                    Description = "Where the king holds court"
-                });
+                    _allMembers.Add(new GroupMemberItemViewModel(this)
+                    {
+                        Key = location.Key,
+                        Name = location.ShortDescription,
+                        Description = location.LongDescription
+                    });
+                }
                 break;
 
             case "Tasks":
-                _allMembers.Add(new GroupMemberItemViewModel(this)
+                foreach (var task in adventure.Tasks.Values)
                 {
-                    Key = "task1",
-                    Name = "Open Door",
-                    Description = "Opens the wooden door"
-                });
+                    _allMembers.Add(new GroupMemberItemViewModel(this)
+                    {
+                        Key = task.Key,
+                        Name = task.Name,
+                        Description = task.Description
+                    });
+                }
                 break;
 
             case "Events":
-                _allMembers.Add(new GroupMemberItemViewModel(this)
+                foreach (var evt in adventure.Events.Values)
                 {
-                    Key = "event1",
-                    Name = "Timer Event",
-                    Description = "Triggers after 10 turns"
-                });
+                    _allMembers.Add(new GroupMemberItemViewModel(this)
+                    {
+                        Key = evt.Key,
+                        Name = evt.Name,
+                        Description = evt.Description
+                    });
+                }
                 break;
         }
 
@@ -313,17 +309,54 @@ public partial class GroupEditorViewModel : ObservableObject
 
     private async Task SaveGroup()
     {
-        // TODO: Save group to adventure service
-        // Get selected members
-        var selectedMembers = _allMembers.Where(m => m.IsSelected).Select(m => m.Key).ToList();
-
-        // For now, just a placeholder
-        await Task.Delay(100);
-
-        // If this was a new group, generate a key
-        if (string.IsNullOrEmpty(GroupKey))
+        try
         {
-            GroupKey = "grp_" + Guid.NewGuid().ToString("N")[..8];
+            var adventure = _adventureService.CurrentAdventure;
+            if (adventure == null)
+            {
+                await Shell.Current.DisplayAlert("Error", "No adventure loaded", "OK");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(GroupKey))
+            {
+                GroupKey = "grp_" + Guid.NewGuid().ToString("N").Substring(0, 8);
+            }
+
+            var group = new Group
+            {
+                Key = GroupKey,
+                Name = GroupName,
+                Description = Description,
+                LastModified = DateTime.Now
+            };
+
+            // Parse group type
+            if (Enum.TryParse<GroupType>(SelectedGroupType, out var groupType))
+            {
+                group.Type = groupType;
+            }
+
+            // Get selected members
+            group.MemberKeys.Clear();
+            foreach (var member in _allMembers.Where(m => m.IsSelected))
+            {
+                group.MemberKeys.Add(member.Key);
+            }
+
+            // Add or update in adventure
+            if (adventure.Groups.ContainsKey(GroupKey))
+            {
+                adventure.Groups[GroupKey] = group;
+            }
+            else
+            {
+                adventure.Groups.Add(GroupKey, group);
+            }
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Error", $"Failed to save group: {ex.Message}", "OK");
         }
     }
 }

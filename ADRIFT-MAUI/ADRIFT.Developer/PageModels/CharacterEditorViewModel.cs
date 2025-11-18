@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using ADRIFT.Core.Models;
 
 namespace ADRIFT.Developer.ViewModels;
 
@@ -223,51 +224,70 @@ public partial class CharacterEditorViewModel : ObservableObject
 
     public async Task InitializeAsync()
     {
-        // Load available locations
-        // TODO: Load from adventure service
-        AvailableLocations.Add(new LocationItemViewModel { Key = "loc1", Name = "Town Square" });
-        AvailableLocations.Add(new LocationItemViewModel { Key = "loc2", Name = "Castle Gate" });
-        AvailableLocations.Add(new LocationItemViewModel { Key = "loc3", Name = "Market" });
-
-        if (!string.IsNullOrEmpty(CharacterKey))
+        try
         {
-            // Edit mode - load existing character
-            IsEditMode = true;
-            PageTitle = "Edit Character";
+            var adventure = _adventureService.CurrentAdventure;
+            if (adventure == null) return;
 
-            // TODO: Load character from adventure service
-            // For now, using sample data
-            Prefix = "Captain";
-            Name = "Redbeard";
-            Aliases = "captain, sailor, redbeard";
-            Description = "A grizzled sea captain with a magnificent red beard and a weathered face that tells countless tales of adventure.";
-            SelectedCharacterType = "NPC";
-            PersonalityTraits = "brave, gruff, loyal";
-            SelectedLocation = AvailableLocations.FirstOrDefault();
-            GeneralGreeting = "Ahoy there, landlubber! What brings ye to these parts?";
-
-            // Sample inventory
-            InventoryItems.Add(new InventoryItemViewModel { ObjectName = "Compass" });
-            InventoryItems.Add(new InventoryItemViewModel { ObjectName = "Map" });
-
-            // Sample conversation topics
-            ConversationTopics.Add(new ConversationTopicViewModel
+            // Load available locations
+            AvailableLocations.Clear();
+            foreach (var loc in adventure.Locations.Values)
             {
-                TopicName = "Ship",
-                Response = "Aye, me ship is the finest vessel on the seven seas!"
-            });
-        }
-        else
-        {
-            // New character mode
-            IsEditMode = false;
-            PageTitle = "New Character";
-            Name = "";
-            SelectedCharacterType = "NPC";
-        }
+                AvailableLocations.Add(new LocationItemViewModel(loc));
+            }
 
-        UpdateFullCharacterName();
-        await Task.CompletedTask;
+            if (!string.IsNullOrEmpty(CharacterKey) && adventure.Characters.TryGetValue(CharacterKey, out var existingChar))
+            {
+                // Edit mode - load existing character
+                IsEditMode = true;
+                PageTitle = "Edit Character";
+
+                Prefix = existingChar.Prefix;
+                Name = existingChar.Name;
+                Aliases = string.Join(", ", existingChar.Aliases);
+                Description = existingChar.Description;
+                SelectedCharacterType = existingChar.Type.ToString();
+                PersonalityTraits = existingChar.PersonalityTraits;
+
+                if (!string.IsNullOrEmpty(existingChar.InitialLocationKey))
+                {
+                    SelectedLocation = AvailableLocations.FirstOrDefault(l => l.Key == existingChar.InitialLocationKey);
+                }
+
+                CanMove = existingChar.CanMove;
+                FollowsPlayer = existingChar.FollowsPlayer;
+                GeneralGreeting = existingChar.Greeting;
+
+                // Load inventory
+                InventoryItems.Clear();
+                foreach (var objKey in existingChar.InventoryKeys)
+                {
+                    if (adventure.Objects.TryGetValue(objKey, out var obj))
+                    {
+                        InventoryItems.Add(new InventoryItemViewModel
+                        {
+                            ObjectName = obj.FullName,
+                            ObjectKey = objKey
+                        });
+                    }
+                }
+            }
+            else
+            {
+                // New character mode
+                CharacterKey = "char_" + Guid.NewGuid().ToString("N").Substring(0, 8);
+                IsEditMode = false;
+                PageTitle = "New Character";
+                Name = "";
+                SelectedCharacterType = "NPC";
+            }
+
+            UpdateFullCharacterName();
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Error", $"Failed to initialize: {ex.Message}", "OK");
+        }
     }
 
     [RelayCommand]
@@ -368,12 +388,73 @@ public partial class CharacterEditorViewModel : ObservableObject
 
     private async Task SaveCharacter()
     {
-        // TODO: Save character to adventure service
-        await Task.Delay(100);
-
-        if (string.IsNullOrEmpty(CharacterKey))
+        try
         {
-            CharacterKey = "char_" + Guid.NewGuid().ToString("N")[..8];
+            var adventure = _adventureService.CurrentAdventure;
+            if (adventure == null)
+            {
+                await Shell.Current.DisplayAlert("Error", "No adventure loaded", "OK");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(CharacterKey))
+            {
+                CharacterKey = "char_" + Guid.NewGuid().ToString("N").Substring(0, 8);
+            }
+
+            var character = new Character
+            {
+                Key = CharacterKey,
+                Prefix = Prefix,
+                Name = Name,
+                Description = Description,
+                InitialLocationKey = SelectedLocation?.Key,
+                CanMove = CanMove,
+                FollowsPlayer = FollowsPlayer,
+                Greeting = GeneralGreeting,
+                PersonalityTraits = PersonalityTraits,
+                LastModified = DateTime.Now
+            };
+
+            // Parse aliases
+            if (!string.IsNullOrWhiteSpace(Aliases))
+            {
+                character.Aliases.Clear();
+                foreach (var alias in Aliases.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                {
+                    character.Aliases.Add(alias.Trim());
+                }
+            }
+
+            // Parse character type
+            if (Enum.TryParse<CharacterType>(SelectedCharacterType, out var charType))
+            {
+                character.Type = charType;
+            }
+
+            // Save inventory
+            character.InventoryKeys.Clear();
+            foreach (var item in InventoryItems)
+            {
+                if (!string.IsNullOrEmpty(item.ObjectKey))
+                {
+                    character.InventoryKeys.Add(item.ObjectKey);
+                }
+            }
+
+            // Add or update in adventure
+            if (adventure.Characters.ContainsKey(CharacterKey))
+            {
+                adventure.Characters[CharacterKey] = character;
+            }
+            else
+            {
+                adventure.Characters.Add(CharacterKey, character);
+            }
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Error", $"Failed to save character: {ex.Message}", "OK");
         }
     }
 }
@@ -382,6 +463,9 @@ public partial class InventoryItemViewModel : ObservableObject
 {
     [ObservableProperty]
     private string objectName = "";
+
+    [ObservableProperty]
+    private string objectKey = "";
 }
 
 public partial class WalkStepViewModel : ObservableObject
