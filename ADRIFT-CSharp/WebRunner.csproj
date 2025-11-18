@@ -1,0 +1,57 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>WebRunner</AssemblyName>
+    <RootNamespace>ADRIFT</RootNamespace>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <DefineConstants>$(DefineConstants);www</DefineConstants>
+    <Version>5.0.36.6</Version>
+    <Product>ADRIFT 5 Web Runner</Product>
+    <Copyright>Copyright © Campbell Wild 1998-2025</Copyright>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <DefineConstants>$(DefineConstants);DEBUG;TRACE</DefineConstants>
+    <DebugType>portable</DebugType>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <DefineConstants>$(DefineConstants);TRACE</DefineConstants>
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="ADRIFT\**\*.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- zlib.net replacement for .NET 8 -->
+    <PackageReference Include="SharpZipLib" Version="1.4.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="ADRIFT\**\*.cs" Exclude="ADRIFT\**\*.Designer.cs;ADRIFT\My Project\**;ADRIFT\frmGenerator.cs;ADRIFT\Generator.cs;ADRIFT\frmRunner.cs;ADRIFT\frmMonoRunner.cs;ADRIFT\Runner.cs;ADRIFT\Mono.cs" />
+    <Compile Include="ADRIFT\AssemblyInfo.cs" />
+    <Compile Include="ADRIFT\**\*.aspx.cs" />
+    <Compile Include="ADRIFT\**\*.ascx.cs" />
+    <Compile Include="ADRIFT\**\*.ashx.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="ADRIFT\**\*.aspx" />
+    <Content Include="ADRIFT\**\*.ascx" />
+    <Content Include="ADRIFT\**\*.ashx" />
+    <Content Include="ADRIFT\**\*.asax" />
+    <Content Include="ADRIFT\**\*.master" />
+    <Content Include="ADRIFT\Web.config" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Libraries\**\*.amf" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

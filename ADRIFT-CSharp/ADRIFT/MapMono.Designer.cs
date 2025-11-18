@@ -1,0 +1,324 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace ADRIFT
+{
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _;
+partial class Map
+{
+    Inherits System.Windows.Forms.UserControl;
+
+    'UserControl overrides dispose to clean up the component list.
+    <System.Diagnostics.DebuggerNonUserCode()> _;
+    protected override void Dispose(bool disposing)
+    {
+        try
+        {
+            if (disposing && components IsNot null)
+            {
+                components.Dispose();
+            }
+        }
+        finally
+        {
+            MyBase.Dispose(disposing);
+        }
+    }
+
+    'Required by the Windows Form Designer
+    private System.ComponentModel.IContainer components;
+
+    'NOTE: The following procedure is required by the Windows Form Designer
+    'It can be modified using the Windows Form Designer.
+    'Do not modify it using the code editor.
+    '<System.Diagnostics.DebuggerStepThrough()> _
+    private void InitializeComponent()
+    {
+        Me.components = New System.ComponentModel.Container();
+        private System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(GetType(Map));
+        Me.tabsMap = New System.Windows.Forms.TabControl();
+        Me.txtRename = New System.Windows.Forms.TextBox();
+        Me.imgMap = New System.Windows.Forms.PictureBox();
+        Me.ToolStrip1 = New System.Windows.Forms.ToolStrip();
+        Me.btnAddNode = New System.Windows.Forms.ToolStripButton();
+        Me.btnPlanView = New System.Windows.Forms.ToolStripButton();
+        Me.btnCentralise = New System.Windows.Forms.ToolStripButton();
+        Me.btnZoomIn = New System.Windows.Forms.ToolStripButton();
+        Me.btnZoomOut = New System.Windows.Forms.ToolStripButton();
+        Me.cmsNode = New System.Windows.Forms.ContextMenuStrip(Me.components);
+        Me.miEditLocation = New System.Windows.Forms.ToolStripMenuItem();
+        Me.miRenameLocation = New System.Windows.Forms.ToolStripMenuItem();
+        Me.miDeleteNode = New System.Windows.Forms.ToolStripMenuItem();
+        Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator();
+        Me.miMoveToPage = New System.Windows.Forms.ToolStripMenuItem();
+        Me.miMoveUp = New System.Windows.Forms.ToolStripMenuItem();
+        Me.miMoveDown = New System.Windows.Forms.ToolStripMenuItem();
+        Me.cmsLink = New System.Windows.Forms.ContextMenuStrip(Me.components);
+        Me.miEditLink = New System.Windows.Forms.ToolStripMenuItem();
+        Me.miOneWayLink = New System.Windows.Forms.ToolStripMenuItem();
+        Me.miRestrictions = New System.Windows.Forms.ToolStripMenuItem();
+        Me.ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator();
+        Me.miDeleteLink = New System.Windows.Forms.ToolStripMenuItem();
+        Me.miAddAnchor = New System.Windows.Forms.ToolStripMenuItem();
+        Me.cmsTabs = New System.Windows.Forms.ContextMenuStrip(Me.components);
+        Me.miRenamePage = New System.Windows.Forms.ToolStripMenuItem();
+        Me.TabPage1 = New System.Windows.Forms.TabPage();
+        Me.tabsMap.SuspendLayout();
+        (System.ComponentModel.ISupportInitialize)(Me.imgMap).BeginInit();
+        Me.ToolStrip1.SuspendLayout();
+        Me.cmsNode.SuspendLayout();
+        Me.cmsLink.SuspendLayout();
+        Me.cmsTabs.SuspendLayout();
+        Me.SuspendLayout();
+        '
+        'tabsMap
+        '
+        Me.tabsMap.Alignment = System.Windows.Forms.TabAlignment.Bottom;
+        Me.tabsMap.Controls.Add(Me.TabPage1);
+        Me.tabsMap.Dock = System.Windows.Forms.DockStyle.Fill;
+        Me.tabsMap.Location = New System.Drawing.Point(0, 25);
+        Me.tabsMap.Name = "tabsMap";
+        Me.tabsMap.SelectedIndex = 0;
+        Me.tabsMap.Size = New System.Drawing.Size(266, 229);
+        Me.tabsMap.TabIndex = 0;
+        '
+        'txtRename
+        '
+        Me.txtRename.Anchor = (System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right));
+        Me.txtRename.Location = New System.Drawing.Point(152, -1000);
+        Me.txtRename.Name = "txtRename";
+        Me.txtRename.Size = New System.Drawing.Size(107, 20);
+        Me.txtRename.TabIndex = 1;
+        Me.txtRename.Visible = false;
+        '
+        'imgMap
+        '
+        Me.imgMap.BackColor = System.Drawing.Color.FromArgb((Byte)(CType(222), Integer), (Byte)(CType(254), Integer), (Byte)(CType(230), Integer));
+        Me.imgMap.Dock = System.Windows.Forms.DockStyle.Fill;
+        Me.imgMap.Location = New System.Drawing.Point(0, 0);
+        Me.imgMap.Name = "imgMap";
+        Me.imgMap.Size = New System.Drawing.Size(262, 206);
+        Me.imgMap.TabIndex = 0;
+        Me.imgMap.TabStop = false;
+        '
+        'ToolStrip1
+        '
+        Me.ToolStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.btnAddNode, Me.btnPlanView, Me.btnCentralise, Me.btnZoomIn, Me.btnZoomOut});
+        Me.ToolStrip1.Location = New System.Drawing.Point(0, 0);
+        Me.ToolStrip1.Name = "ToolStrip1";
+        Me.ToolStrip1.Size = New System.Drawing.Size(266, 25);
+        Me.ToolStrip1.TabIndex = 1;
+        Me.ToolStrip1.Text = "ToolStrip1";
+        '
+        'btnAddNode
+        '
+        Me.btnAddNode.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+        Me.btnAddNode.Image = Global.ADRIFT.My.Resources.Resources.imgLocation16;
+        Me.btnAddNode.ImageTransparentColor = System.Drawing.Color.Magenta;
+        Me.btnAddNode.Name = "btnAddNode";
+        Me.btnAddNode.Size = New System.Drawing.Size(23, 22);
+        Me.btnAddNode.Text = "Add Location";
+        '
+        'btnPlanView
+        '
+        Me.btnPlanView.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+        Me.btnPlanView.Image = (System.Drawing.Image)(resources.GetObject("btnPlanView.Image"));
+        Me.btnPlanView.ImageTransparentColor = System.Drawing.Color.Magenta;
+        Me.btnPlanView.Name = "btnPlanView";
+        Me.btnPlanView.Size = New System.Drawing.Size(23, 22);
+        Me.btnPlanView.Text = "Reset map to plan view";
+        '
+        'btnCentralise
+        '
+        Me.btnCentralise.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+        Me.btnCentralise.Image = (System.Drawing.Image)(resources.GetObject("btnCentralise.Image"));
+        Me.btnCentralise.ImageTransparentColor = System.Drawing.Color.Magenta;
+        Me.btnCentralise.Name = "btnCentralise";
+        Me.btnCentralise.Size = New System.Drawing.Size(23, 22);
+        Me.btnCentralise.Text = "Centralise Map";
+        '
+        'btnZoomIn
+        '
+        Me.btnZoomIn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+        Me.btnZoomIn.Image = Global.ADRIFT.My.Resources.Resources.imgZoomIn16;
+        Me.btnZoomIn.ImageTransparentColor = System.Drawing.Color.Magenta;
+        Me.btnZoomIn.Name = "btnZoomIn";
+        Me.btnZoomIn.Size = New System.Drawing.Size(23, 22);
+        Me.btnZoomIn.Text = "Zoom In";
+        '
+        'btnZoomOut
+        '
+        Me.btnZoomOut.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+        Me.btnZoomOut.Image = Global.ADRIFT.My.Resources.Resources.imgZoomOut16;
+        Me.btnZoomOut.ImageTransparentColor = System.Drawing.Color.Magenta;
+        Me.btnZoomOut.Name = "btnZoomOut";
+        Me.btnZoomOut.Size = New System.Drawing.Size(23, 22);
+        Me.btnZoomOut.Text = "Zoom Out";
+        '
+        'cmsNode
+        '
+        Me.cmsNode.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.miEditLocation, Me.miRenameLocation, Me.miDeleteNode, Me.ToolStripSeparator1, Me.miMoveToPage, Me.miMoveUp, Me.miMoveDown});
+        Me.cmsNode.Name = "cmsMap";
+        Me.cmsNode.Size = New System.Drawing.Size(181, 142);
+        '
+        'miEditLocation
+        '
+        Me.miEditLocation.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold);
+        Me.miEditLocation.Name = "miEditLocation";
+        Me.miEditLocation.Size = New System.Drawing.Size(180, 22);
+        Me.miEditLocation.Text = "Edit Location";
+        '
+        'miRenameLocation
+        '
+        Me.miRenameLocation.Name = "miRenameLocation";
+        Me.miRenameLocation.Size = New System.Drawing.Size(180, 22);
+        Me.miRenameLocation.Text = "Rename Location";
+        '
+        'miDeleteNode
+        '
+        Me.miDeleteNode.Image = Global.ADRIFT.My.Resources.Resources.imgDelete;
+        Me.miDeleteNode.Name = "miDeleteNode";
+        Me.miDeleteNode.Size = New System.Drawing.Size(180, 22);
+        Me.miDeleteNode.Text = "Delete Location";
+        '
+        'ToolStripSeparator1
+        '
+        Me.ToolStripSeparator1.Name = "ToolStripSeparator1";
+        Me.ToolStripSeparator1.Size = New System.Drawing.Size(177, 6);
+        '
+        'miMoveToPage
+        '
+        Me.miMoveToPage.Name = "miMoveToPage";
+        Me.miMoveToPage.Size = New System.Drawing.Size(180, 22);
+        Me.miMoveToPage.Text = "Move to page";
+        '
+        'miMoveUp
+        '
+        Me.miMoveUp.Name = "miMoveUp";
+        Me.miMoveUp.ShortcutKeys = (System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.U));
+        Me.miMoveUp.Size = New System.Drawing.Size(180, 22);
+        Me.miMoveUp.Text = "Move Up";
+        '
+        'miMoveDown
+        '
+        Me.miMoveDown.Name = "miMoveDown";
+        Me.miMoveDown.ShortcutKeys = (System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D));
+        Me.miMoveDown.Size = New System.Drawing.Size(180, 22);
+        Me.miMoveDown.Text = "Move Down";
+        '
+        'cmsLink
+        '
+        Me.cmsLink.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.miEditLink, Me.miOneWayLink, Me.miRestrictions, Me.ToolStripSeparator2, Me.miDeleteLink, Me.miAddAnchor});
+        Me.cmsLink.Name = "cmsLink";
+        Me.cmsLink.Size = New System.Drawing.Size(161, 120);
+        '
+        'miEditLink
+        '
+        Me.miEditLink.Name = "miEditLink";
+        Me.miEditLink.Size = New System.Drawing.Size(160, 22);
+        Me.miEditLink.Text = "Edit Link";
+        '
+        'miOneWayLink
+        '
+        Me.miOneWayLink.Name = "miOneWayLink";
+        Me.miOneWayLink.Size = New System.Drawing.Size(160, 22);
+        Me.miOneWayLink.Text = "One-way Link";
+        '
+        'miRestrictions
+        '
+        Me.miRestrictions.Name = "miRestrictions";
+        Me.miRestrictions.Size = New System.Drawing.Size(160, 22);
+        Me.miRestrictions.Text = "Add Restrictions";
+        '
+        'ToolStripSeparator2
+        '
+        Me.ToolStripSeparator2.Name = "ToolStripSeparator2";
+        Me.ToolStripSeparator2.Size = New System.Drawing.Size(157, 6);
+        '
+        'miDeleteLink
+        '
+        Me.miDeleteLink.Image = Global.ADRIFT.My.Resources.Resources.imgDelete;
+        Me.miDeleteLink.Name = "miDeleteLink";
+        Me.miDeleteLink.Size = New System.Drawing.Size(160, 22);
+        Me.miDeleteLink.Text = "Delete Link";
+        '
+        'miAddAnchor
+        '
+        Me.miAddAnchor.Name = "miAddAnchor";
+        Me.miAddAnchor.Size = New System.Drawing.Size(160, 22);
+        Me.miAddAnchor.Text = "Add Anchor";
+        '
+        'cmsTabs
+        '
+        Me.cmsTabs.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.miRenamePage});
+        Me.cmsTabs.Name = "cmsTabs";
+        Me.cmsTabs.Size = New System.Drawing.Size(147, 26);
+        '
+        'miRenamePage
+        '
+        Me.miRenamePage.Name = "miRenamePage";
+        Me.miRenamePage.Size = New System.Drawing.Size(146, 22);
+        Me.miRenamePage.Text = "Rename Page";
+        '
+        'TabPage1
+        '
+        Me.TabPage1.Location = New System.Drawing.Point(4, 4);
+        Me.TabPage1.Name = "TabPage1";
+        Me.TabPage1.Padding = New System.Windows.Forms.Padding(3);
+        Me.TabPage1.Size = New System.Drawing.Size(258, 203);
+        Me.TabPage1.TabIndex = 0;
+        Me.TabPage1.Text = "TabPage1";
+        Me.TabPage1.UseVisualStyleBackColor = true;
+        '
+        'Map
+        '
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!);
+        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+        Me.Controls.Add(Me.tabsMap);
+        Me.Controls.Add(Me.ToolStrip1);
+        Me.Name = "Map";
+        Me.Size = New System.Drawing.Size(266, 254);
+        Me.tabsMap.ResumeLayout(false);
+        (System.ComponentModel.ISupportInitialize)(Me.imgMap).EndInit();
+        Me.ToolStrip1.ResumeLayout(false);
+        Me.ToolStrip1.PerformLayout();
+        Me.cmsNode.ResumeLayout(false);
+        Me.cmsLink.ResumeLayout(false);
+        Me.cmsTabs.ResumeLayout(false);
+        Me.ResumeLayout(false);
+        Me.PerformLayout();
+
+    }
+    Friend WithEvents tabsMap As Windows.Forms.TabControl ' Infragistics.Win.UltraWinTabControl.UltraTabControl;
+    'Friend WithEvents tabSharedPage As Infragistics.Win.UltraWinTabControl.UltraTabSharedControlsPage
+    Friend WithEvents imgMap As System.Windows.Forms.PictureBox;
+    Friend WithEvents ToolStrip1 As System.Windows.Forms.ToolStrip;
+    Friend WithEvents btnPlanView As System.Windows.Forms.ToolStripButton;
+    Friend WithEvents btnCentralise As System.Windows.Forms.ToolStripButton;
+    Friend WithEvents cmsNode As System.Windows.Forms.ContextMenuStrip;
+    Friend WithEvents miMoveUp As System.Windows.Forms.ToolStripMenuItem;
+    Friend WithEvents miMoveDown As System.Windows.Forms.ToolStripMenuItem;
+    Friend WithEvents miEditLocation As System.Windows.Forms.ToolStripMenuItem;
+    Friend WithEvents ToolStripSeparator1 As System.Windows.Forms.ToolStripSeparator;
+    Friend WithEvents btnZoomIn As System.Windows.Forms.ToolStripButton;
+    Friend WithEvents btnZoomOut As System.Windows.Forms.ToolStripButton;
+    Friend WithEvents miDeleteNode As System.Windows.Forms.ToolStripMenuItem;
+    Friend WithEvents cmsLink As System.Windows.Forms.ContextMenuStrip;
+    Friend WithEvents miEditLink As System.Windows.Forms.ToolStripMenuItem;
+    Friend WithEvents miDeleteLink As System.Windows.Forms.ToolStripMenuItem;
+    Friend WithEvents miAddAnchor As System.Windows.Forms.ToolStripMenuItem;
+    Friend WithEvents btnAddNode As System.Windows.Forms.ToolStripButton;
+    Friend WithEvents miRenameLocation As System.Windows.Forms.ToolStripMenuItem;
+    Friend WithEvents txtRename As System.Windows.Forms.TextBox;
+    Friend WithEvents miOneWayLink As System.Windows.Forms.ToolStripMenuItem;
+    Friend WithEvents miRestrictions As System.Windows.Forms.ToolStripMenuItem;
+    Friend WithEvents ToolStripSeparator2 As System.Windows.Forms.ToolStripSeparator;
+    Friend WithEvents miMoveToPage As System.Windows.Forms.ToolStripMenuItem;
+    Friend WithEvents cmsTabs As System.Windows.Forms.ContextMenuStrip;
+    Friend WithEvents miRenamePage As System.Windows.Forms.ToolStripMenuItem;
+    Friend WithEvents TabPage1 As System.Windows.Forms.TabPage;
+
+}
+
+}

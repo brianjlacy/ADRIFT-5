@@ -1,0 +1,1252 @@
+using Infragistics.Win.UltraWinTree;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace ADRIFT
+{
+
+
+public class frmCharacter
+{
+    Inherits System.Windows.Forms.Form;
+
+#Region " Windows Form Designer generated code "
+
+    public bool bKeepOpen = false;
+
+    public void New(ref ch As clsCharacter, bool bShow)
+    {
+        MyBase.New();
+
+        ' Check that this window isn't already open
+        For Each w As Form In OpenForms
+            if (TypeOf w Is frmCharacter)
+            {
+                if (CType(w, frmCharacter).cCharacter.Key = ch.Key && ch.Key IsNot null)
+                {
+                    w.BringToFront();
+                    w.Focus();
+                    Exit Sub;
+                }
+            }
+        Next;
+
+        'This call is required by the Windows Form Designer.
+        InitializeComponent();
+
+        'Add any initialization after the InitializeComponent() call
+        LoadForm(ch, bShow);
+        bKeepOpen = Not bShow
+
+    }
+
+    'Form overrides dispose to clean up the component list.
+    Protected Overloads Overrides Sub Dispose(ByVal disposing As Boolean)
+        if (disposing)
+        {
+            if (Not (components Is null))
+            {
+                components.Dispose();
+            }
+        }
+        MyBase.Dispose(disposing);
+    }
+
+    'Required by the Windows Form Designer
+    private System.ComponentModel.IContainer components;
+
+    'NOTE: The following procedure is required by the Windows Form Designer
+    'It can be modified using the Windows Form Designer.
+    'Do not modify it using the code editor.
+    Friend WithEvents UltraStatusBar1 As Infragistics.Win.UltraWinStatusBar.UltraStatusBar;
+    Friend WithEvents btnApply As Infragistics.Win.Misc.UltraButton;
+    Friend WithEvents btnCancel As Infragistics.Win.Misc.UltraButton;
+    Friend WithEvents btnOK As Infragistics.Win.Misc.UltraButton;
+    Friend WithEvents tabsCharacters As Infragistics.Win.UltraWinTabControl.UltraTabControl;
+    Friend WithEvents UltraTabSharedControlsPage1 As Infragistics.Win.UltraWinTabControl.UltraTabSharedControlsPage;
+    Friend WithEvents UltraTabPageControl1 As Infragistics.Win.UltraWinTabControl.UltraTabPageControl;
+    Friend WithEvents UltraTabPageControl2 As Infragistics.Win.UltraWinTabControl.UltraTabPageControl;
+    Friend WithEvents Properties1 As ADRIFT.Properties;
+    Friend WithEvents txtDescription As ADRIFT.GenTextbox;
+    Friend WithEvents lblNouns As Infragistics.Win.Misc.UltraLabel;
+    Friend WithEvents HelpProvider1 As System.Windows.Forms.HelpProvider;
+    Friend WithEvents UltraTabPageControl3 As Infragistics.Win.UltraWinTabControl.UltraTabPageControl;
+    Friend WithEvents UltraTabPageControl4 As Infragistics.Win.UltraWinTabControl.UltraTabPageControl;
+    Friend WithEvents UltraTabPageControl5 As Infragistics.Win.UltraWinTabControl.UltraTabPageControl;
+    Friend WithEvents lstWalks As System.Windows.Forms.ListBox;
+    Friend WithEvents btnAddWalk As Infragistics.Win.Misc.UltraButton;
+    Friend WithEvents btnRemoveWalk As Infragistics.Win.Misc.UltraButton;
+    Friend WithEvents btnEditWalk As Infragistics.Win.Misc.UltraButton;
+    Friend WithEvents treeTopics As Infragistics.Win.UltraWinTree.UltraTree;
+    Friend WithEvents btnAddTopic As Infragistics.Win.Misc.UltraButton;
+    Friend WithEvents btnRemoveTopic As Infragistics.Win.Misc.UltraButton;
+    Friend WithEvents btnEditTopic As Infragistics.Win.Misc.UltraButton;
+    Friend WithEvents txtPrefix As Infragistics.Win.UltraWinEditors.UltraTextEditor;
+    Friend WithEvents txtArticle As Infragistics.Win.UltraWinEditors.UltraTextEditor;
+    Friend WithEvents cmbShortDescriptions As Infragistics.Win.UltraWinEditors.UltraComboEditor;
+    Friend WithEvents UltraLabel2 As Infragistics.Win.Misc.UltraLabel;
+    Friend WithEvents lblPrefix As Infragistics.Win.Misc.UltraLabel;
+    Friend WithEvents lblArticle As Infragistics.Win.Misc.UltraLabel;
+    Friend WithEvents txtProperName As Infragistics.Win.UltraWinEditors.UltraTextEditor;
+    Friend WithEvents UltraLabel1 As Infragistics.Win.Misc.UltraLabel;
+    <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent();
+        private System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(GetType(frmCharacter));
+        private Infragistics.Win.UltraWinTree.Override Override1 = new Infragistics.Win.UltraWinTree.Override();
+        private Infragistics.Win.UltraWinTabControl.UltraTab UltraTab1 = new Infragistics.Win.UltraWinTabControl.UltraTab();
+        private Infragistics.Win.UltraWinTabControl.UltraTab UltraTab2 = new Infragistics.Win.UltraWinTabControl.UltraTab();
+        private Infragistics.Win.UltraWinTabControl.UltraTab UltraTab3 = new Infragistics.Win.UltraWinTabControl.UltraTab();
+        private Infragistics.Win.UltraWinTabControl.UltraTab UltraTab5 = new Infragistics.Win.UltraWinTabControl.UltraTab();
+        Me.UltraTabPageControl1 = New Infragistics.Win.UltraWinTabControl.UltraTabPageControl();
+        Me.txtProperName = New Infragistics.Win.UltraWinEditors.UltraTextEditor();
+        Me.txtPrefix = New Infragistics.Win.UltraWinEditors.UltraTextEditor();
+        Me.txtArticle = New Infragistics.Win.UltraWinEditors.UltraTextEditor();
+        Me.cmbShortDescriptions = New Infragistics.Win.UltraWinEditors.UltraComboEditor();
+        Me.UltraLabel2 = New Infragistics.Win.Misc.UltraLabel();
+        Me.lblPrefix = New Infragistics.Win.Misc.UltraLabel();
+        Me.lblArticle = New Infragistics.Win.Misc.UltraLabel();
+        Me.txtDescription = New ADRIFT.GenTextbox();
+        Me.UltraLabel1 = New Infragistics.Win.Misc.UltraLabel();
+        Me.lblNouns = New Infragistics.Win.Misc.UltraLabel();
+        Me.UltraTabPageControl2 = New Infragistics.Win.UltraWinTabControl.UltraTabPageControl();
+        Me.Properties1 = New ADRIFT.Properties();
+        Me.UltraTabPageControl3 = New Infragistics.Win.UltraWinTabControl.UltraTabPageControl();
+        Me.btnAddWalk = New Infragistics.Win.Misc.UltraButton();
+        Me.btnRemoveWalk = New Infragistics.Win.Misc.UltraButton();
+        Me.btnEditWalk = New Infragistics.Win.Misc.UltraButton();
+        Me.lstWalks = New System.Windows.Forms.ListBox();
+        Me.UltraTabPageControl5 = New Infragistics.Win.UltraWinTabControl.UltraTabPageControl();
+        Me.btnAddTopic = New Infragistics.Win.Misc.UltraButton();
+        Me.btnRemoveTopic = New Infragistics.Win.Misc.UltraButton();
+        Me.btnEditTopic = New Infragistics.Win.Misc.UltraButton();
+        Me.treeTopics = New Infragistics.Win.UltraWinTree.UltraTree();
+        Me.UltraTabPageControl4 = New Infragistics.Win.UltraWinTabControl.UltraTabPageControl();
+        Me.UltraStatusBar1 = New Infragistics.Win.UltraWinStatusBar.UltraStatusBar();
+        Me.btnApply = New Infragistics.Win.Misc.UltraButton();
+        Me.btnCancel = New Infragistics.Win.Misc.UltraButton();
+        Me.btnOK = New Infragistics.Win.Misc.UltraButton();
+        Me.tabsCharacters = New Infragistics.Win.UltraWinTabControl.UltraTabControl();
+        Me.UltraTabSharedControlsPage1 = New Infragistics.Win.UltraWinTabControl.UltraTabSharedControlsPage();
+        Me.HelpProvider1 = New System.Windows.Forms.HelpProvider();
+        Me.UltraTabPageControl1.SuspendLayout();
+        (System.ComponentModel.ISupportInitialize)(Me.txtProperName).BeginInit();
+        (System.ComponentModel.ISupportInitialize)(Me.txtPrefix).BeginInit();
+        (System.ComponentModel.ISupportInitialize)(Me.txtArticle).BeginInit();
+        (System.ComponentModel.ISupportInitialize)(Me.cmbShortDescriptions).BeginInit();
+        Me.UltraTabPageControl2.SuspendLayout();
+        Me.UltraTabPageControl3.SuspendLayout();
+        Me.UltraTabPageControl5.SuspendLayout();
+        (System.ComponentModel.ISupportInitialize)(Me.treeTopics).BeginInit();
+        (System.ComponentModel.ISupportInitialize)(Me.UltraStatusBar1).BeginInit();
+        (System.ComponentModel.ISupportInitialize)(Me.tabsCharacters).BeginInit();
+        Me.tabsCharacters.SuspendLayout();
+        Me.SuspendLayout();
+        '
+        'UltraTabPageControl1
+        '
+        Me.UltraTabPageControl1.Controls.Add(Me.txtProperName);
+        Me.UltraTabPageControl1.Controls.Add(Me.txtPrefix);
+        Me.UltraTabPageControl1.Controls.Add(Me.txtArticle);
+        Me.UltraTabPageControl1.Controls.Add(Me.cmbShortDescriptions);
+        Me.UltraTabPageControl1.Controls.Add(Me.UltraLabel2);
+        Me.UltraTabPageControl1.Controls.Add(Me.lblPrefix);
+        Me.UltraTabPageControl1.Controls.Add(Me.lblArticle);
+        Me.UltraTabPageControl1.Controls.Add(Me.txtDescription);
+        Me.UltraTabPageControl1.Controls.Add(Me.UltraLabel1);
+        Me.UltraTabPageControl1.Controls.Add(Me.lblNouns);
+        Me.UltraTabPageControl1.Location = New System.Drawing.Point(-10000, -10000);
+        Me.UltraTabPageControl1.Name = "UltraTabPageControl1";
+        Me.UltraTabPageControl1.Size = New System.Drawing.Size(548, 396);
+        '
+        'txtProperName
+        '
+        Me.txtProperName.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) _;
+            | System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles);
+        Me.txtProperName.Font = New System.Drawing.Font("Arial", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (Byte)(0));
+        Me.HelpProvider1.SetHelpString(Me.txtProperName, "This is the character's actual name");
+        Me.txtProperName.Location = New System.Drawing.Point(9, 24);
+        Me.txtProperName.Name = "txtProperName";
+        Me.HelpProvider1.SetShowHelp(Me.txtProperName, true);
+        Me.txtProperName.Size = New System.Drawing.Size(533, 26);
+        Me.txtProperName.TabIndex = 0;
+        Me.txtProperName.Text = "old";
+        '
+        'txtPrefix
+        '
+        Me.txtPrefix.Font = New System.Drawing.Font("Arial", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (Byte)(0));
+        Me.HelpProvider1.SetHelpString(Me.txtPrefix, resources.GetString("txtPrefix.HelpString"));
+        Me.txtPrefix.Location = New System.Drawing.Point(111, 72);
+        Me.txtPrefix.Name = "txtPrefix";
+        Me.HelpProvider1.SetShowHelp(Me.txtPrefix, true);
+        Me.txtPrefix.Size = New System.Drawing.Size(208, 26);
+        Me.txtPrefix.TabIndex = 2;
+        Me.txtPrefix.Text = "old";
+        '
+        'txtArticle
+        '
+        Me.txtArticle.Font = New System.Drawing.Font("Arial", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (Byte)(0));
+        Me.HelpProvider1.SetHelpString(Me.txtArticle, resources.GetString("txtArticle.HelpString"));
+        Me.txtArticle.Location = New System.Drawing.Point(9, 72);
+        Me.txtArticle.Name = "txtArticle";
+        Me.HelpProvider1.SetShowHelp(Me.txtArticle, true);
+        Me.txtArticle.Size = New System.Drawing.Size(96, 26);
+        Me.txtArticle.TabIndex = 1;
+        Me.txtArticle.Text = "an";
+        '
+        'cmbShortDescriptions
+        '
+        Me.cmbShortDescriptions.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) _;
+            | System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles);
+        Me.cmbShortDescriptions.Font = New System.Drawing.Font("Arial", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (Byte)(0));
+        Me.cmbShortDescriptions.Location = New System.Drawing.Point(325, 72);
+        Me.cmbShortDescriptions.Name = "cmbShortDescriptions";
+        Me.cmbShortDescriptions.Size = New System.Drawing.Size(217, 26);
+        Me.cmbShortDescriptions.TabIndex = 3;
+        '
+        'UltraLabel2
+        '
+        Me.UltraLabel2.BackColorInternal = System.Drawing.Color.Transparent;
+        Me.HelpProvider1.SetHelpString(Me.UltraLabel2, "The short descriptor, or noun, is what the character is, for example, ""man"", ""lad" + _;
+        "y"", ""dog"" etc.");
+        Me.UltraLabel2.Location = New System.Drawing.Point(325, 56);
+        Me.UltraLabel2.Name = "UltraLabel2";
+        Me.HelpProvider1.SetShowHelp(Me.UltraLabel2, true);
+        Me.UltraLabel2.Size = New System.Drawing.Size(138, 16);
+        Me.UltraLabel2.TabIndex = 25;
+        Me.UltraLabel2.Text = "Descriptor/Noun:";
+        '
+        'lblPrefix
+        '
+        Me.lblPrefix.BackColorInternal = System.Drawing.Color.Transparent;
+        Me.lblPrefix.Location = New System.Drawing.Point(111, 56);
+        Me.lblPrefix.Name = "lblPrefix";
+        Me.lblPrefix.Size = New System.Drawing.Size(88, 16);
+        Me.lblPrefix.TabIndex = 24;
+        Me.lblPrefix.Text = "Prefix/Adjective:";
+        '
+        'lblArticle
+        '
+        Me.lblArticle.BackColorInternal = System.Drawing.Color.Transparent;
+        Me.lblArticle.Location = New System.Drawing.Point(10, 56);
+        Me.lblArticle.Name = "lblArticle";
+        Me.lblArticle.Size = New System.Drawing.Size(100, 23);
+        Me.lblArticle.TabIndex = 23;
+        Me.lblArticle.Text = "Article:";
+        '
+        'txtDescription
+        '
+        Me.txtDescription.AllowAlternateDescriptions = true;
+        Me.txtDescription.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) _;
+            | System.Windows.Forms.AnchorStyles.Left) _;
+            | System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles);
+        Me.txtDescription.BackColor = System.Drawing.SystemColors.ControlLight;
+        Me.txtDescription.FirstTabHasRestrictions = false;
+        Me.txtDescription.Location = New System.Drawing.Point(8, 119);
+        Me.txtDescription.Name = "txtDescription";
+        Me.txtDescription.sCommand = null;
+        Me.txtDescription.Size = New System.Drawing.Size(536, 262);
+        Me.txtDescription.TabIndex = 4;
+        '
+        'UltraLabel1
+        '
+        Me.UltraLabel1.BackColorInternal = System.Drawing.Color.Transparent;
+        Me.UltraLabel1.Location = New System.Drawing.Point(8, 104);
+        Me.UltraLabel1.Name = "UltraLabel1";
+        Me.UltraLabel1.Size = New System.Drawing.Size(100, 23);
+        Me.UltraLabel1.TabIndex = 19;
+        Me.UltraLabel1.Text = "Description:";
+        '
+        'lblNouns
+        '
+        Me.lblNouns.BackColorInternal = System.Drawing.Color.Transparent;
+        Me.lblNouns.Location = New System.Drawing.Point(8, 8);
+        Me.lblNouns.Name = "lblNouns";
+        Me.lblNouns.Size = New System.Drawing.Size(88, 16);
+        Me.lblNouns.TabIndex = 18;
+        Me.lblNouns.Text = "Proper Name:";
+        '
+        'UltraTabPageControl2
+        '
+        Me.UltraTabPageControl2.Controls.Add(Me.Properties1);
+        Me.UltraTabPageControl2.Location = New System.Drawing.Point(-10000, -10000);
+        Me.UltraTabPageControl2.Name = "UltraTabPageControl2";
+        Me.UltraTabPageControl2.Size = New System.Drawing.Size(548, 396);
+        '
+        'Properties1
+        '
+        Me.Properties1.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) _;
+            | System.Windows.Forms.AnchorStyles.Left) _;
+            | System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles);
+        Me.Properties1.BackColor = System.Drawing.Color.Transparent;
+        Me.Properties1.Location = New System.Drawing.Point(8, 8);
+        Me.Properties1.Name = "Properties1";
+        Me.Properties1.Size = New System.Drawing.Size(536, 384);
+        Me.Properties1.TabIndex = 0;
+        '
+        'UltraTabPageControl3
+        '
+        Me.UltraTabPageControl3.Controls.Add(Me.btnAddWalk);
+        Me.UltraTabPageControl3.Controls.Add(Me.btnRemoveWalk);
+        Me.UltraTabPageControl3.Controls.Add(Me.btnEditWalk);
+        Me.UltraTabPageControl3.Controls.Add(Me.lstWalks);
+        Me.UltraTabPageControl3.Location = New System.Drawing.Point(1, 23);
+        Me.UltraTabPageControl3.Name = "UltraTabPageControl3";
+        Me.UltraTabPageControl3.Size = New System.Drawing.Size(548, 396);
+        '
+        'btnAddWalk
+        '
+        Me.btnAddWalk.Anchor = (System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
+        Me.btnAddWalk.Location = New System.Drawing.Point(188, 358);
+        Me.btnAddWalk.Name = "btnAddWalk";
+        Me.btnAddWalk.Size = New System.Drawing.Size(112, 21);
+        Me.btnAddWalk.TabIndex = 1;
+        Me.btnAddWalk.Text = "Add Walk";
+        '
+        'btnRemoveWalk
+        '
+        Me.btnRemoveWalk.Anchor = (System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
+        Me.btnRemoveWalk.Enabled = false;
+        Me.btnRemoveWalk.Location = New System.Drawing.Point(424, 358);
+        Me.btnRemoveWalk.Name = "btnRemoveWalk";
+        Me.btnRemoveWalk.Size = New System.Drawing.Size(112, 21);
+        Me.btnRemoveWalk.TabIndex = 3;
+        Me.btnRemoveWalk.Text = "Remove Walk";
+        '
+        'btnEditWalk
+        '
+        Me.btnEditWalk.Anchor = (System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
+        Me.btnEditWalk.Enabled = false;
+        Me.btnEditWalk.Location = New System.Drawing.Point(306, 358);
+        Me.btnEditWalk.Name = "btnEditWalk";
+        Me.btnEditWalk.Size = New System.Drawing.Size(112, 21);
+        Me.btnEditWalk.TabIndex = 2;
+        Me.btnEditWalk.Text = "Edit Walk";
+        '
+        'lstWalks
+        '
+        Me.lstWalks.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) _;
+            | System.Windows.Forms.AnchorStyles.Left) _;
+            | System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles);
+        Me.lstWalks.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (Byte)(0));
+        Me.lstWalks.FormattingEnabled = true;
+        Me.lstWalks.IntegralHeight = false;
+        Me.lstWalks.ItemHeight = 18;
+        Me.lstWalks.Location = New System.Drawing.Point(11, 12);
+        Me.lstWalks.Name = "lstWalks";
+        Me.lstWalks.Size = New System.Drawing.Size(524, 340);
+        Me.lstWalks.TabIndex = 0;
+        '
+        'UltraTabPageControl5
+        '
+        Me.UltraTabPageControl5.Controls.Add(Me.btnAddTopic);
+        Me.UltraTabPageControl5.Controls.Add(Me.btnRemoveTopic);
+        Me.UltraTabPageControl5.Controls.Add(Me.btnEditTopic);
+        Me.UltraTabPageControl5.Controls.Add(Me.treeTopics);
+        Me.UltraTabPageControl5.Location = New System.Drawing.Point(-10000, -10000);
+        Me.UltraTabPageControl5.Name = "UltraTabPageControl5";
+        Me.UltraTabPageControl5.Size = New System.Drawing.Size(548, 396);
+        '
+        'btnAddTopic
+        '
+        Me.btnAddTopic.Anchor = (System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
+        Me.btnAddTopic.Location = New System.Drawing.Point(188, 358);
+        Me.btnAddTopic.Name = "btnAddTopic";
+        Me.btnAddTopic.Size = New System.Drawing.Size(112, 21);
+        Me.btnAddTopic.TabIndex = 1;
+        Me.btnAddTopic.Text = "Add Topic";
+        '
+        'btnRemoveTopic
+        '
+        Me.btnRemoveTopic.Anchor = (System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
+        Me.btnRemoveTopic.Enabled = false;
+        Me.btnRemoveTopic.Location = New System.Drawing.Point(424, 358);
+        Me.btnRemoveTopic.Name = "btnRemoveTopic";
+        Me.btnRemoveTopic.Size = New System.Drawing.Size(112, 21);
+        Me.btnRemoveTopic.TabIndex = 3;
+        Me.btnRemoveTopic.Text = "Remove Topic";
+        '
+        'btnEditTopic
+        '
+        Me.btnEditTopic.Anchor = (System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
+        Me.btnEditTopic.Enabled = false;
+        Me.btnEditTopic.Location = New System.Drawing.Point(306, 358);
+        Me.btnEditTopic.Name = "btnEditTopic";
+        Me.btnEditTopic.Size = New System.Drawing.Size(112, 21);
+        Me.btnEditTopic.TabIndex = 2;
+        Me.btnEditTopic.Text = "Edit Topic";
+        '
+        'treeTopics
+        '
+        Me.treeTopics.AllowDrop = true;
+        Me.treeTopics.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) _;
+            | System.Windows.Forms.AnchorStyles.Left) _;
+            | System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles);
+        Me.treeTopics.Font = New System.Drawing.Font("Microsoft Sans Serif", 10.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (Byte)(0));
+        Me.treeTopics.Location = New System.Drawing.Point(11, 12);
+        Me.treeTopics.Name = "treeTopics";
+        Override1.NodeDoubleClickAction = Infragistics.Win.UltraWinTree.NodeDoubleClickAction.None;
+        Override1.Sort = Infragistics.Win.UltraWinTree.SortType.Ascending;
+        Me.treeTopics.Override = Override1;
+        Me.treeTopics.Size = New System.Drawing.Size(524, 340);
+        Me.treeTopics.TabIndex = 0;
+        '
+        'UltraTabPageControl4
+        '
+        Me.UltraTabPageControl4.Enabled = false;
+        Me.UltraTabPageControl4.Location = New System.Drawing.Point(-10000, -10000);
+        Me.UltraTabPageControl4.Name = "UltraTabPageControl4";
+        Me.UltraTabPageControl4.Size = New System.Drawing.Size(548, 396);
+        '
+        'UltraStatusBar1
+        '
+        Me.UltraStatusBar1.Location = New System.Drawing.Point(0, 422);
+        Me.UltraStatusBar1.Name = "UltraStatusBar1";
+        Me.UltraStatusBar1.Size = New System.Drawing.Size(552, 48);
+        Me.UltraStatusBar1.TabIndex = 5;
+        '
+        'btnApply
+        '
+        Me.btnApply.Anchor = (System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
+        Me.btnApply.Enabled = false;
+        Me.btnApply.Location = New System.Drawing.Point(448, 432);
+        Me.btnApply.Name = "btnApply";
+        Me.btnApply.Size = New System.Drawing.Size(88, 32);
+        Me.btnApply.TabIndex = 3;
+        Me.btnApply.Text = "Apply";
+        '
+        'btnCancel
+        '
+        Me.btnCancel.Anchor = (System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
+        Me.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+        Me.btnCancel.Location = New System.Drawing.Point(352, 432);
+        Me.btnCancel.Name = "btnCancel";
+        Me.btnCancel.Size = New System.Drawing.Size(88, 32);
+        Me.btnCancel.TabIndex = 2;
+        Me.btnCancel.Text = "Cancel";
+        '
+        'btnOK
+        '
+        Me.btnOK.Anchor = (System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
+        Me.btnOK.Location = New System.Drawing.Point(256, 432);
+        Me.btnOK.Name = "btnOK";
+        Me.btnOK.Size = New System.Drawing.Size(88, 32);
+        Me.btnOK.TabIndex = 1;
+        Me.btnOK.Text = "OK";
+        '
+        'tabsCharacters
+        '
+        Me.tabsCharacters.Controls.Add(Me.UltraTabSharedControlsPage1);
+        Me.tabsCharacters.Controls.Add(Me.UltraTabPageControl1);
+        Me.tabsCharacters.Controls.Add(Me.UltraTabPageControl2);
+        Me.tabsCharacters.Controls.Add(Me.UltraTabPageControl3);
+        Me.tabsCharacters.Controls.Add(Me.UltraTabPageControl5);
+        Me.tabsCharacters.Dock = System.Windows.Forms.DockStyle.Fill;
+        Me.tabsCharacters.Location = New System.Drawing.Point(0, 0);
+        Me.tabsCharacters.Name = "tabsCharacters";
+        Me.tabsCharacters.SharedControlsPage = Me.UltraTabSharedControlsPage1;
+        Me.tabsCharacters.Size = New System.Drawing.Size(552, 422);
+        Me.tabsCharacters.TabIndex = 0;
+        UltraTab1.Key = "Description";
+        UltraTab1.TabPage = Me.UltraTabPageControl1;
+        UltraTab1.Text = "Description";
+        UltraTab2.Key = "Properties";
+        UltraTab2.TabPage = Me.UltraTabPageControl2;
+        UltraTab2.Text = "Properties";
+        UltraTab3.Key = "Movement";
+        UltraTab3.TabPage = Me.UltraTabPageControl3;
+        UltraTab3.Text = "Movement";
+        UltraTab5.Key = "Conversation";
+        UltraTab5.TabPage = Me.UltraTabPageControl5;
+        UltraTab5.Text = "Conversation";
+        Me.tabsCharacters.Tabs.AddRange(New Infragistics.Win.UltraWinTabControl.UltraTab() {UltraTab1, UltraTab2, UltraTab3, UltraTab5});
+        '
+        'UltraTabSharedControlsPage1
+        '
+        Me.UltraTabSharedControlsPage1.Location = New System.Drawing.Point(-10000, -10000);
+        Me.UltraTabSharedControlsPage1.Name = "UltraTabSharedControlsPage1";
+        Me.UltraTabSharedControlsPage1.Size = New System.Drawing.Size(548, 396);
+        '
+        'frmCharacter
+        '
+        Me.AcceptButton = Me.btnOK;
+        Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13);
+        Me.CancelButton = Me.btnCancel;
+        Me.ClientSize = New System.Drawing.Size(552, 470);
+        Me.Controls.Add(Me.tabsCharacters);
+        Me.Controls.Add(Me.btnApply);
+        Me.Controls.Add(Me.btnCancel);
+        Me.Controls.Add(Me.btnOK);
+        Me.Controls.Add(Me.UltraStatusBar1);
+        Me.HelpButton = true;
+        Me.MaximizeBox = false;
+        Me.MinimizeBox = false;
+        Me.MinimumSize = New System.Drawing.Size(568, 506);
+        Me.Name = "frmCharacter";
+        Me.ShowInTaskbar = false;
+        Me.Text = "Character - ";
+        Me.UltraTabPageControl1.ResumeLayout(false);
+        Me.UltraTabPageControl1.PerformLayout();
+        (System.ComponentModel.ISupportInitialize)(Me.txtProperName).EndInit();
+        (System.ComponentModel.ISupportInitialize)(Me.txtPrefix).EndInit();
+        (System.ComponentModel.ISupportInitialize)(Me.txtArticle).EndInit();
+        (System.ComponentModel.ISupportInitialize)(Me.cmbShortDescriptions).EndInit();
+        Me.UltraTabPageControl2.ResumeLayout(false);
+        Me.UltraTabPageControl3.ResumeLayout(false);
+        Me.UltraTabPageControl5.ResumeLayout(false);
+        (System.ComponentModel.ISupportInitialize)(Me.treeTopics).EndInit();
+        (System.ComponentModel.ISupportInitialize)(Me.UltraStatusBar1).EndInit();
+        (System.ComponentModel.ISupportInitialize)(Me.tabsCharacters).EndInit();
+        Me.tabsCharacters.ResumeLayout(false);
+        Me.ResumeLayout(false);
+
+    }
+
+#End Region
+
+
+    private clsCharacter cCharacter;
+    private bool bChanged;
+    private int iSelectedIndex = 0;
+    private bool bAllowChangeValue = true;
+    private TopicHashTable htblTopics;
+
+
+    public bool Changed { get; set; }
+        {
+            get
+            {
+            return bChanged;
+        }
+set(ByVal Value As Boolean)
+            bChanged = Value
+            if (bChanged)
+            {
+                btnApply.Enabled = true;
+            Else
+                btnApply.Enabled = false;
+            }
+        }
+    }
+
+
+    private void LoadForm(ref cCharacter As clsCharacter, bool bShow)
+    {
+
+        Me.cCharacter = cCharacter;
+
+
+        With cCharacter;
+            Text = "Character - " & .Name
+            If SafeBool(GetSetting("ADRIFT", "Generator", "ShowKeys", "0")) Then Text &= "  [" + .Key + "]"
+            If .Name = "" || (.Name = "Anonymous" && .Key = "") Then Text = "New Character"
+
+            if (.CharacterType = clsCharacter.CharacterTypeEnum.Player)
+            {
+                Me.Icon = Icon.FromHandle(My.Resources.Resources.imgPlayer16.GetHicon);
+            Else
+                Me.Icon = Icon.FromHandle(My.Resources.Resources.imgCharacter16.GetHicon);
+            }
+
+            txtDescription.Description = .Description.Copy;
+            txtArticle.Text = .Article;
+            txtPrefix.Text = .Prefix;
+            txtProperName.Text = .ProperName;
+            'cmbNames.Items.Add(.Name)
+            For Each sName As String In .arlDescriptors
+                cmbShortDescriptions.Items.Add(sName);
+            Next;
+            if (cmbShortDescriptions.Items.Count > 0)
+            {
+                iSelectedIndex = 0
+                cmbShortDescriptions.SelectedIndex = 0;
+            Else
+                cmbShortDescriptions.Items.Add("");
+            }
+
+            ' Pad out the local Object hashtable with unselected properties
+            .ResetInherited();
+            private PropertyHashTable htblProperties = .htblProperties.Clone ' .GetPropertiesIncludingGroups.Clone;
+            For Each prop As clsProperty In Adventure.htblCharacterProperties.Values
+                If ! htblProperties.ContainsKey(prop.Key) Then htblProperties.Add(prop.Copy)
+            Next;
+            Me.Properties1.htblProperties = htblProperties;
+            Me.Properties1.OwnerKey = .Key;
+            Me.htblTopics = .htblTopics.Clone;
+
+            treeTopics.Nodes.Clear();
+            For Each topic As clsTopic In htblTopics.Values
+                private Infragistics.Win.UltraWinTree.UltraTreeNode node = treeTopics.Nodes.Add(topic.Key, topic.Summary);
+                TopicIcons(topic, node);
+            Next;
+            For Each topic As clsTopic In htblTopics.Values
+                if (topic.ParentKey <> "")
+                {
+                    treeTopics.GetNodeByKey(topic.Key).Reposition(treeTopics.GetNodeByKey(topic.ParentKey).Nodes);
+                    treeTopics.GetNodeByKey(topic.ParentKey).ExpandAll();
+                }
+            Next;
+
+            For Each walk As clsWalk In .arlWalks
+                private New ListBoxWalkObject(walk.Description, walk) lstItem;
+
+                lstWalks.Items.Add(lstItem) 'walk.Description);
+            Next;
+            ' Grab the obfuscated name...
+            For Each p As System.Reflection.PropertyInfo In GetType(ListBoxWalkObject).GetProperties
+                lstWalks.DisplayMember = p.Name;
+                Exit For;
+            Next;
+            'lstWalks.DisplayMember = GetType( ListBoxWalkObject).GetProperties( "Description"
+
+            Changed = False
+        }
+
+        'treeTopics.DrawFilter = highlight
+        treeTopics.Override.SelectionType = SelectType.ExtendedAutoDrag;
+
+        If bShow Then Me.Show()
+        'txtPrefix.Focus()
+        If ! OpenForms.Contains(Me) Then OpenForms.Add(Me)
+
+    }
+
+    private void btnOK_Click(System.Object sender, System.EventArgs e)
+    {
+        If ApplyCharacter() Then CloseCharacter(Me)
+    }
+
+    private void btnApply_Click(System.Object sender, System.EventArgs e)
+    {
+        If ApplyCharacter() Then Changed = false
+    }
+
+    private void btnCancel_Click(System.Object sender, System.EventArgs e)
+    {
+        if (Changed)
+        {
+            private DialogResult result = MessageBox.Show("Would you like to apply your changes?", "ADRIFT Developer", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button3);
+            if (result = Windows.Forms.DialogResult.Yes)
+            {
+                If ! ApplyCharacter() Then Exit Sub
+            }
+            If result = Windows.Forms.DialogResult.Cancel Then Exit Sub
+        }
+        CloseCharacter(Me);
+    }
+
+
+    private bool ValidateCharacter()
+    {
+
+        if (txtProperName.Text = "" && cmbShortDescriptions.Items.Count = 1 && cmbShortDescriptions.Text = "")
+        {
+            MessageBox.Show("You must give the character either a name or descriptor.", Text, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            Me.tabsCharacters.Tabs(0).Selected = true;
+            txtProperName.Focus();
+            return false;
+        }
+
+        if (Not Properties1.ValidateProperties)
+        {
+            tabsCharacters.SelectedTab = tabsCharacters.Tabs("Properties");
+            return false;
+        }
+
+        return true;
+    }
+
+
+    private bool ApplyCharacter()
+    {
+
+        If ! ValidateCharacter() Then Return false
+
+        ' remember to strip off the unselected properties
+
+        With cCharacter;
+
+            .arlDescriptors.Clear();
+            .Article = txtArticle.Text.Trim;
+            .Prefix = txtPrefix.Text.Trim;
+
+            For Each vli As Infragistics.Win.ValueListItem In cmbShortDescriptions.Items
+                If vli.DisplayText <> "" && ! .arlDescriptors.Contains(vli.DisplayText.Trim) Then .arlDescriptors.Add(vli.DisplayText.Trim)
+            Next;
+            .Description = txtDescription.Description.Copy;
+            .LastUpdated = Now;
+            .IsLibrary = false;
+
+            .arlWalks.Clear();
+            For Each lbwo As ListBoxWalkObject In lstWalks.Items
+                .arlWalks.Add(lbwo.Walk);
+            Next;
+
+            .htblActualProperties = Me.Properties1.htblProperties.CopySelected;
+            .htblTopics = Me.htblTopics;
+            .ProperName = txtProperName.Text;
+
+            if (.Key = "")
+            {
+                .Key = .GetNewKey ' Adventure.GetNewKey("Character");
+                Adventure.htblCharacters.Add(cCharacter, .Key);
+                Me.Properties1.OwnerKey = .Key;
+            }
+
+            .ProperName = "" ' for now, whilst we search;
+            if (txtProperName.Text <> "" && .SearchFor(txtProperName.Text))
+            {
+                'Select Case MessageBox.Show("Would you like to replace all instances of """ & txtProperName.Text & """ with ""%CharacterName%""? (dialog to be improved)", "ADRIFT", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+                switch (YesNoCancel("Would you like to replace all instances of """ + txtProperName.Text + """ with ""%CharacterName%""?", "Save changes", "ReplaceCharacterNames", false))
+                {
+                    case Windows.Forms.DialogResult.Yes:
+                        {
+                        For Each tc As Char In New Char() {" "c, "."c, ","c, "!"c, Chr(10), Chr(13)}
+                            .SearchAndReplace(txtProperName.Text + tc, "%CharacterName%" + tc);
+                        Next;
+                        'ApplyCharacter()
+                        .ProperName = txtProperName.Text;
+                        LoadForm(cCharacter, true);
+                    case Windows.Forms.DialogResult.No:
+                        {
+                        ' Leave as is
+                }
+            }
+
+            .ProperName = txtProperName.Text;
+            UpdateListItem(.Key, .Name);
+
+            For Each w As Form In OpenForms
+                if (TypeOf w Is frmLocation)
+                {
+                    private string sLocKey = CType(w, frmLocation).Folder1.sParentKey;
+                    if ((.Location.ExistWhere = clsCharacterLocation.ExistsWhereEnum.AtLocation && .Location.Key = sLocKey))
+                    {
+                        (frmLocation)(w).Folder1.AddSingleItem(.Key);
+                    }
+                }
+            Next;
+
+        }
+
+        Adventure.Changed = true;
+
+        return true;
+
+    }
+
+
+    private void frmCharacter_FormClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
+    {
+        OpenForms.Remove(Me);
+    }
+
+    private void frmCharacter_Resize(object sender, System.EventArgs e)
+    {
+
+        'Me.txtPrefix.Width = CInt(Me.Width / 2) - 72
+        'Me.cmbNames.Width = CInt(Me.Width / 2) - 72
+        'Me.cmbNames.Left = CInt(Me.Width / 2) + 48
+        'Me.lblNouns.Left = Me.cmbNames.Left
+
+    }
+
+
+    private void txtPrefix_TextChanged(object sender, System.EventArgs e)
+    {
+
+        if (txtArticle.Text = "" && txtPrefix.Text <> "")
+        {
+            switch (sLeft(txtPrefix.Text, 1).ToLower)
+            {
+                case "a":
+                case "e":
+                case "i":
+                case "o":
+                case "u":
+                    {
+                    txtArticle.Text = "an";
+                default:
+                    {
+                    txtArticle.Text = "a";
+            }
+        }
+
+    }
+
+
+
+    private void frmObject_Load(object sender, System.EventArgs e)
+    {
+        Me.Properties1.PropertyType = clsProperty.PropertyOfEnum.Characters;
+        GetFormPosition(Me);
+    }
+
+    private void cmbShortDescriptions_Enter(object sender, System.EventArgs e)
+    {
+        Me.AcceptButton = null;
+    }
+
+
+    private void cmbShortDescriptions_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+    {
+
+        switch (e.KeyData)
+        {
+            case Keys.Enter:
+                {
+                if (iSelectedIndex = cmbShortDescriptions.Items.Count - 1)
+                {
+                    iSelectedIndex += 1;
+                    cmbShortDescriptions.Items.Add("");
+                    bAllowChangeValue = False
+                    cmbShortDescriptions.Clear();
+                    bAllowChangeValue = True
+                Else
+                    iSelectedIndex += 1;
+                    cmbShortDescriptions.SelectedItem = cmbShortDescriptions.Items(iSelectedIndex);
+                    cmbShortDescriptions.SelectedText = cmbShortDescriptions.SelectedItem.DisplayText;
+                    cmbShortDescriptions.SelectionStart = 0;
+                    cmbShortDescriptions.SelectionLength = cmbShortDescriptions.Text.Length;
+                }
+        }
+
+    }
+
+
+
+    private void cmbShortDescriptions_KeyUp(object sender, System.Windows.Forms.KeyEventArgs e)
+    {
+        cmbShortDescriptions.Items(iSelectedIndex).DisplayText = cmbShortDescriptions.Text;
+        bChanged = True
+    }
+
+    private void cmbShortDescriptions_Leave(object sender, System.EventArgs e)
+    {
+        Me.AcceptButton = btnOK;
+    }
+
+
+    private void cmbShortDescriptions_SelectionChanged(object sender, System.EventArgs e)
+    {
+        If bAllowChangeValue && cmbShortDescriptions.SelectedIndex > -1 Then iSelectedIndex = cmbShortDescriptions.SelectedIndex
+    }
+
+    private void StuffChanged(object sender, System.EventArgs e)
+    {
+        Changed = True
+    }
+
+    private void lstWalks_DoubleClick(object sender, System.EventArgs e)
+    {
+
+        if (lstWalks.SelectedItem IsNot null)
+        {
+            EditWalk((ListBoxWalkObject)(lstWalks.SelectedItem).Walk, (ListBoxWalkObject)(lstWalks.SelectedItem));
+        }
+
+    }
+
+    private void lstWalks_SelectedIndexChanged(System.Object sender, System.EventArgs e)
+    {
+        if (lstWalks.SelectedItem IsNot null)
+        {
+            btnEditWalk.Enabled = true;
+            btnRemoveWalk.Enabled = true;
+        Else
+            btnEditWalk.Enabled = false;
+            btnRemoveWalk.Enabled = false;
+        }
+    }
+
+
+    private void EditTopic(clsTopic topic, Infragistics.Win.UltraWinTree.UltraTreeNode node = null)
+    {
+
+        private New frmTopic(topic, htblTopics) frmTopic;
+        if (frmTopic.DialogResult = Windows.Forms.DialogResult.OK)
+        {
+            if (node Is null)
+            {
+                node = treeTopics.Nodes.Add(topic.Key, topic.Summary)
+                treeTopics.Refresh();
+                htblTopics.Add(topic);
+            Else
+                node.Text = topic.Summary;
+            }
+            TopicIcons(topic, node);
+        }
+
+    }
+
+
+    private void TopicIcons(clsTopic topic, Infragistics.Win.UltraWinTree.UltraTreeNode node)
+    {
+        if (topic.bIntroduction)
+        {
+            node.Override.NodeAppearance.Image = Global.ADRIFT.My.Resources.Resources.imgRight;
+        ElseIf topic.bFarewell Then
+            node.Override.NodeAppearance.Image = Global.ADRIFT.My.Resources.Resources.imgLeft;
+        }
+    }
+
+
+    private void EditWalk(clsWalk walk, ListBoxWalkObject lbwo = null)
+    {
+
+        private New frmWalk(walk) frmWalk;
+        if (frmWalk.DialogResult = Windows.Forms.DialogResult.OK)
+        {
+            if (lbwo Is null)
+            {
+                lstWalks.Items.Add(New ListBoxWalkObject(walk.Description, walk));
+            Else
+                lbwo.Description = walk.Description;
+
+                ' Force it to re-read the display member
+                lstWalks.DisplayMember = "xxx";
+                lstWalks.DisplayMember = "Description";
+            }
+        }
+
+    }
+
+    private void btnAddWalk_Click(System.Object sender, System.EventArgs e)
+    {
+        private New clsWalk walk;
+        EditWalk(walk);
+    }
+
+
+    private void btnRemoveWalk_Click(object sender, System.EventArgs e)
+    {
+
+        If lstWalks.SelectedItem == null Then Exit Sub
+
+        private clsWalk walk = CType(lstWalks.SelectedItem, ListBoxWalkObject).Walk;
+
+        if (MessageBox.Show("Are you sure you wish to remove walk " + walk.Description + "?", "Remove walk", MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes)
+        {
+            lstWalks.Items.Remove(lstWalks.SelectedItem);
+        }
+
+    }
+
+
+    private void btnAddTopic_Click(System.Object sender, System.EventArgs e)
+    {
+        private New clsTopic topic;
+        EditTopic(topic);
+    }
+
+    private void treeTopics_AfterSelect(object sender, Infragistics.Win.UltraWinTree.SelectEventArgs e)
+    {
+        if (treeTopics.SelectedNodes.Count = 1)
+        {
+            btnEditTopic.Enabled = true;
+            btnRemoveTopic.Enabled = true;
+        Else
+            btnEditTopic.Enabled = false;
+            btnRemoveTopic.Enabled = false;
+        }
+    }
+
+    private void btnEditTopic_Click(object sender, System.EventArgs e)
+    {
+        if (treeTopics.SelectedNodes.Count = 1)
+        {
+            EditTopic(htblTopics(treeTopics.SelectedNodes(0).Key), treeTopics.SelectedNodes(0));
+        }
+    }
+    private void treeTopics_MouseDoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)
+    {
+        if (treeTopics.SelectedNodes.Count = 1 && treeTopics.GetNodeFromPoint(e.Location) IsNot null)
+        {
+            EditTopic(htblTopics(treeTopics.SelectedNodes(0).Key), treeTopics.SelectedNodes(0));
+        }
+    }
+
+#Region "Drag/Drop"
+
+    'Private WithEvents highlight As New UltraTree_DropHightLight_DrawFilter_Class()
+
+    private void treeTopics_SelectionDragStart(object sender, System.EventArgs e)
+    {
+        'Start a DragDrop operation
+        treeTopics.DoDragDrop(treeTopics.SelectedNodes, DragDropEffects.Move);
+    }
+
+    private void treeTopics_DragOver(object sender, System.Windows.Forms.DragEventArgs e)
+    {
+        'A dummy node variable used to hold nodes for various things
+        private UltraTreeNode node;
+        'The Point that the mouse cursor is on, in Tree coords.
+        'This event passes X and Y in form coords.
+
+        'Get the node the mouse is over
+        node = treeTopics.GetNodeFromPoint(treeTopics.PointToClient(New Point(e.X, e.Y)))
+
+        'Make sure the mouse is over a node
+        if (node Is null)
+        {
+            'The Mouse is not over a node
+            'Do not allow dropping here
+            e.Effect = DragDropEffects.Move;
+            'Erase any DropHighlight
+            'highlight.ClearDropHighlight()
+            treeTopics.ActiveNode = null;
+            'Exit stage left
+            Exit Sub;
+        }
+
+
+
+        'Check to see if we are dropping onto a node who's parent (grandparent, etc) is selected.
+        'This is to prevent the user from dropping a node onto one of it's own descendents.
+        if (IsAnyParentSelected(node))
+        {
+            'Mouse is over a node whose parent is selected.  Do not allow the drop
+            e.Effect = DragDropEffects.None;
+            'Clear the DropHighlight
+            'highlight.ClearDropHighlight()
+            treeTopics.ActiveNode = null;
+            'Exit stage left
+            Exit Sub;
+        }
+
+        'If we've reached this point, it's okay to drop on this node
+        'Tell the DrawFilter where we are by calling SetDropHighlightNode
+        'highlight.SetDropHighlightNode(node, PointInTree)
+        treeTopics.ActiveNode = node;
+
+        'Allow Dropping here.
+        e.Effect = DragDropEffects.Move;
+    }
+
+    'Walks up the parent chain for a node to determine if any of it's parent nodes are selected
+    private bool IsAnyParentSelected(UltraTreeNode Node)
+    {
+        private UltraTreeNode ParentNode;
+        private bool ReturnValue = false;
+
+        If Node.Selected Then Return true
+        ParentNode = Node.Parent
+        Do Until ParentNode == null
+            if (ParentNode.Selected)
+            {
+                ReturnValue = True
+                Exit Do;
+            Else
+                ParentNode = ParentNode.Parent
+            }
+        Loop;
+
+        return ReturnValue;
+    }
+
+
+    'The DragDrop event. Here we respond to a Drop on the tree
+    private void UltraTree1_DragDrop(object sender, System.Windows.Forms.DragEventArgs e)
+    {
+        'A dummy node variable used for various things
+        private UltraTreeNode node;
+
+        'The Node to Drop On
+        private Infragistics.Win.UltraWinTree.UltraTreeNode DropNode;
+        'An integer used for loops
+        private int i;
+
+        'Set the DropNode
+        'DropNode = highlight.DropHightLightNode
+        DropNode = treeTopics.GetNodeFromPoint(treeTopics.PointToClient(New Point(e.X, e.Y)))
+
+        'Get the Data and put it into a SelectedNodes collection, then clone it and work with the clone
+        'These are the nodes that are being dragged and dropped
+        private SelectedNodesCollection SelectedNodes = CType(CType(e.Data.GetData(GetType(SelectedNodesCollection)), SelectedNodesCollection).Clone, SelectedNodesCollection);
+
+        For Each node In SelectedNodes
+            If node == DropNode Then Exit Sub
+        Next;
+
+        'Sort the selected nodes into their visible position.  This is done so that they stay in the same order when
+        'they are repositioned.
+        SelectedNodes.SortByPosition();
+
+        if (DropNode Is null)
+        {
+            For i = 0 To SelectedNodes.Count - 1
+                node = SelectedNodes(i)
+                node.Reposition(treeTopics.Nodes);
+            Next;
+        Else
+            For i = 0 To SelectedNodes.Count - 1
+                node = SelectedNodes(i)
+                node.Reposition(DropNode.Nodes);
+                DropNode.ExpandAll(ExpandAllType.OnlyNodesWithChildren);
+            Next;
+        }
+
+        For Each node In SelectedNodes
+            if (node.Parent IsNot null)
+            {
+                htblTopics(node.Key).ParentKey = htblTopics(node.Parent.Key).Key;
+            Else
+                htblTopics(node.Key).ParentKey = null;
+            }
+        Next;
+
+        'After the drop is complete, erase the current drop
+        'highlight.
+        'highlight.ClearDropHighlight()
+        treeTopics.ActiveNode = SelectedNodes(0) ' null;
+    }
+
+    ''This event is fired by the DrawFilter to let us determine
+    ''what kinds of drops we want to allow on any particular node
+    'Private Sub highlight_QueryStateAllowedForNode(ByVal sender As Object, ByVal e As UltraTree_DropHightLight_DrawFilter_Class.QueryStateAllowedForNodeEventArgs) Handles highlight.QueryStateAllowedForNode
+
+    '    If e.Node.Selected Then
+    '        'This is a selected Continent node.
+    '        'Since it is selected, we don't want to allow
+    '        'dropping ON this node. But we can allow the
+    '        'the user to drop above or below it.
+    '        e.StatesAllowed = DropLinePositionEnum.None ' DropLinePositionEnum.AboveNode Or DropLinePositionEnum.BelowNode
+    '        highlight.EdgeSensitivity = CInt(e.Node.Bounds.Height / 2)
+    '    Else
+    '        'This is a continent node and is not selected
+    '        'We can allow dropping here above, below, or on this
+    '        'node. Since the StatesAllow defaults to All, we don't
+    '        'need to change it.
+    '        'We set the EdgeSensitivity to 1/3 so that the
+    '        'Drawfilter will respond at the top, bottom, or
+    '        'middle of the node.
+    '        e.StatesAllowed = DropLinePositionEnum.OnNode
+    '        highlight.EdgeSensitivity = CInt(e.Node.Bounds.Height / 3)
+    '    End If
+
+    'End Sub
+
+    'Fires when the user drags outside the control.
+    private void treeTopics_DragLeave(object sender, System.EventArgs e)
+    {
+        'When the mouse goes outside the control, clear the drophighlight.
+        'Since the DropHighlight is cleared when the
+        'mouse is not over a node, anyway,
+        'this is probably not needed
+        'But, just in case the user goes from a node directly
+        'off the control...
+        'highlight.ClearDropHighlight()
+        treeTopics.ActiveNode = null;
+    }
+
+    'Occassionally, the DrawFilter will let us know that the
+    'control needs to be invalidated.
+    'Private Sub highlight_Invalidate(ByVal sender As Object, ByVal e As System.EventArgs) Handles highlight.Invalidate
+    '    'Any time the drophighlight changes, the control needs
+    '    'to know that it has to repaint.
+    '    'It would be more efficient to only invalidate the area
+    '    'that needs it, but this works and is very clean.
+    '    treeTopics.Invalidate()
+    'End Sub
+
+#End Region
+
+    private void frmCharacter_Shown(object sender, System.EventArgs e)
+    {
+        if (txtProperName.Text = "")
+        {
+            txtProperName.Focus();
+        Else
+            'txtDescription.rtxtSource.SelectionStart = txtDescription.rtxtSource.TextLength
+            txtDescription.rtxtSource.EditInfo.PerformAction(Infragistics.Win.FormattedLinkLabel.FormattedLinkEditorAction.DocumentEnd);
+            txtDescription.rtxtSource.Focus();
+        }
+    }
+
+
+    private void RemoveNode(UltraTreeNode node)
+    {
+
+        for (int i = node.Nodes.Count - 1; i <= 0; i += -1)
+        {
+            private UltraTreeNode nodeChild = node.Nodes(i);
+            RemoveNode(nodeChild);
+        Next;
+        htblTopics.Remove(node.Key);
+        treeTopics.GetNodeByKey(node.Key).Remove();
+
+    }
+
+
+    private void btnRemoveTopic_Click(object sender, System.EventArgs e)
+    {
+
+        if (treeTopics.SelectedNodes.Count > 0)
+        {
+            private bool bMultiple = treeTopics.SelectedNodes.Count > 1 || treeTopics.SelectedNodes(0).HasNodes;
+            if (MessageBox.Show("Are you sure you wish to delete the selected topic" + IIf(bMultiple, "s", "").ToString + "?", "Delete topic" + IIf(bMultiple, "s", "").ToString, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) = Windows.Forms.DialogResult.Yes)
+            {
+                For Each node As UltraTreeNode In treeTopics.SelectedNodes
+                    RemoveNode(node);
+                    Changed = True
+                Next;
+            }
+        }
+
+    }
+
+
+    private string sLastName = "";
+    private void txtProperName_TextChanged(object sender, System.EventArgs e)
+    {
+        if (sLastName = "" And txtProperName.Text.Length = 1)
+        {
+            txtProperName.Text = UCase(txtProperName.Text);
+            txtProperName.SelectionStart = 1;
+        }
+        sLastName = txtProperName.Text
+    }
+
+
+    private void frmCharacter_HelpButtonClicked(object sender, System.ComponentModel.CancelEventArgs e)
+    {
+        ShowHelp(Me, "Characters");
+    }
+
+}
+
+
+public class ListBoxWalkObject
+{
+
+    private string sValue;
+    private clsWalk oWalk;
+
+    public void New(string sValue, clsWalk oWalk)
+    {
+        Me.sValue = sValue;
+        Me.oWalk = oWalk;
+    }
+
+    Shadows Property Description() As String;
+        {
+            get
+            {
+            return sValue;
+        }
+set(ByVal String)
+            sValue = value
+        }
+    }
+
+    public clsWalk Walk { get; set; }
+        {
+            get
+            {
+            return oWalk;
+        }
+set(ByVal clsWalk)
+            oWalk = value
+        }
+    }
+}
+}

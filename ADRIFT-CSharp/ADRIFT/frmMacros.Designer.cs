@@ -1,0 +1,278 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace ADRIFT
+{
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _;
+partial class frmMacros
+{
+    Inherits System.Windows.Forms.Form;
+
+    'Form overrides dispose to clean up the component list.
+    <System.Diagnostics.DebuggerNonUserCode()> _;
+    protected override void Dispose(bool disposing)
+    {
+        try
+        {
+            if (disposing && components IsNot null)
+            {
+                components.Dispose();
+            }
+        }
+        finally
+        {
+            MyBase.Dispose(disposing);
+        }
+    }
+
+    'Required by the Windows Form Designer
+    private System.ComponentModel.IContainer components;
+
+    'NOTE: The following procedure is required by the Windows Form Designer
+    'It can be modified using the Windows Form Designer.
+    'Do not modify it using the code editor.
+    <System.Diagnostics.DebuggerStepThrough()> _;
+    private void InitializeComponent()
+    {
+        private Infragistics.Win.Appearance Appearance1 = new Infragistics.Win.Appearance;
+        private System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(GetType(frmMacros));
+        Me.SplitContainer1 = New System.Windows.Forms.SplitContainer;
+        Me.lstMacros = New System.Windows.Forms.ListBox;
+        Me.txtCommands = New System.Windows.Forms.TextBox;
+        Me.lblCommands = New Infragistics.Win.Misc.UltraLabel;
+        Me.UltraStatusBar1 = New Infragistics.Win.UltraWinStatusBar.UltraStatusBar;
+        Me.btnCancel = New Infragistics.Win.Misc.UltraButton;
+        Me.btnOK = New Infragistics.Win.Misc.UltraButton;
+        Me.btnAdd = New Infragistics.Win.Misc.UltraButton;
+        Me.btnRemove = New Infragistics.Win.Misc.UltraButton;
+        Me.UltraLabel2 = New Infragistics.Win.Misc.UltraLabel;
+        Me.chkShared = New Infragistics.Win.UltraWinEditors.UltraCheckEditor;
+        Me.cmbShortcut = New Infragistics.Win.UltraWinEditors.UltraComboEditor;
+        Me.UltraLabel3 = New Infragistics.Win.Misc.UltraLabel;
+        Me.btnDown = New Infragistics.Win.Misc.UltraButton;
+        Me.btnUp = New Infragistics.Win.Misc.UltraButton;
+        Me.btnApply = New Infragistics.Win.Misc.UltraButton;
+        Me.SplitContainer1.Panel1.SuspendLayout();
+        Me.SplitContainer1.Panel2.SuspendLayout();
+        Me.SplitContainer1.SuspendLayout();
+        (System.ComponentModel.ISupportInitialize)(Me.cmbShortcut).BeginInit();
+        Me.SuspendLayout();
+        '
+        'SplitContainer1
+        '
+        Me.SplitContainer1.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) _;
+                    | System.Windows.Forms.AnchorStyles.Left) _;
+                    | System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles);
+        Me.SplitContainer1.Location = New System.Drawing.Point(31, 31);
+        Me.SplitContainer1.Name = "SplitContainer1";
+        '
+        'SplitContainer1.Panel1
+        '
+        Me.SplitContainer1.Panel1.Controls.Add(Me.lstMacros);
+        '
+        'SplitContainer1.Panel2
+        '
+        Me.SplitContainer1.Panel2.Controls.Add(Me.txtCommands);
+        Me.SplitContainer1.Size = New System.Drawing.Size(569, 374);
+        Me.SplitContainer1.SplitterDistance = 188;
+        Me.SplitContainer1.TabIndex = 0;
+        '
+        'lstMacros
+        '
+        Me.lstMacros.Dock = System.Windows.Forms.DockStyle.Fill;
+        Me.lstMacros.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (Byte)(0));
+        Me.lstMacros.FormattingEnabled = true;
+        Me.lstMacros.IntegralHeight = false;
+        Me.lstMacros.ItemHeight = 16;
+        Me.lstMacros.Location = New System.Drawing.Point(0, 0);
+        Me.lstMacros.Name = "lstMacros";
+        Me.lstMacros.Size = New System.Drawing.Size(188, 374);
+        Me.lstMacros.TabIndex = 0;
+        '
+        'txtCommands
+        '
+        Me.txtCommands.Dock = System.Windows.Forms.DockStyle.Fill;
+        Me.txtCommands.Enabled = false;
+        Me.txtCommands.Font = New System.Drawing.Font("Courier New", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (Byte)(0));
+        Me.txtCommands.Location = New System.Drawing.Point(0, 0);
+        Me.txtCommands.Multiline = true;
+        Me.txtCommands.Name = "txtCommands";
+        Me.txtCommands.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+        Me.txtCommands.Size = New System.Drawing.Size(377, 374);
+        Me.txtCommands.TabIndex = 0;
+        '
+        'lblCommands
+        '
+        Me.lblCommands.Location = New System.Drawing.Point(221, 12);
+        Me.lblCommands.Name = "lblCommands";
+        Me.lblCommands.Size = New System.Drawing.Size(358, 18);
+        Me.lblCommands.TabIndex = 0;
+        Me.lblCommands.Text = "Enter commands for this adventure, each on a separate line";
+        '
+        'UltraStatusBar1
+        '
+        Me.UltraStatusBar1.Location = New System.Drawing.Point(0, 442);
+        Me.UltraStatusBar1.Name = "UltraStatusBar1";
+        Me.UltraStatusBar1.Size = New System.Drawing.Size(612, 42);
+        Me.UltraStatusBar1.TabIndex = 16;
+        Me.UltraStatusBar1.ViewStyle = Infragistics.Win.UltraWinStatusBar.ViewStyle.Office2007;
+        '
+        'btnCancel
+        '
+        Me.btnCancel.Anchor = (System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
+        Me.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+        Me.btnCancel.Location = New System.Drawing.Point(418, 447);
+        Me.btnCancel.Name = "btnCancel";
+        Me.btnCancel.Size = New System.Drawing.Size(88, 32);
+        Me.btnCancel.TabIndex = 19;
+        Me.btnCancel.Text = "Cancel";
+        '
+        'btnOK
+        '
+        Me.btnOK.Anchor = (System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
+        Appearance1.BackColor = System.Drawing.Color.Transparent;
+        Me.btnOK.Appearance = Appearance1;
+        Me.btnOK.Location = New System.Drawing.Point(324, 447);
+        Me.btnOK.Name = "btnOK";
+        Me.btnOK.Size = New System.Drawing.Size(88, 32);
+        Me.btnOK.TabIndex = 18;
+        Me.btnOK.Text = "OK";
+        '
+        'btnAdd
+        '
+        Me.btnAdd.Anchor = (System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
+        Me.btnAdd.Location = New System.Drawing.Point(29, 411);
+        Me.btnAdd.Name = "btnAdd";
+        Me.btnAdd.Size = New System.Drawing.Size(88, 25);
+        Me.btnAdd.TabIndex = 20;
+        Me.btnAdd.Text = "Add";
+        '
+        'btnRemove
+        '
+        Me.btnRemove.Anchor = (System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
+        Me.btnRemove.Location = New System.Drawing.Point(123, 411);
+        Me.btnRemove.Name = "btnRemove";
+        Me.btnRemove.Size = New System.Drawing.Size(88, 25);
+        Me.btnRemove.TabIndex = 21;
+        Me.btnRemove.Text = "Remove";
+        '
+        'UltraLabel2
+        '
+        Me.UltraLabel2.Location = New System.Drawing.Point(29, 12);
+        Me.UltraLabel2.Name = "UltraLabel2";
+        Me.UltraLabel2.Size = New System.Drawing.Size(71, 18);
+        Me.UltraLabel2.TabIndex = 22;
+        Me.UltraLabel2.Text = "Macros";
+        '
+        'chkShared
+        '
+        Me.chkShared.Anchor = (System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
+        Me.chkShared.Location = New System.Drawing.Point(416, 413);
+        Me.chkShared.Name = "chkShared";
+        Me.chkShared.Size = New System.Drawing.Size(179, 20);
+        Me.chkShared.TabIndex = 23;
+        Me.chkShared.Text = "Macro applies to all adventures";
+        '
+        'cmbShortcut
+        '
+        Me.cmbShortcut.Anchor = (System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
+        Me.cmbShortcut.DropDownStyle = Infragistics.Win.DropDownStyle.DropDownList;
+        Me.cmbShortcut.Location = New System.Drawing.Point(308, 412);
+        Me.cmbShortcut.Name = "cmbShortcut";
+        Me.cmbShortcut.Size = New System.Drawing.Size(78, 21);
+        Me.cmbShortcut.TabIndex = 1;
+        '
+        'UltraLabel3
+        '
+        Me.UltraLabel3.Anchor = (System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
+        Me.UltraLabel3.Location = New System.Drawing.Point(255, 416);
+        Me.UltraLabel3.Name = "UltraLabel3";
+        Me.UltraLabel3.Size = New System.Drawing.Size(60, 18);
+        Me.UltraLabel3.TabIndex = 24;
+        Me.UltraLabel3.Text = "Shortcut";
+        '
+        'btnDown
+        '
+        Me.btnDown.Anchor = System.Windows.Forms.AnchorStyles.Left;
+        Me.btnDown.Enabled = false;
+        Me.btnDown.Font = New System.Drawing.Font("Webdings", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (Byte)(2));
+        Me.btnDown.Location = New System.Drawing.Point(4, 218);
+        Me.btnDown.Name = "btnDown";
+        Me.btnDown.Size = New System.Drawing.Size(24, 23);
+        Me.btnDown.TabIndex = 26;
+        Me.btnDown.Text = "6";
+        '
+        'btnUp
+        '
+        Me.btnUp.Anchor = System.Windows.Forms.AnchorStyles.Left;
+        Me.btnUp.Enabled = false;
+        Me.btnUp.Font = New System.Drawing.Font("Webdings", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (Byte)(2));
+        Me.btnUp.Location = New System.Drawing.Point(4, 186);
+        Me.btnUp.Name = "btnUp";
+        Me.btnUp.Size = New System.Drawing.Size(24, 23);
+        Me.btnUp.TabIndex = 25;
+        Me.btnUp.Text = "5";
+        '
+        'btnApply
+        '
+        Me.btnApply.Anchor = (System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
+        Me.btnApply.Location = New System.Drawing.Point(512, 447);
+        Me.btnApply.Name = "btnApply";
+        Me.btnApply.Size = New System.Drawing.Size(88, 32);
+        Me.btnApply.TabIndex = 27;
+        Me.btnApply.Text = "Apply";
+        '
+        'frmMacros
+        '
+        Me.AcceptButton = Me.btnOK;
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!);
+        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+        Me.CancelButton = Me.btnCancel;
+        Me.ClientSize = New System.Drawing.Size(612, 484);
+        Me.Controls.Add(Me.btnApply);
+        Me.Controls.Add(Me.btnDown);
+        Me.Controls.Add(Me.btnUp);
+        Me.Controls.Add(Me.cmbShortcut);
+        Me.Controls.Add(Me.UltraLabel3);
+        Me.Controls.Add(Me.chkShared);
+        Me.Controls.Add(Me.UltraLabel2);
+        Me.Controls.Add(Me.lblCommands);
+        Me.Controls.Add(Me.btnRemove);
+        Me.Controls.Add(Me.btnAdd);
+        Me.Controls.Add(Me.btnCancel);
+        Me.Controls.Add(Me.SplitContainer1);
+        Me.Controls.Add(Me.btnOK);
+        Me.Controls.Add(Me.UltraStatusBar1);
+        Me.Icon = (System.Drawing.Icon)(resources.GetObject("$this.Icon"));
+        Me.MinimumSize = New System.Drawing.Size(591, 370);
+        Me.Name = "frmMacros";
+        Me.Text = "Form1";
+        Me.SplitContainer1.Panel1.ResumeLayout(false);
+        Me.SplitContainer1.Panel2.ResumeLayout(false);
+        Me.SplitContainer1.Panel2.PerformLayout();
+        Me.SplitContainer1.ResumeLayout(false);
+        (System.ComponentModel.ISupportInitialize)(Me.cmbShortcut).EndInit();
+        Me.ResumeLayout(false);
+        Me.PerformLayout();
+
+    }
+    Friend WithEvents SplitContainer1 As System.Windows.Forms.SplitContainer;
+    Friend WithEvents lstMacros As System.Windows.Forms.ListBox;
+    Friend WithEvents txtCommands As System.Windows.Forms.TextBox;
+    Friend WithEvents UltraStatusBar1 As Infragistics.Win.UltraWinStatusBar.UltraStatusBar;
+    Friend WithEvents btnCancel As Infragistics.Win.Misc.UltraButton;
+    Friend WithEvents btnOK As Infragistics.Win.Misc.UltraButton;
+    Friend WithEvents lblCommands As Infragistics.Win.Misc.UltraLabel;
+    Friend WithEvents btnAdd As Infragistics.Win.Misc.UltraButton;
+    Friend WithEvents btnRemove As Infragistics.Win.Misc.UltraButton;
+    Friend WithEvents UltraLabel2 As Infragistics.Win.Misc.UltraLabel;
+    Friend WithEvents chkShared As Infragistics.Win.UltraWinEditors.UltraCheckEditor;
+    Friend WithEvents cmbShortcut As Infragistics.Win.UltraWinEditors.UltraComboEditor;
+    Friend WithEvents UltraLabel3 As Infragistics.Win.Misc.UltraLabel;
+    Friend WithEvents btnDown As Infragistics.Win.Misc.UltraButton;
+    Friend WithEvents btnUp As Infragistics.Win.Misc.UltraButton;
+    Friend WithEvents btnApply As Infragistics.Win.Misc.UltraButton;
+}
+
+}
