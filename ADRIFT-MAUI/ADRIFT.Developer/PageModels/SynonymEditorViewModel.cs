@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using ADRIFT.Core.Models;
 
 namespace ADRIFT.Developer.ViewModels;
 
@@ -52,29 +53,40 @@ public partial class SynonymEditorViewModel : ObservableObject
 
     public async Task InitializeAsync()
     {
-        if (!string.IsNullOrEmpty(SynonymKey))
+        try
         {
-            // Edit mode - load existing synonym set
-            IsEditMode = true;
-            PageTitle = "Edit Synonym";
+            var adventure = _adventureService.CurrentAdventure;
+            if (adventure == null) return;
 
-            // TODO: Load synonym from adventure service
-            // For now, using sample data
-            OriginalWord = "examine";
-            Synonyms.Add(new SynonymItemViewModel { Text = "look at" });
-            Synonyms.Add(new SynonymItemViewModel { Text = "inspect" });
-            Synonyms.Add(new SynonymItemViewModel { Text = "check" });
+            if (!string.IsNullOrEmpty(SynonymKey) && adventure.Synonyms.TryGetValue(SynonymKey, out var existingSynonym))
+            {
+                // Edit mode - load existing synonym set
+                IsEditMode = true;
+                PageTitle = "Edit Synonym";
+
+                OriginalWord = existingSynonym.OriginalWord;
+
+                // Load synonyms
+                Synonyms.Clear();
+                foreach (var syn in existingSynonym.SynonymWords)
+                {
+                    Synonyms.Add(new SynonymItemViewModel { Text = syn });
+                }
+            }
+            else
+            {
+                // New synonym mode
+                SynonymKey = "syn_" + Guid.NewGuid().ToString("N").Substring(0, 8);
+                IsEditMode = false;
+                PageTitle = "New Synonym";
+                OriginalWord = "";
+                Synonyms.Clear();
+            }
         }
-        else
+        catch (Exception ex)
         {
-            // New synonym mode
-            IsEditMode = false;
-            PageTitle = "New Synonym";
-            OriginalWord = "";
-            Synonyms.Clear();
+            await Shell.Current.DisplayAlert("Error", $"Failed to initialize: {ex.Message}", "OK");
         }
-
-        await Task.CompletedTask;
     }
 
     [RelayCommand]
@@ -161,14 +173,50 @@ public partial class SynonymEditorViewModel : ObservableObject
 
     private async Task SaveSynonym()
     {
-        // TODO: Save synonym to adventure service
-        // For now, just a placeholder
-        await Task.Delay(100);
-
-        // If this was a new synonym, generate a key
-        if (string.IsNullOrEmpty(SynonymKey))
+        try
         {
-            SynonymKey = "syn_" + Guid.NewGuid().ToString("N")[..8];
+            var adventure = _adventureService.CurrentAdventure;
+            if (adventure == null)
+            {
+                await Shell.Current.DisplayAlert("Error", "No adventure loaded", "OK");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(SynonymKey))
+            {
+                SynonymKey = "syn_" + Guid.NewGuid().ToString("N").Substring(0, 8);
+            }
+
+            var synonym = new Synonym
+            {
+                Key = SynonymKey,
+                OriginalWord = OriginalWord.Trim(),
+                LastModified = DateTime.Now
+            };
+
+            // Save synonym words
+            synonym.SynonymWords.Clear();
+            foreach (var syn in Synonyms)
+            {
+                if (!string.IsNullOrWhiteSpace(syn.Text))
+                {
+                    synonym.SynonymWords.Add(syn.Text.Trim());
+                }
+            }
+
+            // Add or update in adventure
+            if (adventure.Synonyms.ContainsKey(SynonymKey))
+            {
+                adventure.Synonyms[SynonymKey] = synonym;
+            }
+            else
+            {
+                adventure.Synonyms.Add(SynonymKey, synonym);
+            }
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Error", $"Failed to save synonym: {ex.Message}", "OK");
         }
     }
 }

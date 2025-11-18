@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using ADRIFT.Core.Models;
 
 namespace ADRIFT.Developer.ViewModels;
 
@@ -69,38 +70,62 @@ public partial class HintEditorViewModel : ObservableObject
 
     public async Task InitializeAsync()
     {
-        // Load available tasks
-        // TODO: Load from adventure service
-        AvailableTasks.Add(new TaskItemViewModel { Key = "task1", Command = "Open the door" });
-        AvailableTasks.Add(new TaskItemViewModel { Key = "task2", Command = "Find the key" });
-        AvailableTasks.Add(new TaskItemViewModel { Key = "task3", Command = "Talk to the guard" });
-
-        if (!string.IsNullOrEmpty(HintKey))
+        try
         {
-            // Edit mode - load existing hint
-            IsEditMode = true;
-            PageTitle = "Edit Hint";
+            var adventure = _adventureService.CurrentAdventure;
+            if (adventure == null) return;
 
-            // TODO: Load hint from adventure service
-            // For now, using sample data
-            Question = "How do I get past the guard?";
-            SelectedTask = AvailableTasks.FirstOrDefault();
+            // Load available tasks
+            AvailableTasks.Clear();
+            foreach (var task in adventure.Tasks.Values)
+            {
+                AvailableTasks.Add(new TaskItemViewModel
+                {
+                    Key = task.Key,
+                    Command = task.Commands.Any() ? task.Commands.First().Command : task.Name
+                });
+            }
 
-            Hints.Add(new HintItemViewModel { Text = "Try talking to the guard" });
-            Hints.Add(new HintItemViewModel { Text = "Maybe the guard wants something?" });
-            Hints.Add(new HintItemViewModel { Text = "Check your inventory for items" });
+            if (!string.IsNullOrEmpty(HintKey) && adventure.Hints.TryGetValue(HintKey, out var existingHint))
+            {
+                // Edit mode - load existing hint
+                IsEditMode = true;
+                PageTitle = "Edit Hint";
+
+                Question = existingHint.Question;
+
+                // Set selected task
+                if (!string.IsNullOrEmpty(existingHint.RelatedTaskKey))
+                {
+                    SelectedTask = AvailableTasks.FirstOrDefault(t => t.Key == existingHint.RelatedTaskKey);
+                }
+
+                // Load hints
+                Hints.Clear();
+                foreach (var hint in existingHint.Hints.OrderBy(h => h.Order))
+                {
+                    Hints.Add(new HintItemViewModel
+                    {
+                        Text = hint.Text,
+                        Order = hint.Order
+                    });
+                }
+            }
+            else
+            {
+                // New hint mode
+                HintKey = "hint_" + Guid.NewGuid().ToString("N").Substring(0, 8);
+                IsEditMode = false;
+                PageTitle = "New Hint";
+                Question = "";
+                SelectedTask = null;
+                Hints.Clear();
+            }
         }
-        else
+        catch (Exception ex)
         {
-            // New hint mode
-            IsEditMode = false;
-            PageTitle = "New Hint";
-            Question = "";
-            SelectedTask = null;
-            Hints.Clear();
+            await Shell.Current.DisplayAlert("Error", $"Failed to initialize: {ex.Message}", "OK");
         }
-
-        await Task.CompletedTask;
     }
 
     [RelayCommand]
@@ -199,14 +224,55 @@ public partial class HintEditorViewModel : ObservableObject
 
     private async Task SaveHint()
     {
-        // TODO: Save hint to adventure service
-        // For now, just a placeholder
-        await Task.Delay(100);
-
-        // If this was a new hint, generate a key
-        if (string.IsNullOrEmpty(HintKey))
+        try
         {
-            HintKey = "hint_" + Guid.NewGuid().ToString("N")[..8];
+            var adventure = _adventureService.CurrentAdventure;
+            if (adventure == null)
+            {
+                await Shell.Current.DisplayAlert("Error", "No adventure loaded", "OK");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(HintKey))
+            {
+                HintKey = "hint_" + Guid.NewGuid().ToString("N").Substring(0, 8);
+            }
+
+            var hint = new Hint
+            {
+                Key = HintKey,
+                Question = Question.Trim(),
+                RelatedTaskKey = SelectedTask?.Key,
+                LastModified = DateTime.Now
+            };
+
+            // Save hints
+            hint.Hints.Clear();
+            foreach (var hintVm in Hints)
+            {
+                if (!string.IsNullOrWhiteSpace(hintVm.Text))
+                {
+                    hint.Hints.Add(new HintText
+                    {
+                        Order = hintVm.Order,
+                        Text = hintVm.Text.Trim()
+                    });
+                }
+            }
+
+            // Add or update in adventure
+            if (adventure.Hints.ContainsKey(HintKey))
+            {
+                adventure.Hints[HintKey] = hint;
+            }
+            else
+            {
+                adventure.Hints.Add(HintKey, hint);
+            }
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Error", $"Failed to save hint: {ex.Message}", "OK");
         }
     }
 }
