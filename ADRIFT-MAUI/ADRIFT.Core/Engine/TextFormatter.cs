@@ -187,6 +187,82 @@ public class TextFormatter
             return entityRef;
         }, RegexOptions.IgnoreCase);
 
+        // %UCase[text]% - ALL UPPERCASE
+        text = Regex.Replace(text, @"%UCase\[([^\]]+)\]%", m =>
+        {
+            return m.Groups[1].Value.ToUpper();
+        }, RegexOptions.IgnoreCase);
+
+        // %LCase[text]% - all lowercase
+        text = Regex.Replace(text, @"%LCase\[([^\]]+)\]%", m =>
+        {
+            return m.Groups[1].Value.ToLower();
+        }, RegexOptions.IgnoreCase);
+
+        // %Number[n]% - Convert number to words
+        text = Regex.Replace(text, @"%Number\[(\d+)\]%", m =>
+        {
+            if (int.TryParse(m.Groups[1].Value, out var num))
+            {
+                return NumberToWords(num);
+            }
+            return m.Value;
+        }, RegexOptions.IgnoreCase);
+
+        // %ListObjects[]% - List objects at current location
+        text = Regex.Replace(text, @"%ListObjects\[\]%", m =>
+        {
+            return ListObjectsAtCurrentLocation();
+        }, RegexOptions.IgnoreCase);
+
+        // %ListCharacters[]% - List characters at current location
+        text = Regex.Replace(text, @"%ListCharacters\[\]%", m =>
+        {
+            return ListCharactersAtCurrentLocation();
+        }, RegexOptions.IgnoreCase);
+
+        // %ListExits[]% - List available exits
+        text = Regex.Replace(text, @"%ListExits\[\]%", m =>
+        {
+            return ListExitsFromCurrentLocation();
+        }, RegexOptions.IgnoreCase);
+
+        // %Either[option1|option2|option3]% - Random choice
+        text = Regex.Replace(text, @"%Either\[([^\]]+)\]%", m =>
+        {
+            var options = m.Groups[1].Value.Split('|');
+            if (options.Length > 0)
+            {
+                var random = new Random();
+                return options[random.Next(options.Length)].Trim();
+            }
+            return m.Value;
+        }, RegexOptions.IgnoreCase);
+
+        // %Random[min,max]% - Random number in range
+        text = Regex.Replace(text, @"%Random\[(\d+),(\d+)\]%", m =>
+        {
+            if (int.TryParse(m.Groups[1].Value, out var min) &&
+                int.TryParse(m.Groups[2].Value, out var max))
+            {
+                var random = new Random();
+                return random.Next(min, max + 1).ToString();
+            }
+            return m.Value;
+        }, RegexOptions.IgnoreCase);
+
+        // %If[condition,true_text,false_text]% - Conditional text
+        text = Regex.Replace(text, @"%If\[([^,]+),([^,]+),([^\]]+)\]%", m =>
+        {
+            var condition = m.Groups[1].Value.Trim();
+            var trueText = m.Groups[2].Value.Trim();
+            var falseText = m.Groups[3].Value.Trim();
+
+            // Evaluate simple conditions
+            bool result = EvaluateCondition(condition);
+            return result ? trueText : falseText;
+        }, RegexOptions.IgnoreCase);
+
         return text;
     }
 
@@ -416,5 +492,184 @@ public class TextFormatter
         return (firstChar == 'a' || firstChar == 'e' || firstChar == 'i' || firstChar == 'o' || firstChar == 'u')
             ? "an"
             : "a";
+    }
+
+    /// <summary>
+    /// Convert number to words (1-99)
+    /// </summary>
+    private string NumberToWords(int number)
+    {
+        if (number == 0) return "zero";
+        if (number < 0) return "minus " + NumberToWords(-number);
+
+        string[] ones = { "", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
+                          "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen",
+                          "seventeen", "eighteen", "nineteen" };
+        string[] tens = { "", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety" };
+
+        if (number < 20)
+            return ones[number];
+
+        if (number < 100)
+        {
+            var ten = number / 10;
+            var one = number % 10;
+            return tens[ten] + (one > 0 ? "-" + ones[one] : "");
+        }
+
+        if (number < 1000)
+        {
+            var hundred = number / 100;
+            var remainder = number % 100;
+            return ones[hundred] + " hundred" + (remainder > 0 ? " and " + NumberToWords(remainder) : "");
+        }
+
+        return number.ToString(); // Fallback for large numbers
+    }
+
+    /// <summary>
+    /// List all visible objects at the current location
+    /// </summary>
+    private string ListObjectsAtCurrentLocation()
+    {
+        var objects = _state.GetObjectsAtCurrentLocation()
+            .Where(o => !o.IsStatic && !_state.HasObject(o.Key)) // Exclude static and carried objects
+            .ToList();
+
+        if (objects.Count == 0)
+            return "nothing";
+
+        if (objects.Count == 1)
+            return objects[0].FullName;
+
+        var names = objects.Select(o => o.FullName).ToList();
+        return FormatList(names);
+    }
+
+    /// <summary>
+    /// List all characters at the current location
+    /// </summary>
+    private string ListCharactersAtCurrentLocation()
+    {
+        var characters = _state.GetCharactersAtCurrentLocation();
+
+        if (characters.Count == 0)
+            return "no one";
+
+        if (characters.Count == 1)
+            return characters[0].FullName;
+
+        var names = characters.Select(c => c.FullName).ToList();
+        return FormatList(names);
+    }
+
+    /// <summary>
+    /// List all exits from the current location
+    /// </summary>
+    private string ListExitsFromCurrentLocation()
+    {
+        var location = _state.GetCurrentLocation();
+        if (location == null || location.Directions.Count == 0)
+            return "nowhere";
+
+        var exits = location.Directions
+            .Where(d => !string.IsNullOrEmpty(d.DestinationKey))
+            .Select(d => d.DirectionName)
+            .ToList();
+
+        if (exits.Count == 0)
+            return "nowhere";
+
+        if (exits.Count == 1)
+            return exits[0];
+
+        return FormatList(exits);
+    }
+
+    /// <summary>
+    /// Format a list of items with commas and "and"
+    /// </summary>
+    private string FormatList(List<string> items)
+    {
+        if (items.Count == 0) return "";
+        if (items.Count == 1) return items[0];
+        if (items.Count == 2) return $"{items[0]} and {items[1]}";
+
+        var allButLast = string.Join(", ", items.Take(items.Count - 1));
+        return $"{allButLast}, and {items.Last()}";
+    }
+
+    /// <summary>
+    /// Evaluate a simple condition (for %If% function)
+    /// </summary>
+    private bool EvaluateCondition(string condition)
+    {
+        condition = condition.Trim();
+
+        // Handle task completion: TaskCompleted(TaskName)
+        if (condition.StartsWith("TaskCompleted(", StringComparison.OrdinalIgnoreCase))
+        {
+            var taskRef = Regex.Match(condition, @"TaskCompleted\(([^)]+)\)", RegexOptions.IgnoreCase).Groups[1].Value;
+            var task = _adventure.Tasks.Values.FirstOrDefault(t =>
+                t.Name.Equals(taskRef, StringComparison.OrdinalIgnoreCase) ||
+                t.Key.Equals(taskRef, StringComparison.OrdinalIgnoreCase));
+            return task != null && _state.IsTaskCompleted(task.Key);
+        }
+
+        // Handle has object: HasObject(ObjectName)
+        if (condition.StartsWith("HasObject(", StringComparison.OrdinalIgnoreCase))
+        {
+            var objRef = Regex.Match(condition, @"HasObject\(([^)]+)\)", RegexOptions.IgnoreCase).Groups[1].Value;
+            var obj = _adventure.Objects.Values.FirstOrDefault(o =>
+                o.Name.Equals(objRef, StringComparison.OrdinalIgnoreCase) ||
+                o.Key.Equals(objRef, StringComparison.OrdinalIgnoreCase));
+            return obj != null && _state.HasObject(obj.Key);
+        }
+
+        // Handle variable comparisons: Variable = Value
+        var variableMatch = Regex.Match(condition, @"(\w+)\s*(=|>|<|>=|<=|!=)\s*(.+)", RegexOptions.IgnoreCase);
+        if (variableMatch.Success)
+        {
+            var varName = variableMatch.Groups[1].Value;
+            var op = variableMatch.Groups[2].Value;
+            var value = variableMatch.Groups[3].Value.Trim();
+
+            var variable = _adventure.Variables.Values.FirstOrDefault(v =>
+                v.Name.Equals(varName, StringComparison.OrdinalIgnoreCase));
+
+            if (variable != null)
+            {
+                var currentValue = _state.GetVariableValue(variable.Key);
+
+                if (variable.Type == VariableType.Numeric)
+                {
+                    if (int.TryParse(currentValue, out var current) && int.TryParse(value, out var target))
+                    {
+                        return op switch
+                        {
+                            "=" => current == target,
+                            ">" => current > target,
+                            "<" => current < target,
+                            ">=" => current >= target,
+                            "<=" => current <= target,
+                            "!=" => current != target,
+                            _ => false
+                        };
+                    }
+                }
+                else
+                {
+                    return op switch
+                    {
+                        "=" => currentValue.Equals(value, StringComparison.OrdinalIgnoreCase),
+                        "!=" => !currentValue.Equals(value, StringComparison.OrdinalIgnoreCase),
+                        _ => false
+                    };
+                }
+            }
+        }
+
+        // Default: try to parse as boolean
+        return bool.TryParse(condition, out var result) && result;
     }
 }
