@@ -304,11 +304,50 @@ public static class AdventureFileIO
                     case "IsLibrary":
                         location.IsLibrary = await reader.ReadElementContentAsBooleanAsync();
                         break;
+                    case "Directions":
+                        await ReadDirectionsAsync(reader, location);
+                        break;
                 }
             }
         }
 
         return location;
+    }
+
+    private static async Task ReadDirectionsAsync(XmlReader reader, Location location)
+    {
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "Directions")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element && reader.Name == "Direction")
+            {
+                var direction = new Direction();
+                var name = reader.GetAttribute("Name");
+                if (!string.IsNullOrEmpty(name)) direction.DirectionName = name;
+
+                var destination = reader.GetAttribute("Destination");
+                if (!string.IsNullOrEmpty(destination)) direction.DestinationKey = destination;
+
+                // Read restriction if present
+                if (!reader.IsEmptyElement)
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "Direction")
+                            break;
+
+                        if (reader.NodeType == XmlNodeType.Element && reader.Name == "Restriction")
+                        {
+                            direction.RestrictionDescription = await reader.ReadElementContentAsStringAsync();
+                        }
+                    }
+                }
+
+                location.Directions.Add(direction);
+            }
+        }
     }
 
     private static async Task ReadObjectsAsync(XmlReader reader, Adventure adventure)
@@ -1087,6 +1126,26 @@ public static class AdventureFileIO
                 await writer.WriteElementStringAsync(null, "HideOnMap", null, "true");
             if (location.IsLibrary)
                 await writer.WriteElementStringAsync(null, "IsLibrary", null, "true");
+
+            // Write directions
+            if (location.Directions.Count > 0)
+            {
+                await writer.WriteStartElementAsync(null, "Directions", null);
+                foreach (var direction in location.Directions)
+                {
+                    await writer.WriteStartElementAsync(null, "Direction", null);
+                    await writer.WriteAttributeStringAsync(null, "Name", null, direction.DirectionName);
+                    await writer.WriteAttributeStringAsync(null, "Destination", null, direction.DestinationKey);
+
+                    if (!string.IsNullOrEmpty(direction.RestrictionDescription))
+                    {
+                        await writer.WriteElementStringAsync(null, "Restriction", null, direction.RestrictionDescription);
+                    }
+
+                    await writer.WriteEndElementAsync(); // Direction
+                }
+                await writer.WriteEndElementAsync(); // Directions
+            }
 
             await writer.WriteEndElementAsync(); // Location
         }
