@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ADRIFT.ViewModels"
+             x:Class="ADRIFT.Views.GroupEditorPage"
+             x:DataType="vm:GroupEditorViewModel"
+             Title="Group Editor">
+    <Grid RowDefinitions="*,Auto">
+        <!-- Main content -->
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Padding="16" Spacing="16">
+                <!-- Header -->
+                <Frame BackgroundColor="{StaticResource ADRIFTPrimary}" Padding="16" Margin="0" CornerRadius="8">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="{Binding PageTitle}" FontSize="20" FontAttributes="Bold" TextColor="White" />
+                        <Label Text="{Binding MemberCountText}" FontSize="14" TextColor="White" Opacity="0.9" />
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Group Name Section -->
+                <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Group Name" FontSize="16" FontAttributes="Bold" />
+                        <Entry Text="{Binding GroupName}" Placeholder="Enter group name..." />
+                        <Label Text="A descriptive name for this group" FontSize="12" TextColor="Gray" />
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Group Type Section -->
+                <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Group Type" FontSize="16" FontAttributes="Bold" />
+                        <Picker Title="Select group type"
+                                ItemsSource="{Binding GroupTypes}"
+                                SelectedItem="{Binding SelectedGroupType}" />
+                        <Label Text="The type of items this group will contain" FontSize="12" TextColor="Gray" />
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Member Selection Section -->
+                <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                    <VerticalStackLayout Spacing="12">
+                        <HorizontalStackLayout Spacing="8">
+                            <Label Text="Members" FontSize="16" FontAttributes="Bold" VerticalOptions="Center" />
+                            <Label Text="{Binding SelectedMemberCountText}"
+                                   FontSize="14"
+                                   TextColor="{StaticResource ADRIFTPrimary}"
+                                   VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+
+                        <Label Text="{Binding MemberSelectionHint}" FontSize="12" TextColor="Gray" />
+
+                        <!-- Quick selection buttons -->
+                        <HorizontalStackLayout Spacing="8">
+                            <Button Text="Select All"
+                                    Command="{Binding SelectAllMembersCommand}"
+                                    FontSize="12"
+                                    Padding="12,6"
+                                    BackgroundColor="{StaticResource ADRIFTSecondary}" />
+                            <Button Text="Clear All"
+                                    Command="{Binding ClearAllMembersCommand}"
+                                    FontSize="12"
+                                    Padding="12,6"
+                                    BackgroundColor="Gray" />
+                        </HorizontalStackLayout>
+
+                        <!-- Search for members -->
+                        <SearchBar Placeholder="Search members..."
+                                   Text="{Binding MemberSearchText}"
+                                   Margin="0,8,0,0" />
+
+                        <!-- Members list with checkboxes -->
+                        <Label Text="No items available for this group type"
+                               IsVisible="{Binding HasNoMembers}"
+                               FontSize="14"
+                               TextColor="Gray"
+                               Margin="0,8" />
+
+                        <CollectionView ItemsSource="{Binding FilteredMembers}"
+                                        IsVisible="{Binding HasMembers}"
+                                        SelectionMode="None"
+                                        HeightRequest="300">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="vm:GroupMemberItemViewModel">
+                                    <Frame Padding="12" Margin="0,4" BorderColor="LightGray">
+                                        <Grid ColumnDefinitions="Auto,*">
+                                            <CheckBox Grid.Column="0"
+                                                      IsChecked="{Binding IsSelected}"
+                                                      VerticalOptions="Center"
+                                                      Color="{StaticResource ADRIFTPrimary}" />
+                                            <VerticalStackLayout Grid.Column="1" Spacing="4" Margin="8,0,0,0">
+                                                <Label Text="{Binding Name}"
+                                                       FontSize="16"
+                                                       FontAttributes="{Binding NameFontAttributes}" />
+                                                <Label Text="{Binding Description}"
+                                                       FontSize="12"
+                                                       TextColor="Gray"
+                                                       IsVisible="{Binding HasDescription}" />
+                                            </VerticalStackLayout>
+                                        </Grid>
+                                    </Frame>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Description Section -->
+                <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Description (Optional)" FontSize="16" FontAttributes="Bold" />
+                        <Editor Text="{Binding Description}"
+                                Placeholder="Enter group description..."
+                                HeightRequest="100"
+                                AutoSize="TextChanges" />
+                        <Label Text="Optional notes about this group's purpose" FontSize="12" TextColor="Gray" />
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Examples Section -->
+                <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}" BackgroundColor="#F0F8FF">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Group Examples" FontSize="16" FontAttributes="Bold" />
+                        <Label FontSize="12" TextColor="Gray">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="• " />
+                                    <Span Text="Characters: " FontAttributes="Bold" />
+                                    <Span Text="Guards, Villagers, NPCs" />
+                                    <Span Text="&#10;• " />
+                                    <Span Text="Objects: " FontAttributes="Bold" />
+                                    <Span Text="Weapons, Keys, Food Items" />
+                                    <Span Text="&#10;• " />
+                                    <Span Text="Locations: " FontAttributes="Bold" />
+                                    <Span Text="Outdoor Areas, Indoor Rooms" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                    </VerticalStackLayout>
+                </Frame>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Action buttons -->
+        <Grid Grid.Row="1"
+              ColumnDefinitions="*,Auto,Auto"
+              Padding="16"
+              BackgroundColor="{StaticResource ADRIFTLight}"
+              ColumnSpacing="12">
+            <Button Grid.Column="0"
+                    Text="Cancel"
+                    Command="{Binding CancelCommand}"
+                    BackgroundColor="Gray" />
+            <Button Grid.Column="1"
+                    Text="Apply"
+                    Command="{Binding ApplyCommand}"
+                    BackgroundColor="{StaticResource ADRIFTSecondary}"
+                    IsVisible="{Binding IsEditMode}" />
+            <Button Grid.Column="2"
+                    Text="OK"
+                    Command="{Binding SaveAndCloseCommand}"
+                    BackgroundColor="{StaticResource ADRIFTPrimary}" />
+        </Grid>
+    </Grid>
+</ContentPage>

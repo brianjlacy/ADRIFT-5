@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ADRIFT.ViewModels"
+             x:Class="ADRIFT.Views.VariableEditorPage"
+             x:DataType="vm:VariableEditorViewModel"
+             Title="Variable Editor">
+    <Grid RowDefinitions="*,Auto">
+        <!-- Main content -->
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Padding="16" Spacing="16">
+                <!-- Header -->
+                <Frame BackgroundColor="{StaticResource ADRIFTPrimary}" Padding="16" Margin="0" CornerRadius="8">
+                    <Label Text="{Binding PageTitle}" FontSize="20" FontAttributes="Bold" TextColor="White" />
+                </Frame>
+
+                <!-- Name Section -->
+                <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Variable Name" FontSize="16" FontAttributes="Bold" />
+                        <Entry Text="{Binding VariableName}" Placeholder="Enter variable name..." />
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Type Section -->
+                <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Variable Type" FontSize="16" FontAttributes="Bold" />
+                        <Picker Title="Select variable type"
+                                ItemsSource="{Binding VariableTypes}"
+                                SelectedItem="{Binding SelectedVariableType}" />
+                        <Label Text="Choose the data type for this variable" FontSize="12" TextColor="Gray" />
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Initial Value Section -->
+                <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Initial Value" FontSize="16" FontAttributes="Bold" />
+                        <Entry Text="{Binding InitialValue}"
+                               Placeholder="Enter initial value..."
+                               Keyboard="{Binding ValueKeyboard}" />
+                        <Label Text="{Binding ValueHint}" FontSize="12" TextColor="Gray" />
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Description Section -->
+                <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Description (Optional)" FontSize="16" FontAttributes="Bold" />
+                        <Editor Text="{Binding Description}"
+                                Placeholder="Enter description..."
+                                HeightRequest="100"
+                                AutoSize="TextChanges" />
+                        <Label Text="Optional notes about this variable's purpose" FontSize="12" TextColor="Gray" />
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Current Value Display (for existing variables) -->
+                <Frame Padding="16"
+                       BorderColor="{StaticResource ADRIFTSecondary}"
+                       IsVisible="{Binding IsEditMode}">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Current Value" FontSize="16" FontAttributes="Bold" />
+                        <HorizontalStackLayout Spacing="12">
+                            <Label Text="{Binding CurrentValue}"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource ADRIFTPrimary}"
+                                   VerticalOptions="Center" />
+                            <Button Text="Reset to Initial"
+                                    Command="{Binding ResetToInitialCommand}"
+                                    FontSize="12"
+                                    Padding="8,4" />
+                        </HorizontalStackLayout>
+                        <Label Text="This is the variable's current value during gameplay" FontSize="12" TextColor="Gray" />
+                    </VerticalStackLayout>
+                </Frame>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Action buttons -->
+        <Grid Grid.Row="1"
+              ColumnDefinitions="*,Auto,Auto"
+              Padding="16"
+              BackgroundColor="{StaticResource ADRIFTLight}"
+              ColumnSpacing="12">
+            <Button Grid.Column="0"
+                    Text="Cancel"
+                    Command="{Binding CancelCommand}"
+                    BackgroundColor="Gray" />
+            <Button Grid.Column="1"
+                    Text="Apply"
+                    Command="{Binding ApplyCommand}"
+                    BackgroundColor="{StaticResource ADRIFTSecondary}"
+                    IsVisible="{Binding IsEditMode}" />
+            <Button Grid.Column="2"
+                    Text="OK"
+                    Command="{Binding SaveAndCloseCommand}"
+                    BackgroundColor="{StaticResource ADRIFTPrimary}" />
+        </Grid>
+    </Grid>
+</ContentPage>

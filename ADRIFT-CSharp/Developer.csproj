@@ -1,0 +1,68 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <AssemblyName>dev500</AssemblyName>
+    <RootNamespace>ADRIFT</RootNamespace>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationIcon>generator.ico</ApplicationIcon>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <DefineConstants>$(DefineConstants);Generator</DefineConstants>
+    <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
+    <SignAssembly>true</SignAssembly>
+    <Version>5.0.36.6</Version>
+    <Product>ADRIFT 5 Developer</Product>
+    <Copyright>Copyright © Campbell Wild 1998-2025</Copyright>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <DefineConstants>$(DefineConstants);DEBUG;TRACE</DefineConstants>
+    <DebugType>portable</DebugType>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <DefineConstants>$(DefineConstants);TRACE</DefineConstants>
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="ADRIFT\**\*.Designer.cs" />
+    <EmbeddedResource Include="ADRIFT\**\*.resx" Exclude="ADRIFT\My Project\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- NOTE: Infragistics controls need to be updated for .NET 8 or replaced -->
+    <!-- These packages may not exist for .NET 8 - you'll need to find alternatives or use .NET 8 compatible versions -->
+    <!--
+    <PackageReference Include="Infragistics.WinForms" Version="24.1.0" />
+    -->
+
+    <!-- DirectX is not available for .NET Core/.NET 8 - will need to replace with NAudio or similar -->
+    <!-- <Reference Include="Microsoft.DirectX.AudioVideoPlayback" /> -->
+
+    <!-- zlib.net replacement for .NET 8 -->
+    <PackageReference Include="SharpZipLib" Version="1.4.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="ADRIFT\**\*.cs" Exclude="ADRIFT\**\*.Designer.cs;ADRIFT\My Project\**;ADRIFT\**\*.aspx.cs;ADRIFT\**\*.ascx.cs;ADRIFT\**\*.ashx.cs" />
+    <Compile Include="ADRIFT\AssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="ADRIFT\generator.ico" />
+    <None Include="ADRIFT\StandardLibrary.amf" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="Libraries\**\*.amf" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!-- Resource files -->
+  <ItemGroup>
+    <EmbeddedResource Include="ADRIFT\licenses.licx" />
+    <EmbeddedResource Include="ADRIFT\location.ico" />
+  </ItemGroup>
+
+</Project>

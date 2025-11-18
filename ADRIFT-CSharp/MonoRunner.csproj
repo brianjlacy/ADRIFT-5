@@ -1,0 +1,54 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>MonoRunner</AssemblyName>
+    <RootNamespace>ADRIFT</RootNamespace>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationIcon>runner.ico</ApplicationIcon>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <DefineConstants>$(DefineConstants);Mono</DefineConstants>
+    <Version>5.0.36.6</Version>
+    <Product>ADRIFT 5 Mono Runner</Product>
+    <Copyright>Copyright © Campbell Wild 1998-2025</Copyright>
+    <RuntimeIdentifiers>linux-x64;osx-x64;win-x64</RuntimeIdentifiers>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <DefineConstants>$(DefineConstants);DEBUG;TRACE</DefineConstants>
+    <DebugType>portable</DebugType>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <DefineConstants>$(DefineConstants);TRACE</DefineConstants>
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="ADRIFT\**\*.Designer.cs" />
+    <EmbeddedResource Include="ADRIFT\**\*.resx" Exclude="ADRIFT\My Project\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- zlib.net replacement for .NET 8 -->
+    <PackageReference Include="SharpZipLib" Version="1.4.2" />
+
+    <!-- For cross-platform audio/video playback on .NET 8 -->
+    <PackageReference Include="NAudio" Version="2.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="ADRIFT\**\*.cs" Exclude="ADRIFT\**\*.Designer.cs;ADRIFT\My Project\**;ADRIFT\**\*.aspx.cs;ADRIFT\**\*.ascx.cs;ADRIFT\**\*.ashx.cs;ADRIFT\frmGenerator.cs;ADRIFT\Generator.cs;ADRIFT\frmRunner.cs;ADRIFT\RunnerInfragistics.cs" />
+    <Compile Include="ADRIFT\AssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="ADRIFT\runner.ico" />
+    <None Include="Libraries\**\*.amf" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

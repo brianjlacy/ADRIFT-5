@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ADRIFT.ViewModels"
+             x:Class="ADRIFT.Views.CharacterEditorPage"
+             x:DataType="vm:CharacterEditorViewModel"
+             Title="Character Editor">
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
+        <!-- Header -->
+        <Frame Grid.Row="0" BackgroundColor="{StaticResource ADRIFTPrimary}" Padding="16" Margin="0" CornerRadius="0">
+            <VerticalStackLayout Spacing="4">
+                <Label Text="{Binding PageTitle}" FontSize="20" FontAttributes="Bold" TextColor="White" />
+                <Label Text="{Binding CharacterSummary}" FontSize="14" TextColor="White" Opacity="0.9" />
+            </VerticalStackLayout>
+        </Frame>
+
+        <!-- Tab buttons -->
+        <ScrollView Grid.Row="1" Orientation="Horizontal" Margin="0">
+            <HorizontalStackLayout Spacing="0" Padding="0">
+                <Button Text="Description"
+                        Command="{Binding SelectTabCommand}"
+                        CommandParameter="Description"
+                        BackgroundColor="{Binding DescriptionTabColor}"
+                        TextColor="White"
+                        CornerRadius="0" />
+                <Button Text="Location"
+                        Command="{Binding SelectTabCommand}"
+                        CommandParameter="Location"
+                        BackgroundColor="{Binding LocationTabColor}"
+                        TextColor="White"
+                        CornerRadius="0" />
+                <Button Text="Walk"
+                        Command="{Binding SelectTabCommand}"
+                        CommandParameter="Walk"
+                        BackgroundColor="{Binding WalkTabColor}"
+                        TextColor="White"
+                        CornerRadius="0" />
+                <Button Text="Topics"
+                        Command="{Binding SelectTabCommand}"
+                        CommandParameter="Topics"
+                        BackgroundColor="{Binding TopicsTabColor}"
+                        TextColor="White"
+                        CornerRadius="0" />
+            </HorizontalStackLayout>
+        </ScrollView>
+
+        <!-- Tab content -->
+        <ScrollView Grid.Row="2">
+            <VerticalStackLayout Padding="16" Spacing="16">
+                <!-- Description Tab -->
+                <VerticalStackLayout Spacing="16" IsVisible="{Binding IsDescriptionTabVisible}">
+                    <!-- Name Section -->
+                    <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Character Name" FontSize="16" FontAttributes="Bold" />
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                                <Entry Grid.Column="0" Text="{Binding Prefix}" Placeholder="Title" WidthRequest="100" />
+                                <Entry Grid.Column="1" Text="{Binding Name}" Placeholder="Name" />
+                            </Grid>
+                            <Label Text="{Binding FullCharacterName}" FontSize="14" FontAttributes="Italic" TextColor="Gray" />
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Aliases -->
+                    <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Aliases (Alternative Names)" FontSize="16" FontAttributes="Bold" />
+                            <Entry Text="{Binding Aliases}" Placeholder="Enter aliases separated by commas..." />
+                            <Label Text="e.g., guard, soldier, watchman" FontSize="12" TextColor="Gray" />
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Description -->
+                    <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Description" FontSize="16" FontAttributes="Bold" />
+                            <Editor Text="{Binding Description}"
+                                    Placeholder="Character description..."
+                                    HeightRequest="120"
+                                    AutoSize="TextChanges" />
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Character Type -->
+                    <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Character Type" FontSize="16" FontAttributes="Bold" />
+                            <Picker ItemsSource="{Binding CharacterTypes}"
+                                    SelectedItem="{Binding SelectedCharacterType}" />
+                            <Label FontSize="12" TextColor="Gray">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="• NPC: " FontAttributes="Bold" />
+                                        <Span Text="Non-player character&#10;" />
+                                        <Span Text="• Companion: " FontAttributes="Bold" />
+                                        <Span Text="Follows player&#10;" />
+                                        <Span Text="• Enemy: " FontAttributes="Bold" />
+                                        <Span Text="Hostile character" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Personality Traits -->
+                    <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Personality Traits" FontSize="16" FontAttributes="Bold" />
+                            <Entry Text="{Binding PersonalityTraits}" Placeholder="brave, cunning, cheerful..." />
+                        </VerticalStackLayout>
+                    </Frame>
+                </VerticalStackLayout>
+
+                <!-- Location Tab -->
+                <VerticalStackLayout Spacing="16" IsVisible="{Binding IsLocationTabVisible}">
+                    <!-- Initial Location -->
+                    <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Initial Location" FontSize="16" FontAttributes="Bold" />
+                            <Picker Title="Select location"
+                                    ItemsSource="{Binding AvailableLocations}"
+                                    ItemDisplayBinding="{Binding Name}"
+                                    SelectedItem="{Binding SelectedLocation}" />
+                            <Label Text="Where the character starts" FontSize="12" TextColor="Gray" />
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Movement -->
+                    <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                        <VerticalStackLayout Spacing="12">
+                            <Label Text="Movement" FontSize="16" FontAttributes="Bold" />
+
+                            <HorizontalStackLayout Spacing="12">
+                                <CheckBox IsChecked="{Binding CanMove}" Color="{StaticResource ADRIFTPrimary}" />
+                                <Label Text="Character can move" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+
+                            <HorizontalStackLayout Spacing="12">
+                                <CheckBox IsChecked="{Binding FollowsPlayer}" Color="{StaticResource ADRIFTPrimary}" />
+                                <Label Text="Follows the player" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Inventory -->
+                    <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                        <VerticalStackLayout Spacing="12">
+                            <HorizontalStackLayout Spacing="8">
+                                <Label Text="Inventory" FontSize="16" FontAttributes="Bold" VerticalOptions="Center" />
+                                <Label Text="{Binding InventoryCountText}"
+                                       FontSize="14"
+                                       TextColor="{StaticResource ADRIFTPrimary}"
+                                       VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+
+                            <Button Text="+ Add Item to Inventory"
+                                    Command="{Binding AddInventoryItemCommand}"
+                                    BackgroundColor="{StaticResource ADRIFTSecondary}" />
+
+                            <CollectionView ItemsSource="{Binding InventoryItems}"
+                                            IsVisible="{Binding HasInventory}">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:InventoryItemViewModel">
+                                        <SwipeView>
+                                            <SwipeView.RightItems>
+                                                <SwipeItem Text="Remove"
+                                                           BackgroundColor="Red"
+                                                           Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CharacterEditorViewModel}}, Path=RemoveInventoryItemCommand}"
+                                                           CommandParameter="{Binding}" />
+                                            </SwipeView.RightItems>
+                                            <Frame Padding="12" Margin="0,4">
+                                                <Label Text="{Binding ObjectName}" FontSize="14" />
+                                            </Frame>
+                                        </SwipeView>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </VerticalStackLayout>
+                    </Frame>
+                </VerticalStackLayout>
+
+                <!-- Walk Tab -->
+                <VerticalStackLayout Spacing="16" IsVisible="{Binding IsWalkTabVisible}">
+                    <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                        <VerticalStackLayout Spacing="12">
+                            <Label Text="Walk Route" FontSize="16" FontAttributes="Bold" />
+                            <Label Text="Define a walking route for this character" FontSize="12" TextColor="Gray" />
+
+                            <HorizontalStackLayout Spacing="12">
+                                <CheckBox IsChecked="{Binding HasWalkRoute}" Color="{StaticResource ADRIFTPrimary}" />
+                                <Label Text="Character follows a walk route" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}"
+                           IsVisible="{Binding HasWalkRoute}">
+                        <VerticalStackLayout Spacing="12">
+                            <HorizontalStackLayout Spacing="8">
+                                <Label Text="Walk Steps" FontSize="16" FontAttributes="Bold" VerticalOptions="Center" />
+                                <Label Text="{Binding WalkStepCountText}"
+                                       FontSize="14"
+                                       TextColor="{StaticResource ADRIFTPrimary}"
+                                       VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+
+                            <Button Text="+ Add Walk Step"
+                                    Command="{Binding AddWalkStepCommand}"
+                                    BackgroundColor="{StaticResource ADRIFTSecondary}" />
+
+                            <CollectionView ItemsSource="{Binding WalkSteps}"
+                                            IsVisible="{Binding HasWalkSteps}">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:WalkStepViewModel">
+                                        <Frame Padding="12" Margin="0,4">
+                                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                                <Label Grid.Column="0"
+                                                       Text="{Binding StepNumber}"
+                                                       FontSize="16"
+                                                       FontAttributes="Bold"
+                                                       WidthRequest="40" />
+                                                <Label Grid.Column="1"
+                                                       Text="{Binding Description}"
+                                                       FontSize="14" />
+                                                <Button Grid.Column="2"
+                                                        Text="×"
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CharacterEditorViewModel}}, Path=RemoveWalkStepCommand}"
+                                                        CommandParameter="{Binding}"
+                                                        BackgroundColor="Red"
+                                                        WidthRequest="40" />
+                                            </Grid>
+                                        </Frame>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+
+                            <HorizontalStackLayout Spacing="12" IsVisible="{Binding HasWalkSteps}">
+                                <CheckBox IsChecked="{Binding WalkLoops}" Color="{StaticResource ADRIFTPrimary}" />
+                                <Label Text="Loop walk route" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </Frame>
+                </VerticalStackLayout>
+
+                <!-- Topics Tab -->
+                <VerticalStackLayout Spacing="16" IsVisible="{Binding IsTopicsTabVisible}">
+                    <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                        <VerticalStackLayout Spacing="12">
+                            <Label Text="Conversation Topics" FontSize="16" FontAttributes="Bold" />
+                            <Label Text="Topics the character can discuss" FontSize="12" TextColor="Gray" />
+
+                            <Button Text="+ Add Conversation Topic"
+                                    Command="{Binding AddTopicCommand}"
+                                    BackgroundColor="{StaticResource ADRIFTSecondary}" />
+
+                            <Label Text="No topics added"
+                                   IsVisible="{Binding HasNoTopics}"
+                                   FontSize="14"
+                                   TextColor="Gray"
+                                   Margin="0,8" />
+
+                            <CollectionView ItemsSource="{Binding ConversationTopics}"
+                                            IsVisible="{Binding HasTopics}">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:ConversationTopicViewModel">
+                                        <SwipeView>
+                                            <SwipeView.RightItems>
+                                                <SwipeItem Text="Delete"
+                                                           BackgroundColor="Red"
+                                                           Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CharacterEditorViewModel}}, Path=RemoveTopicCommand}"
+                                                           CommandParameter="{Binding}" />
+                                            </SwipeView.RightItems>
+                                            <Frame Padding="12" Margin="0,4">
+                                                <VerticalStackLayout Spacing="4">
+                                                    <Label Text="{Binding TopicName}"
+                                                           FontSize="16"
+                                                           FontAttributes="Bold" />
+                                                    <Label Text="{Binding Response}"
+                                                           FontSize="14"
+                                                           TextColor="Gray" />
+                                                </VerticalStackLayout>
+                                            </Frame>
+                                        </SwipeView>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- General Greeting -->
+                    <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="General Greeting" FontSize="16" FontAttributes="Bold" />
+                            <Editor Text="{Binding GeneralGreeting}"
+                                    Placeholder="What the character says when greeted..."
+                                    HeightRequest="80"
+                                    AutoSize="TextChanges" />
+                        </VerticalStackLayout>
+                    </Frame>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Action buttons -->
+        <Grid Grid.Row="3"
+              ColumnDefinitions="*,Auto,Auto"
+              Padding="16"
+              BackgroundColor="{StaticResource ADRIFTLight}"
+              ColumnSpacing="12">
+            <Button Grid.Column="0"
+                    Text="Cancel"
+                    Command="{Binding CancelCommand}"
+                    BackgroundColor="Gray" />
+            <Button Grid.Column="1"
+                    Text="Apply"
+                    Command="{Binding ApplyCommand}"
+                    BackgroundColor="{StaticResource ADRIFTSecondary}"
+                    IsVisible="{Binding IsEditMode}" />
+            <Button Grid.Column="2"
+                    Text="OK"
+                    Command="{Binding SaveAndCloseCommand}"
+                    BackgroundColor="{StaticResource ADRIFTPrimary}" />
+        </Grid>
+    </Grid>
+</ContentPage>

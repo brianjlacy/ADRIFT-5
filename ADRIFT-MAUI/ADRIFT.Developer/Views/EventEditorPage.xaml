@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ADRIFT.ViewModels"
+             x:Class="ADRIFT.Views.EventEditorPage"
+             x:DataType="vm:EventEditorViewModel"
+             Title="Event Editor">
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
+        <!-- Header -->
+        <Frame Grid.Row="0" BackgroundColor="{StaticResource ADRIFTPrimary}" Padding="16" Margin="0" CornerRadius="0">
+            <VerticalStackLayout Spacing="4">
+                <Label Text="{Binding PageTitle}" FontSize="20" FontAttributes="Bold" TextColor="White" />
+                <Label Text="{Binding EventSummary}" FontSize="14" TextColor="White" Opacity="0.9" />
+            </VerticalStackLayout>
+        </Frame>
+
+        <!-- Tab buttons -->
+        <ScrollView Grid.Row="1" Orientation="Horizontal" Margin="0">
+            <HorizontalStackLayout Spacing="0" Padding="0">
+                <Button Text="Description"
+                        Command="{Binding SelectTabCommand}"
+                        CommandParameter="Description"
+                        BackgroundColor="{Binding DescriptionTabColor}"
+                        TextColor="White"
+                        CornerRadius="0" />
+                <Button Text="When"
+                        Command="{Binding SelectTabCommand}"
+                        CommandParameter="When"
+                        BackgroundColor="{Binding WhenTabColor}"
+                        TextColor="White"
+                        CornerRadius="0" />
+                <Button Text="Actions"
+                        Command="{Binding SelectTabCommand}"
+                        CommandParameter="Actions"
+                        BackgroundColor="{Binding ActionsTabColor}"
+                        TextColor="White"
+                        CornerRadius="0" />
+            </HorizontalStackLayout>
+        </ScrollView>
+
+        <!-- Tab content -->
+        <ScrollView Grid.Row="2">
+            <VerticalStackLayout Padding="16" Spacing="16">
+                <!-- Description Tab -->
+                <VerticalStackLayout Spacing="16" IsVisible="{Binding IsDescriptionTabVisible}">
+                    <!-- Event Name -->
+                    <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Event Name" FontSize="16" FontAttributes="Bold" />
+                            <Entry Text="{Binding EventName}" Placeholder="Enter event name..." />
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Event Type -->
+                    <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Event Type" FontSize="16" FontAttributes="Bold" />
+                            <Picker ItemsSource="{Binding EventTypes}"
+                                    SelectedItem="{Binding SelectedEventType}" />
+                            <Label FontSize="12" TextColor="Gray">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="• Time-based: " FontAttributes="Bold" />
+                                        <Span Text="Occurs after time passes&#10;" />
+                                        <Span Text="• Triggered: " FontAttributes="Bold" />
+                                        <Span Text="Occurs when conditions are met&#10;" />
+                                        <Span Text="• Repeating: " FontAttributes="Bold" />
+                                        <Span Text="Occurs multiple times" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Description -->
+                    <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Description" FontSize="16" FontAttributes="Bold" />
+                            <Editor Text="{Binding Description}"
+                                    Placeholder="Describe what this event does..."
+                                    HeightRequest="100"
+                                    AutoSize="TextChanges" />
+                        </VerticalStackLayout>
+                    </Frame>
+                </VerticalStackLayout>
+
+                <!-- When Tab -->
+                <VerticalStackLayout Spacing="16" IsVisible="{Binding IsWhenTabVisible}">
+                    <!-- Trigger Type -->
+                    <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Trigger Type" FontSize="16" FontAttributes="Bold" />
+                            <Picker ItemsSource="{Binding TriggerTypes}"
+                                    SelectedItem="{Binding SelectedTriggerType}" />
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Time-based Settings -->
+                    <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}"
+                           IsVisible="{Binding IsTimeBased}">
+                        <VerticalStackLayout Spacing="12">
+                            <Label Text="Time Settings" FontSize="16" FontAttributes="Bold" />
+
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                                <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                    <Label Text="Delay (turns)" FontSize="14" />
+                                    <Entry Text="{Binding DelayTurns}" Keyboard="Numeric" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                    <Label Text="Repeat every (turns)" FontSize="14" />
+                                    <Entry Text="{Binding RepeatTurns}" Keyboard="Numeric" Placeholder="0 = no repeat" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Condition-based Settings -->
+                    <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}"
+                           IsVisible="{Binding IsConditionBased}">
+                        <VerticalStackLayout Spacing="12">
+                            <Label Text="Trigger Conditions" FontSize="16" FontAttributes="Bold" />
+                            <Label Text="Event triggers when these conditions are met" FontSize="12" TextColor="Gray" />
+
+                            <Button Text="+ Add Condition"
+                                    Command="{Binding AddConditionCommand}"
+                                    BackgroundColor="{StaticResource ADRIFTSecondary}" />
+
+                            <Label Text="No conditions defined (triggers immediately)"
+                                   IsVisible="{Binding HasNoConditions}"
+                                   FontSize="14"
+                                   TextColor="Gray" />
+
+                            <CollectionView ItemsSource="{Binding TriggerConditions}"
+                                            IsVisible="{Binding HasConditions}">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:ConditionViewModel">
+                                        <SwipeView>
+                                            <SwipeView.RightItems>
+                                                <SwipeItem Text="Delete"
+                                                           BackgroundColor="Red"
+                                                           Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EventEditorViewModel}}, Path=RemoveConditionCommand}"
+                                                           CommandParameter="{Binding}" />
+                                            </SwipeView.RightItems>
+                                            <Frame Padding="12" Margin="0,4">
+                                                <Label Text="{Binding Description}" FontSize="14" />
+                                            </Frame>
+                                        </SwipeView>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Parent Event (for sub-events) -->
+                    <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Parent Event (Optional)" FontSize="16" FontAttributes="Bold" />
+                            <Picker Title="Select parent event"
+                                    ItemsSource="{Binding AvailableParentEvents}"
+                                    ItemDisplayBinding="{Binding Name}"
+                                    SelectedItem="{Binding SelectedParentEvent}" />
+                            <Label Text="Make this a sub-event of another event" FontSize="12" TextColor="Gray" />
+                        </VerticalStackLayout>
+                    </Frame>
+                </VerticalStackLayout>
+
+                <!-- Actions Tab -->
+                <VerticalStackLayout Spacing="16" IsVisible="{Binding IsActionsTabVisible}">
+                    <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                        <VerticalStackLayout Spacing="12">
+                            <HorizontalStackLayout Spacing="8">
+                                <Label Text="Event Actions" FontSize="16" FontAttributes="Bold" VerticalOptions="Center" />
+                                <Label Text="{Binding ActionCountText}"
+                                       FontSize="14"
+                                       TextColor="{StaticResource ADRIFTPrimary}"
+                                       VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                            <Label Text="Actions that occur when the event triggers" FontSize="12" TextColor="Gray" />
+
+                            <Button Text="+ Add Action"
+                                    Command="{Binding AddActionCommand}"
+                                    BackgroundColor="{StaticResource ADRIFTSecondary}" />
+
+                            <Label Text="No actions defined"
+                                   IsVisible="{Binding HasNoActions}"
+                                   FontSize="14"
+                                   TextColor="Gray" />
+
+                            <CollectionView ItemsSource="{Binding EventActions}"
+                                            IsVisible="{Binding HasActions}">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:EventActionViewModel">
+                                        <SwipeView>
+                                            <SwipeView.LeftItems>
+                                                <SwipeItem Text="▲"
+                                                           BackgroundColor="{StaticResource ADRIFTSecondary}"
+                                                           Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EventEditorViewModel}}, Path=MoveActionUpCommand}"
+                                                           CommandParameter="{Binding}" />
+                                            </SwipeView.LeftItems>
+                                            <SwipeView.RightItems>
+                                                <SwipeItem Text="▼"
+                                                           BackgroundColor="{StaticResource ADRIFTSecondary}"
+                                                           Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EventEditorViewModel}}, Path=MoveActionDownCommand}"
+                                                           CommandParameter="{Binding}" />
+                                                <SwipeItem Text="Delete"
+                                                           BackgroundColor="Red"
+                                                           Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EventEditorViewModel}}, Path=RemoveActionCommand}"
+                                                           CommandParameter="{Binding}" />
+                                            </SwipeView.RightItems>
+                                            <Frame Padding="12" Margin="0,4">
+                                                <Grid ColumnDefinitions="Auto,*">
+                                                    <Frame Grid.Column="0"
+                                                           BackgroundColor="{StaticResource ADRIFTPrimary}"
+                                                           WidthRequest="35"
+                                                           HeightRequest="35"
+                                                           CornerRadius="17.5"
+                                                           Padding="0"
+                                                           VerticalOptions="Center"
+                                                           Margin="0,0,12,0">
+                                                        <Label Text="{Binding Order}"
+                                                               FontSize="16"
+                                                               FontAttributes="Bold"
+                                                               TextColor="White"
+                                                               HorizontalOptions="Center"
+                                                               VerticalOptions="Center" />
+                                                    </Frame>
+                                                    <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                                        <Label Text="{Binding ActionType}"
+                                                               FontSize="14"
+                                                               FontAttributes="Bold" />
+                                                        <Label Text="{Binding Description}"
+                                                               FontSize="13"
+                                                               TextColor="Gray" />
+                                                    </VerticalStackLayout>
+                                                </Grid>
+                                            </Frame>
+                                        </SwipeView>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Event Output Text -->
+                    <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Event Output Text (Optional)" FontSize="16" FontAttributes="Bold" />
+                            <Editor Text="{Binding OutputText}"
+                                    Placeholder="Text displayed when event triggers..."
+                                    HeightRequest="100"
+                                    AutoSize="TextChanges" />
+                            <Label Text="Leave empty for silent event" FontSize="12" TextColor="Gray" />
+                        </VerticalStackLayout>
+                    </Frame>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Action buttons -->
+        <Grid Grid.Row="3"
+              ColumnDefinitions="*,Auto,Auto"
+              Padding="16"
+              BackgroundColor="{StaticResource ADRIFTLight}"
+              ColumnSpacing="12">
+            <Button Grid.Column="0"
+                    Text="Cancel"
+                    Command="{Binding CancelCommand}"
+                    BackgroundColor="Gray" />
+            <Button Grid.Column="1"
+                    Text="Apply"
+                    Command="{Binding ApplyCommand}"
+                    BackgroundColor="{StaticResource ADRIFTSecondary}"
+                    IsVisible="{Binding IsEditMode}" />
+            <Button Grid.Column="2"
+                    Text="OK"
+                    Command="{Binding SaveAndCloseCommand}"
+                    BackgroundColor="{StaticResource ADRIFTPrimary}" />
+        </Grid>
+    </Grid>
+</ContentPage>

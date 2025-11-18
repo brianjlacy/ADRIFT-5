@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ADRIFT.ViewModels" x:Class="ADRIFT.Views.GroupListPage"
+             x:DataType="vm:GroupListViewModel" Title="Groups">
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
+        <Frame Grid.Row="0" BackgroundColor="{StaticResource ADRIFTPrimary}" Padding="16" Margin="0" CornerRadius="0">
+            <Label Text="Groups" FontSize="20" FontAttributes="Bold" TextColor="White" />
+        </Frame>
+        <SearchBar Grid.Row="1" Placeholder="Search groups..." Text="{Binding SearchText}" Margin="16,8" />
+        <CollectionView Grid.Row="2" ItemsSource="{Binding FilteredGroups}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Margin="16,8" Padding="12">
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:GroupListViewModel}}, Path=EditGroupCommand}" CommandParameter="{Binding}" />
+                        </Frame.GestureRecognizers>
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="{Binding Name}" FontSize="18" FontAttributes="Bold" />
+                            <Label Text="{Binding MemberCount, StringFormat='{0} members'}" FontSize="14" TextColor="Gray" />
+                            <Label Text="{Binding GroupType}" FontSize="12" TextColor="Gray" />
+                        </VerticalStackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+        <Button Grid.Row="3" Text="+ Add Group" Command="{Binding AddGroupCommand}"
+                BackgroundColor="{StaticResource ADRIFTPrimary}" Margin="16" HeightRequest="50" />
+    </Grid>
+</ContentPage>

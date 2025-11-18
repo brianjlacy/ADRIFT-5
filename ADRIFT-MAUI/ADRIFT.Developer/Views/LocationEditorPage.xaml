@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ADRIFT.ViewModels"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="ADRIFT.Views.LocationEditorPage"
+             x:DataType="vm:LocationEditorViewModel"
+             Title="Location Editor">
+
+    <Shell.TitleView>
+        <HorizontalStackLayout Spacing="8" Padding="8">
+            <Label Text="Location: "
+                   FontAttributes="Bold"
+                   VerticalOptions="Center" />
+            <Label Text="{Binding LocationName}"
+                   VerticalOptions="Center" />
+        </HorizontalStackLayout>
+    </Shell.TitleView>
+
+    <Grid RowDefinitions="*,Auto">
+
+        <!-- Main Content with Tabs -->
+        <ScrollView Grid.Row="0">
+            <!-- Replace with Syncfusion SfTabView for better tab support -->
+            <VerticalStackLayout Spacing="0">
+
+                <!-- Tab Headers (Simplified - use SfTabView in production) -->
+                <Grid ColumnDefinitions="*,*,*,*"
+                      BackgroundColor="{StaticResource ADRIFTSurface}"
+                      ColumnSpacing="0">
+                    <Button Grid.Column="0"
+                            Text="Description"
+                            Command="{Binding SelectTabCommand}"
+                            CommandParameter="description"
+                            BackgroundColor="{Binding CurrentTab, Converter={StaticResource TabColorConverter}, ConverterParameter=description}" />
+                    <Button Grid.Column="1"
+                            Text="Directions"
+                            Command="{Binding SelectTabCommand}"
+                            CommandParameter="directions"
+                            BackgroundColor="{Binding CurrentTab, Converter={StaticResource TabColorConverter}, ConverterParameter=directions}" />
+                    <Button Grid.Column="2"
+                            Text="Properties"
+                            Command="{Binding SelectTabCommand}"
+                            CommandParameter="properties"
+                            BackgroundColor="{Binding CurrentTab, Converter={StaticResource TabColorConverter}, ConverterParameter=properties}" />
+                    <Button Grid.Column="3"
+                            Text="Advanced"
+                            Command="{Binding SelectTabCommand}"
+                            CommandParameter="advanced"
+                            BackgroundColor="{Binding CurrentTab, Converter={StaticResource TabColorConverter}, ConverterParameter=advanced}" />
+                </Grid>
+
+                <!-- Tab Content -->
+                <Frame Padding="20">
+
+                    <!-- Description Tab -->
+                    <VerticalStackLayout Spacing="16"
+                                         IsVisible="{Binding CurrentTab, Converter={StaticResource EqualConverter}, ConverterParameter=description}">
+
+                        <Label Text="Location Description"
+                               FontSize="20"
+                               FontAttributes="Bold" />
+
+                        <!-- Short Description -->
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Short Description (one line):"
+                                   FontAttributes="Bold" />
+                            <Entry Text="{Binding ShortDescription}"
+                                   Placeholder="Brief description shown in status bar" />
+                        </VerticalStackLayout>
+
+                        <!-- Long Description -->
+                        <VerticalStackLayout Spacing="8">
+                            <HorizontalStackLayout Spacing="12">
+                                <Label Text="Long Description:"
+                                       FontAttributes="Bold"
+                                       VerticalOptions="Center" />
+                                <Button Text="Format Text"
+                                        Command="{Binding FormatTextCommand}"
+                                        FontSize="12"
+                                        Padding="8,4" />
+                                <Button Text="Insert Function"
+                                        Command="{Binding InsertFunctionCommand}"
+                                        FontSize="12"
+                                        Padding="8,4" />
+                            </HorizontalStackLayout>
+
+                            <Editor Text="{Binding LongDescription}"
+                                    Placeholder="Full description shown when player enters or examines location"
+                                    HeightRequest="200"
+                                    AutoSize="TextChanges" />
+
+                            <Label Text="Available functions: %CharacterName[key]%, %ObjectName[key]%, %TheObject[key]%, %LocationOf[key]%"
+                                   FontSize="11"
+                                   TextColor="Gray" />
+                        </VerticalStackLayout>
+
+                        <!-- View From Here Description -->
+                        <VerticalStackLayout Spacing="8">
+                            <CheckBox IsChecked="{Binding HasViewFromHere}" />
+                            <Label Text="View from here description (optional):"
+                                   FontAttributes="Bold" />
+                            <Editor Text="{Binding ViewFromHereDescription}"
+                                    Placeholder="Description when viewing this location from another location"
+                                    HeightRequest="100"
+                                    AutoSize="TextChanges"
+                                    IsEnabled="{Binding HasViewFromHere}" />
+                        </VerticalStackLayout>
+
+                    </VerticalStackLayout>
+
+                    <!-- Directions Tab -->
+                    <VerticalStackLayout Spacing="16"
+                                         IsVisible="{Binding CurrentTab, Converter={StaticResource EqualConverter}, ConverterParameter=directions}">
+
+                        <Label Text="Exits and Directions"
+                               FontSize="20"
+                               FontAttributes="Bold" />
+
+                        <CollectionView ItemsSource="{Binding Directions}"
+                                        SelectionMode="None">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Frame Margin="0,4"
+                                           Padding="12"
+                                           BackgroundColor="{StaticResource ADRIFTSurface}">
+                                        <Grid ColumnDefinitions="100,*,Auto,Auto"
+                                              ColumnSpacing="12">
+                                            <Picker Grid.Column="0"
+                                                    ItemsSource="{Binding AvailableDirections}"
+                                                    SelectedItem="{Binding Direction}" />
+
+                                            <Picker Grid.Column="1"
+                                                    ItemsSource="{Binding AvailableLocations}"
+                                                    ItemDisplayBinding="{Binding Name}"
+                                                    SelectedItem="{Binding TargetLocation}" />
+
+                                            <Button Grid.Column="2"
+                                                    Text="Restrictions"
+                                                    FontSize="12"
+                                                    Command="{Binding EditRestrictionsCommand}" />
+
+                                            <Button Grid.Column="3"
+                                                    Text="✕"
+                                                    FontSize="16"
+                                                    WidthRequest="40"
+                                                    BackgroundColor="{StaticResource ADRIFTError}"
+                                                    Command="{Binding RemoveCommand}" />
+                                        </Grid>
+                                    </Frame>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+
+                        <Button Text="Add Direction"
+                                Command="{Binding AddDirectionCommand}"
+                                BackgroundColor="{StaticResource ADRIFTPrimary}"
+                                HorizontalOptions="Start" />
+
+                    </VerticalStackLayout>
+
+                    <!-- Properties Tab -->
+                    <VerticalStackLayout Spacing="16"
+                                         IsVisible="{Binding CurrentTab, Converter={StaticResource EqualConverter}, ConverterParameter=properties}">
+
+                        <Label Text="Location Properties"
+                               FontSize="20"
+                               FontAttributes="Bold" />
+
+                        <CollectionView ItemsSource="{Binding Properties}"
+                                        SelectionMode="None">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Frame Margin="0,4"
+                                           Padding="12">
+                                        <Grid RowDefinitions="Auto,Auto"
+                                              ColumnDefinitions="*,Auto"
+                                              ColumnSpacing="12"
+                                              RowSpacing="8">
+
+                                            <Label Grid.Row="0" Grid.Column="0"
+                                                   Text="{Binding PropertyName}"
+                                                   FontAttributes="Bold" />
+
+                                            <Switch Grid.Row="0" Grid.Column="1"
+                                                    IsToggled="{Binding IsEnabled}"
+                                                    VerticalOptions="Center" />
+
+                                            <!-- Property value (shown when enabled) -->
+                                            <StackLayout Grid.Row="1" Grid.ColumnSpan="2"
+                                                         IsVisible="{Binding IsEnabled}">
+                                                <!-- Dynamic control based on property type -->
+                                                <Entry Text="{Binding StringValue}"
+                                                       IsVisible="{Binding IsStringType}"
+                                                       Placeholder="{Binding PropertyDescription}" />
+
+                                                <Picker ItemsSource="{Binding StateOptions}"
+                                                        SelectedItem="{Binding StateValue}"
+                                                        IsVisible="{Binding IsStateType}" />
+
+                                                <CheckBox IsChecked="{Binding BoolValue}"
+                                                          IsVisible="{Binding IsBoolType}" />
+                                            </StackLayout>
+                                        </Grid>
+                                    </Frame>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+
+                    </VerticalStackLayout>
+
+                    <!-- Advanced Tab -->
+                    <VerticalStackLayout Spacing="16"
+                                         IsVisible="{Binding CurrentTab, Converter={StaticResource EqualConverter}, ConverterParameter=advanced}">
+
+                        <Label Text="Advanced Settings"
+                               FontSize="20"
+                               FontAttributes="Bold" />
+
+                        <Frame>
+                            <VerticalStackLayout Spacing="12">
+                                <Label Text="Location Key:"
+                                       FontAttributes="Bold" />
+                                <Entry Text="{Binding LocationKey}"
+                                       IsReadOnly="True"
+                                       BackgroundColor="{StaticResource ADRIFTSurface}" />
+                                <Label Text="Unique identifier for this location"
+                                       FontSize="11"
+                                       TextColor="Gray" />
+                            </VerticalStackLayout>
+                        </Frame>
+
+                        <Frame>
+                            <VerticalStackLayout Spacing="12">
+                                <Label Text="Hidden:"
+                                       FontAttributes="Bold" />
+                                <CheckBox IsChecked="{Binding IsHidden}" />
+                                <Label Text="Hidden locations are not shown in the map and cannot be navigated to normally"
+                                       FontSize="11"
+                                       TextColor="Gray" />
+                            </VerticalStackLayout>
+                        </Frame>
+
+                        <Frame>
+                            <VerticalStackLayout Spacing="12">
+                                <Label Text="Library Item:"
+                                       FontAttributes="Bold" />
+                                <CheckBox IsChecked="{Binding IsLibraryItem}" />
+                                <Label Text="Mark this location as part of the standard library"
+                                       FontSize="11"
+                                       TextColor="Gray" />
+                            </VerticalStackLayout>
+                        </Frame>
+
+                    </VerticalStackLayout>
+
+                </Frame>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Bottom Action Bar -->
+        <Grid Grid.Row="1"
+              ColumnDefinitions="*,Auto,Auto,Auto"
+              Padding="16"
+              BackgroundColor="{StaticResource ADRIFTSurface}"
+              ColumnSpacing="12">
+
+            <Label Grid.Column="0"
+                   Text="{Binding StatusMessage}"
+                   VerticalOptions="Center" />
+
+            <Button Grid.Column="1"
+                    Text="Cancel"
+                    Command="{Binding CancelCommand}"
+                    BackgroundColor="Gray" />
+
+            <Button Grid.Column="2"
+                    Text="Apply"
+                    Command="{Binding ApplyCommand}"
+                    BackgroundColor="{StaticResource ADRIFTSecondary}" />
+
+            <Button Grid.Column="3"
+                    Text="OK"
+                    Command="{Binding SaveAndCloseCommand}"
+                    BackgroundColor="{StaticResource ADRIFTPrimary}" />
+        </Grid>
+
+    </Grid>
+
+</ContentPage>

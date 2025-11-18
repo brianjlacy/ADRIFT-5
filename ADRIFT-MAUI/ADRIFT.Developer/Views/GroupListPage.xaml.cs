@@ -1,0 +1,7 @@
+using ADRIFT.ViewModels;
+namespace ADRIFT.Views;
+public partial class GroupListPage : ContentPage
+{
+    public GroupListPage(GroupListViewModel viewModel) { InitializeComponent(); BindingContext = viewModel; }
+    protected override void OnAppearing() { base.OnAppearing(); if (BindingContext is GroupListViewModel vm) _ = vm.LoadGroupsAsync(); }
+}

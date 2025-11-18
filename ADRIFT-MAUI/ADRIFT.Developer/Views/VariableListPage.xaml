@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ADRIFT.ViewModels" x:Class="ADRIFT.Views.VariableListPage"
+             x:DataType="vm:VariableListViewModel" Title="Variables">
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
+        <Frame Grid.Row="0" BackgroundColor="{StaticResource ADRIFTPrimary}" Padding="16" Margin="0" CornerRadius="0">
+            <Label Text="Variables" FontSize="20" FontAttributes="Bold" TextColor="White" />
+        </Frame>
+        <SearchBar Grid.Row="1" Placeholder="Search variables..." Text="{Binding SearchText}" Margin="16,8" />
+        <CollectionView Grid.Row="2" ItemsSource="{Binding FilteredVariables}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Margin="16,8" Padding="12">
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VariableListViewModel}}, Path=EditVariableCommand}" CommandParameter="{Binding}" />
+                        </Frame.GestureRecognizers>
+                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
+                            <Label Grid.Row="0" Grid.Column="0" Text="{Binding Name}" FontSize="18" FontAttributes="Bold" />
+                            <Label Grid.Row="0" Grid.Column="1" Text="{Binding VariableType}" FontSize="12" TextColor="Gray" />
+                            <Label Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding CurrentValue, StringFormat='Value: {0}'}" FontSize="14" TextColor="Gray" />
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+        <Button Grid.Row="3" Text="+ Add Variable" Command="{Binding AddVariableCommand}"
+                BackgroundColor="{StaticResource ADRIFTPrimary}" Margin="16" HeightRequest="50" />
+    </Grid>
+</ContentPage>
