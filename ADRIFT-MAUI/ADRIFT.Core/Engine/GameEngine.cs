@@ -462,30 +462,8 @@ public class GameEngine
 
     private string FormatText(string text, Dictionary<string, string> parameters)
     {
-        // Replace parameter references with actual values
-        foreach (var param in parameters)
-        {
-            // Replace %paramname% with actual object/character names
-            var placeholder = $"%{param.Key}%";
-            if (text.Contains(placeholder))
-            {
-                var value = param.Value;
-
-                // Try to get the object/character name
-                if (_adventure.Objects.TryGetValue(param.Value, out var obj))
-                {
-                    value = obj.FullName;
-                }
-                else if (_adventure.Characters.TryGetValue(param.Value, out var character))
-                {
-                    value = character.FullName;
-                }
-
-                text = text.Replace(placeholder, value);
-            }
-        }
-
-        return text;
+        var formatter = new TextFormatter(_adventure, _state);
+        return formatter.Format(text, parameters);
     }
 
     private string ResolveParameter(string value, Dictionary<string, string> parameters)
