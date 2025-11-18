@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ADRIFT.ViewModels" x:Class="ADRIFT.Views.CharacterListPage"
+             x:DataType="vm:CharacterListViewModel" Title="Characters">
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
+        <Frame Grid.Row="0" BackgroundColor="{StaticResource ADRIFTPrimary}" Padding="16" Margin="0" CornerRadius="0">
+            <HorizontalStackLayout Spacing="12">
+                <Image Source="character.png" WidthRequest="32" HeightRequest="32" />
+                <Label Text="Characters" FontSize="20" FontAttributes="Bold" TextColor="White" />
+            </HorizontalStackLayout>
+        </Frame>
+        <SearchBar Grid.Row="1" Placeholder="Search characters..." Text="{Binding SearchText}" Margin="16,8" />
+        <RefreshView Grid.Row="2" IsRefreshing="{Binding IsRefreshing}" Command="{Binding RefreshCommand}">
+            <CollectionView ItemsSource="{Binding FilteredCharacters}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Margin="16,8" Padding="12">
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CharacterListViewModel}}, Path=EditCharacterCommand}" CommandParameter="{Binding}" />
+                            </Frame.GestureRecognizers>
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="{Binding Name}" FontSize="18" FontAttributes="Bold" />
+                                <Label Text="{Binding Description}" FontSize="14" TextColor="Gray" />
+                                <Label Text="{Binding Location}" FontSize="12" TextColor="Gray" />
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+        <Button Grid.Row="3" Text="+ Add Character" Command="{Binding AddCharacterCommand}"
+                BackgroundColor="{StaticResource ADRIFTPrimary}" Margin="16" HeightRequest="50" />
+    </Grid>
+</ContentPage>
