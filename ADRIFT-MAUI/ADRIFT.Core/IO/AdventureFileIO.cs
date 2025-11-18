@@ -106,6 +106,24 @@ public static class AdventureFileIO
                     case "Hints":
                         await ReadHintsAsync(reader, adventure);
                         break;
+                    case "Properties":
+                        await ReadPropertiesAsync(reader, adventure);
+                        break;
+                    case "ALRs":
+                        await ReadALRsAsync(reader, adventure);
+                        break;
+                    case "UserFunctions":
+                        await ReadUserFunctionsAsync(reader, adventure);
+                        break;
+                    case "Macros":
+                        await ReadMacrosAsync(reader, adventure);
+                        break;
+                    case "Map":
+                        await ReadMapAsync(reader, adventure);
+                        break;
+                    case "Sounds":
+                        await ReadSoundsAsync(reader, adventure);
+                        break;
                 }
             }
         }
@@ -143,6 +161,12 @@ public static class AdventureFileIO
         await WriteGroupsAsync(writer, adventure);
         await WriteSynonymsAsync(writer, adventure);
         await WriteHintsAsync(writer, adventure);
+        await WritePropertiesAsync(writer, adventure);
+        await WriteALRsAsync(writer, adventure);
+        await WriteUserFunctionsAsync(writer, adventure);
+        await WriteMacrosAsync(writer, adventure);
+        await WriteMapAsync(writer, adventure);
+        await WriteSoundsAsync(writer, adventure);
 
         await writer.WriteEndElementAsync(); // AdriftAdventure
         await writer.WriteEndDocumentAsync();
@@ -1341,6 +1365,459 @@ public static class AdventureFileIO
         }
     }
 
+    private static async Task ReadPropertiesAsync(XmlReader reader, Adventure adventure)
+    {
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "Properties")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element && reader.Name == "Property")
+            {
+                var property = await ReadPropertyAsync(reader);
+                adventure.Properties[property.Key] = property;
+            }
+        }
+    }
+
+    private static async Task<Property> ReadPropertyAsync(XmlReader reader)
+    {
+        var property = new Property();
+        var key = reader.GetAttribute("Key");
+        if (!string.IsNullOrEmpty(key)) property.Key = key;
+
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "Property")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element)
+            {
+                switch (reader.Name)
+                {
+                    case "Description":
+                        property.Description = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "Type":
+                        if (Enum.TryParse<PropertyType>(await reader.ReadElementContentAsStringAsync(), out var type))
+                            property.Type = type;
+                        break;
+                    case "PropertyOf":
+                        if (Enum.TryParse<PropertyOf>(await reader.ReadElementContentAsStringAsync(), out var propertyOf))
+                            property.PropertyOf = propertyOf;
+                        break;
+                    case "Mandatory":
+                        property.Mandatory = await reader.ReadElementContentAsBooleanAsync();
+                        break;
+                    case "StringValue":
+                        property.StringValue = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "IntValue":
+                        property.IntValue = await reader.ReadElementContentAsIntAsync();
+                        break;
+                    case "States":
+                        await ReadPropertyStatesAsync(reader, property);
+                        break;
+                }
+            }
+        }
+
+        return property;
+    }
+
+    private static async Task ReadPropertyStatesAsync(XmlReader reader, Property property)
+    {
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "States")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element && reader.Name == "State")
+            {
+                property.States.Add(await reader.ReadElementContentAsStringAsync());
+            }
+        }
+    }
+
+    private static async Task ReadALRsAsync(XmlReader reader, Adventure adventure)
+    {
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "ALRs")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element && reader.Name == "ALR")
+            {
+                var alr = await ReadALRAsync(reader);
+                adventure.ALRs[alr.Key] = alr;
+            }
+        }
+    }
+
+    private static async Task<ALR> ReadALRAsync(XmlReader reader)
+    {
+        var alr = new ALR();
+        var key = reader.GetAttribute("Key");
+        if (!string.IsNullOrEmpty(key)) alr.Key = key;
+
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "ALR")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element)
+            {
+                switch (reader.Name)
+                {
+                    case "OldText":
+                        alr.OldText = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "NewText":
+                        alr.NewText = new Description { Text = await reader.ReadElementContentAsStringAsync() };
+                        break;
+                    case "CaseSensitive":
+                        alr.CaseSensitive = await reader.ReadElementContentAsBooleanAsync();
+                        break;
+                    case "WholeWordsOnly":
+                        alr.WholeWordsOnly = await reader.ReadElementContentAsBooleanAsync();
+                        break;
+                    case "Order":
+                        alr.Order = await reader.ReadElementContentAsIntAsync();
+                        break;
+                }
+            }
+        }
+
+        return alr;
+    }
+
+    private static async Task ReadUserFunctionsAsync(XmlReader reader, Adventure adventure)
+    {
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "UserFunctions")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element && reader.Name == "UserFunction")
+            {
+                var func = await ReadUserFunctionAsync(reader);
+                adventure.UserFunctions[func.Key] = func;
+            }
+        }
+    }
+
+    private static async Task<UserFunction> ReadUserFunctionAsync(XmlReader reader)
+    {
+        var func = new UserFunction();
+        var key = reader.GetAttribute("Key");
+        if (!string.IsNullOrEmpty(key)) func.Key = key;
+
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "UserFunction")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element)
+            {
+                switch (reader.Name)
+                {
+                    case "Name":
+                        func.Name = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "Description":
+                        func.Description = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "Output":
+                        func.Output = new Description { Text = await reader.ReadElementContentAsStringAsync() };
+                        break;
+                    case "Arguments":
+                        await ReadFunctionArgumentsAsync(reader, func);
+                        break;
+                }
+            }
+        }
+
+        return func;
+    }
+
+    private static async Task ReadFunctionArgumentsAsync(XmlReader reader, UserFunction func)
+    {
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "Arguments")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element && reader.Name == "Argument")
+            {
+                var arg = new FunctionArgument();
+
+                var numAttr = reader.GetAttribute("Number");
+                if (!string.IsNullOrEmpty(numAttr) && int.TryParse(numAttr, out var num))
+                    arg.ArgumentNumber = num;
+
+                var typeAttr = reader.GetAttribute("Type");
+                if (!string.IsNullOrEmpty(typeAttr) && Enum.TryParse<FunctionArgumentType>(typeAttr, out var type))
+                    arg.Type = type;
+
+                arg.Name = await reader.ReadElementContentAsStringAsync();
+                func.Arguments.Add(arg);
+            }
+        }
+    }
+
+    private static async Task ReadMacrosAsync(XmlReader reader, Adventure adventure)
+    {
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "Macros")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element && reader.Name == "Macro")
+            {
+                var macro = await ReadMacroAsync(reader);
+                adventure.Macros.Add(macro);
+            }
+        }
+    }
+
+    private static async Task<Macro> ReadMacroAsync(XmlReader reader)
+    {
+        var macro = new Macro();
+        var key = reader.GetAttribute("Key");
+        if (!string.IsNullOrEmpty(key)) macro.Key = key;
+
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "Macro")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element)
+            {
+                switch (reader.Name)
+                {
+                    case "Title":
+                        macro.Title = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "Description":
+                        macro.Description = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "Shortcut":
+                        macro.Shortcut = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "IsShared":
+                        macro.IsShared = await reader.ReadElementContentAsBooleanAsync();
+                        break;
+                    case "IFID":
+                        macro.IFID = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "Commands":
+                        await ReadMacroCommandsAsync(reader, macro);
+                        break;
+                }
+            }
+        }
+
+        return macro;
+    }
+
+    private static async Task ReadMacroCommandsAsync(XmlReader reader, Macro macro)
+    {
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "Commands")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element && reader.Name == "Command")
+            {
+                macro.Commands.Add(await reader.ReadElementContentAsStringAsync());
+            }
+        }
+    }
+
+    private static async Task ReadMapAsync(XmlReader reader, Adventure adventure)
+    {
+        var autoLayoutAttr = reader.GetAttribute("AutoLayout");
+        if (!string.IsNullOrEmpty(autoLayoutAttr) && bool.TryParse(autoLayoutAttr, out var autoLayout))
+            adventure.Map.AutoLayout = autoLayout;
+
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "Map")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element && reader.Name == "MapPage")
+            {
+                var page = await ReadMapPageAsync(reader);
+                adventure.Map.Pages.Add(page);
+            }
+        }
+    }
+
+    private static async Task<MapPage> ReadMapPageAsync(XmlReader reader)
+    {
+        var page = new MapPage();
+
+        var numAttr = reader.GetAttribute("Number");
+        if (!string.IsNullOrEmpty(numAttr) && int.TryParse(numAttr, out var num))
+            page.PageNumber = num;
+
+        var labelAttr = reader.GetAttribute("Label");
+        if (!string.IsNullOrEmpty(labelAttr))
+            page.Label = labelAttr;
+
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "MapPage")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element && reader.Name == "MapNode")
+            {
+                var node = await ReadMapNodeAsync(reader);
+                page.Nodes.Add(node);
+            }
+        }
+
+        return page;
+    }
+
+    private static async Task<MapNode> ReadMapNodeAsync(XmlReader reader)
+    {
+        var node = new MapNode();
+
+        var locKeyAttr = reader.GetAttribute("LocationKey");
+        if (!string.IsNullOrEmpty(locKeyAttr))
+            node.LocationKey = locKeyAttr;
+
+        var xAttr = reader.GetAttribute("X");
+        if (!string.IsNullOrEmpty(xAttr) && double.TryParse(xAttr, out var x))
+            node.X = x;
+
+        var yAttr = reader.GetAttribute("Y");
+        if (!string.IsNullOrEmpty(yAttr) && double.TryParse(yAttr, out var y))
+            node.Y = y;
+
+        var zAttr = reader.GetAttribute("Z");
+        if (!string.IsNullOrEmpty(zAttr) && double.TryParse(zAttr, out var z))
+            node.Z = z;
+
+        var pinnedAttr = reader.GetAttribute("Pinned");
+        if (!string.IsNullOrEmpty(pinnedAttr) && bool.TryParse(pinnedAttr, out var pinned))
+            node.Pinned = pinned;
+
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "MapNode")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element && reader.Name == "MapLink")
+            {
+                var link = await ReadMapLinkAsync(reader);
+                node.Links.Add(link);
+            }
+        }
+
+        return node;
+    }
+
+    private static async Task<MapLink> ReadMapLinkAsync(XmlReader reader)
+    {
+        var link = new MapLink();
+
+        var sourceAttr = reader.GetAttribute("Source");
+        if (!string.IsNullOrEmpty(sourceAttr))
+            link.SourceLocationKey = sourceAttr;
+
+        var destAttr = reader.GetAttribute("Destination");
+        if (!string.IsNullOrEmpty(destAttr))
+            link.DestinationLocationKey = destAttr;
+
+        var dirAttr = reader.GetAttribute("Direction");
+        if (!string.IsNullOrEmpty(dirAttr) && Enum.TryParse<DirectionEnum>(dirAttr, out var dir))
+            link.Direction = dir;
+
+        var styleAttr = reader.GetAttribute("Style");
+        if (!string.IsNullOrEmpty(styleAttr) && Enum.TryParse<LinkStyle>(styleAttr, out var style))
+            link.Style = style;
+
+        // Skip to end of MapLink element
+        if (!reader.IsEmptyElement)
+        {
+            while (await reader.ReadAsync())
+            {
+                if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "MapLink")
+                    break;
+            }
+        }
+
+        return link;
+    }
+
+    private static async Task ReadSoundsAsync(XmlReader reader, Adventure adventure)
+    {
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "Sounds")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element && reader.Name == "Sound")
+            {
+                var sound = await ReadSoundAsync(reader);
+                adventure.Sounds[sound.Key] = sound;
+            }
+        }
+    }
+
+    private static async Task<Sound> ReadSoundAsync(XmlReader reader)
+    {
+        var sound = new Sound();
+        var key = reader.GetAttribute("Key");
+        if (!string.IsNullOrEmpty(key)) sound.Key = key;
+
+        while (await reader.ReadAsync())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "Sound")
+                break;
+
+            if (reader.NodeType == XmlNodeType.Element)
+            {
+                switch (reader.Name)
+                {
+                    case "Name":
+                        sound.Name = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "Description":
+                        sound.Description = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "FilePath":
+                        sound.FilePath = await reader.ReadElementContentAsStringAsync();
+                        break;
+                    case "IsEmbedded":
+                        sound.IsEmbedded = await reader.ReadElementContentAsBooleanAsync();
+                        break;
+                    case "Format":
+                        if (Enum.TryParse<SoundFormat>(await reader.ReadElementContentAsStringAsync(), out var format))
+                            sound.Format = format;
+                        break;
+                    case "DefaultChannel":
+                        sound.DefaultChannel = await reader.ReadElementContentAsIntAsync();
+                        break;
+                    case "Loop":
+                        sound.Loop = await reader.ReadElementContentAsBooleanAsync();
+                        break;
+                    case "Volume":
+                        sound.Volume = await reader.ReadElementContentAsIntAsync();
+                        break;
+                    case "EmbeddedData":
+                        var base64 = await reader.ReadElementContentAsStringAsync();
+                        sound.EmbeddedData = Convert.FromBase64String(base64);
+                        break;
+                }
+            }
+        }
+
+        return sound;
+    }
+
     #endregion
 
     #region Write Methods
@@ -1907,6 +2384,214 @@ public static class AdventureFileIO
         }
 
         await writer.WriteEndElementAsync(); // Events
+    }
+
+    private static async Task WritePropertiesAsync(XmlWriter writer, Adventure adventure)
+    {
+        if (adventure.Properties.Count == 0) return;
+
+        await writer.WriteStartElementAsync(null, "Properties", null);
+
+        foreach (var property in adventure.Properties.Values)
+        {
+            await writer.WriteStartElementAsync(null, "Property", null);
+            await writer.WriteAttributeStringAsync(null, "Key", null, property.Key);
+
+            await writer.WriteElementStringAsync(null, "Description", null, property.Description);
+            await writer.WriteElementStringAsync(null, "Type", null, property.Type.ToString());
+            await writer.WriteElementStringAsync(null, "PropertyOf", null, property.PropertyOf.ToString());
+            await writer.WriteElementStringAsync(null, "Mandatory", null, property.Mandatory.ToString());
+
+            if (!string.IsNullOrEmpty(property.StringValue))
+                await writer.WriteElementStringAsync(null, "StringValue", null, property.StringValue);
+            if (property.IntValue != 0)
+                await writer.WriteElementStringAsync(null, "IntValue", null, property.IntValue.ToString());
+
+            // States for StateList properties
+            if (property.States.Count > 0)
+            {
+                await writer.WriteStartElementAsync(null, "States", null);
+                foreach (var state in property.States)
+                {
+                    await writer.WriteElementStringAsync(null, "State", null, state);
+                }
+                await writer.WriteEndElementAsync(); // States
+            }
+
+            await writer.WriteEndElementAsync(); // Property
+        }
+
+        await writer.WriteEndElementAsync(); // Properties
+    }
+
+    private static async Task WriteALRsAsync(XmlWriter writer, Adventure adventure)
+    {
+        if (adventure.ALRs.Count == 0) return;
+
+        await writer.WriteStartElementAsync(null, "ALRs", null);
+
+        foreach (var alr in adventure.ALRs.Values)
+        {
+            await writer.WriteStartElementAsync(null, "ALR", null);
+            await writer.WriteAttributeStringAsync(null, "Key", null, alr.Key);
+
+            await writer.WriteElementStringAsync(null, "OldText", null, alr.OldText);
+            await writer.WriteElementStringAsync(null, "NewText", null, alr.NewText.ToString());
+            await writer.WriteElementStringAsync(null, "CaseSensitive", null, alr.CaseSensitive.ToString());
+            await writer.WriteElementStringAsync(null, "WholeWordsOnly", null, alr.WholeWordsOnly.ToString());
+            await writer.WriteElementStringAsync(null, "Order", null, alr.Order.ToString());
+
+            await writer.WriteEndElementAsync(); // ALR
+        }
+
+        await writer.WriteEndElementAsync(); // ALRs
+    }
+
+    private static async Task WriteUserFunctionsAsync(XmlWriter writer, Adventure adventure)
+    {
+        if (adventure.UserFunctions.Count == 0) return;
+
+        await writer.WriteStartElementAsync(null, "UserFunctions", null);
+
+        foreach (var func in adventure.UserFunctions.Values)
+        {
+            await writer.WriteStartElementAsync(null, "UserFunction", null);
+            await writer.WriteAttributeStringAsync(null, "Key", null, func.Key);
+
+            await writer.WriteElementStringAsync(null, "Name", null, func.Name);
+            if (!string.IsNullOrEmpty(func.Description))
+                await writer.WriteElementStringAsync(null, "Description", null, func.Description);
+            await writer.WriteElementStringAsync(null, "Output", null, func.Output.ToString());
+
+            if (func.Arguments.Count > 0)
+            {
+                await writer.WriteStartElementAsync(null, "Arguments", null);
+                foreach (var arg in func.Arguments.OrderBy(a => a.ArgumentNumber))
+                {
+                    await writer.WriteStartElementAsync(null, "Argument", null);
+                    await writer.WriteAttributeStringAsync(null, "Number", null, arg.ArgumentNumber.ToString());
+                    await writer.WriteAttributeStringAsync(null, "Type", null, arg.Type.ToString());
+                    await writer.WriteStringAsync(arg.Name);
+                    await writer.WriteEndElementAsync(); // Argument
+                }
+                await writer.WriteEndElementAsync(); // Arguments
+            }
+
+            await writer.WriteEndElementAsync(); // UserFunction
+        }
+
+        await writer.WriteEndElementAsync(); // UserFunctions
+    }
+
+    private static async Task WriteMacrosAsync(XmlWriter writer, Adventure adventure)
+    {
+        if (adventure.Macros.Count == 0) return;
+
+        await writer.WriteStartElementAsync(null, "Macros", null);
+
+        foreach (var macro in adventure.Macros)
+        {
+            await writer.WriteStartElementAsync(null, "Macro", null);
+            await writer.WriteAttributeStringAsync(null, "Key", null, macro.Key);
+
+            await writer.WriteElementStringAsync(null, "Title", null, macro.Title);
+            if (!string.IsNullOrEmpty(macro.Description))
+                await writer.WriteElementStringAsync(null, "Description", null, macro.Description);
+            if (!string.IsNullOrEmpty(macro.Shortcut))
+                await writer.WriteElementStringAsync(null, "Shortcut", null, macro.Shortcut);
+            await writer.WriteElementStringAsync(null, "IsShared", null, macro.IsShared.ToString());
+            if (!string.IsNullOrEmpty(macro.IFID))
+                await writer.WriteElementStringAsync(null, "IFID", null, macro.IFID);
+
+            if (macro.Commands.Count > 0)
+            {
+                await writer.WriteStartElementAsync(null, "Commands", null);
+                foreach (var command in macro.Commands)
+                {
+                    await writer.WriteElementStringAsync(null, "Command", null, command);
+                }
+                await writer.WriteEndElementAsync(); // Commands
+            }
+
+            await writer.WriteEndElementAsync(); // Macro
+        }
+
+        await writer.WriteEndElementAsync(); // Macros
+    }
+
+    private static async Task WriteMapAsync(XmlWriter writer, Adventure adventure)
+    {
+        if (adventure.Map.Pages.Count == 0) return;
+
+        await writer.WriteStartElementAsync(null, "Map", null);
+        await writer.WriteAttributeStringAsync(null, "AutoLayout", null, adventure.Map.AutoLayout.ToString());
+
+        foreach (var page in adventure.Map.Pages)
+        {
+            await writer.WriteStartElementAsync(null, "MapPage", null);
+            await writer.WriteAttributeStringAsync(null, "Number", null, page.PageNumber.ToString());
+            await writer.WriteAttributeStringAsync(null, "Label", null, page.Label);
+
+            foreach (var node in page.Nodes)
+            {
+                await writer.WriteStartElementAsync(null, "MapNode", null);
+                await writer.WriteAttributeStringAsync(null, "LocationKey", null, node.LocationKey);
+                await writer.WriteAttributeStringAsync(null, "X", null, node.X.ToString());
+                await writer.WriteAttributeStringAsync(null, "Y", null, node.Y.ToString());
+                await writer.WriteAttributeStringAsync(null, "Z", null, node.Z.ToString());
+                await writer.WriteAttributeStringAsync(null, "Pinned", null, node.Pinned.ToString());
+
+                // Write links
+                foreach (var link in node.Links)
+                {
+                    await writer.WriteStartElementAsync(null, "MapLink", null);
+                    await writer.WriteAttributeStringAsync(null, "Source", null, link.SourceLocationKey);
+                    await writer.WriteAttributeStringAsync(null, "Destination", null, link.DestinationLocationKey);
+                    await writer.WriteAttributeStringAsync(null, "Direction", null, link.Direction.ToString());
+                    await writer.WriteAttributeStringAsync(null, "Style", null, link.Style.ToString());
+                    await writer.WriteEndElementAsync(); // MapLink
+                }
+
+                await writer.WriteEndElementAsync(); // MapNode
+            }
+
+            await writer.WriteEndElementAsync(); // MapPage
+        }
+
+        await writer.WriteEndElementAsync(); // Map
+    }
+
+    private static async Task WriteSoundsAsync(XmlWriter writer, Adventure adventure)
+    {
+        if (adventure.Sounds.Count == 0) return;
+
+        await writer.WriteStartElementAsync(null, "Sounds", null);
+
+        foreach (var sound in adventure.Sounds.Values)
+        {
+            await writer.WriteStartElementAsync(null, "Sound", null);
+            await writer.WriteAttributeStringAsync(null, "Key", null, sound.Key);
+
+            await writer.WriteElementStringAsync(null, "Name", null, sound.Name);
+            if (!string.IsNullOrEmpty(sound.Description))
+                await writer.WriteElementStringAsync(null, "Description", null, sound.Description);
+            await writer.WriteElementStringAsync(null, "FilePath", null, sound.FilePath);
+            await writer.WriteElementStringAsync(null, "IsEmbedded", null, sound.IsEmbedded.ToString());
+            await writer.WriteElementStringAsync(null, "Format", null, sound.Format.ToString());
+            await writer.WriteElementStringAsync(null, "DefaultChannel", null, sound.DefaultChannel.ToString());
+            await writer.WriteElementStringAsync(null, "Loop", null, sound.Loop.ToString());
+            await writer.WriteElementStringAsync(null, "Volume", null, sound.Volume.ToString());
+
+            if (sound.IsEmbedded && sound.EmbeddedData != null)
+            {
+                await writer.WriteElementStringAsync(null, "EmbeddedData", null,
+                    Convert.ToBase64String(sound.EmbeddedData));
+            }
+
+            await writer.WriteEndElementAsync(); // Sound
+        }
+
+        await writer.WriteEndElementAsync(); // Sounds
     }
 
     #endregion
