@@ -2,7 +2,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:ADRIFT.Developer.ViewModels"
-             x:Class="ADRIFT.Developer.Views.TaskListPage"
+             x:Class="ADRIFT.Developer.Pages.TaskListPage"
+             x:Class="ADRIFT.Developer.Pages.TaskListPage"
              x:DataType="vm:TaskListViewModel"
              Title="Tasks">
     <Grid RowDefinitions="Auto,Auto,*,Auto">

@@ -32,6 +32,11 @@ public class Adventure
     public string WinText { get; set; } = string.Empty;
     public string LoseText { get; set; } = string.Empty;
 
+    // File metadata
+    public string Filename { get; set; } = string.Empty;
+    public string FullPath { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
+
     public int TotalItems => Locations.Count + Objects.Count + Characters.Count +
                              Tasks.Count + Events.Count + Variables.Count +
                              Synonyms.Count + Groups.Count + Hints.Count;

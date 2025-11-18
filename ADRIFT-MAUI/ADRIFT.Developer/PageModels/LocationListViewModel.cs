@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using ADRIFT.Core.Models;
 
 namespace ADRIFT.Developer.ViewModels;
 
@@ -53,11 +54,35 @@ public partial class LocationListViewModel : ObservableObject
         }
     }
 
-    private void FilterLocations()
+    private async void FilterLocations()
     {
-        // TODO: Implement filtering based on SearchText
-        // For now, just reload
-        _ = LoadLocationsAsync();
+        if (string.IsNullOrWhiteSpace(SearchText))
+        {
+            await LoadLocationsAsync();
+            return;
+        }
+
+        try
+        {
+            var allLocations = await _adventureService.GetLocationsAsync();
+            var filtered = allLocations.Where(l =>
+                l.ShortDescription.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
+                l.LongDescription.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
+                l.Key.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            FilteredLocations.Clear();
+            foreach (var location in filtered)
+            {
+                FilteredLocations.Add(new LocationItemViewModel(location));
+            }
+
+            LocationCount = FilteredLocations.Count;
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Error", $"Failed to filter locations: {ex.Message}", "OK");
+        }
     }
 
     [RelayCommand]
@@ -82,9 +107,20 @@ public partial class LocationListViewModel : ObservableObject
 
         if (result)
         {
-            // TODO: Implement delete functionality
-            FilteredLocations.Remove(location);
-            LocationCount = FilteredLocations.Count;
+            try
+            {
+                var adventure = _adventureService.CurrentAdventure;
+                if (adventure != null && adventure.Locations.ContainsKey(location.Key))
+                {
+                    adventure.Locations.Remove(location.Key);
+                    FilteredLocations.Remove(location);
+                    LocationCount = FilteredLocations.Count;
+                }
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert("Error", $"Failed to delete location: {ex.Message}", "OK");
+            }
         }
     }
 
@@ -105,8 +141,20 @@ public partial class LocationListViewModel : ObservableObject
 
         if (action != null && action != "Cancel")
         {
-            // TODO: Implement sorting
-            await Shell.Current.DisplayAlert("Sort", $"Sorting by: {action}", "OK");
+            var sorted = action switch
+            {
+                "Name (A-Z)" => FilteredLocations.OrderBy(l => l.Name).ToList(),
+                "Name (Z-A)" => FilteredLocations.OrderByDescending(l => l.Name).ToList(),
+                "Recently Modified" => FilteredLocations.OrderByDescending(l => l.Key).ToList(),
+                "Key" => FilteredLocations.OrderBy(l => l.Key).ToList(),
+                _ => FilteredLocations.ToList()
+            };
+
+            FilteredLocations.Clear();
+            foreach (var item in sorted)
+            {
+                FilteredLocations.Add(item);
+            }
         }
     }
 
@@ -121,8 +169,29 @@ public partial class LocationListViewModel : ObservableObject
 
         if (action != null && action != "Cancel")
         {
-            // TODO: Implement filtering
-            await Shell.Current.DisplayAlert("Filter", $"Filter: {action}", "OK");
+            try
+            {
+                var allLocations = await _adventureService.GetLocationsAsync();
+                IEnumerable<AdriftLocation> filtered = action switch
+                {
+                    "Hidden Only" => allLocations.Where(l => l.HideOnMap),
+                    "Visible Only" => allLocations.Where(l => !l.HideOnMap),
+                    "Library Only" => allLocations.Where(l => l.IsLibrary),
+                    _ => allLocations
+                };
+
+                FilteredLocations.Clear();
+                foreach (var location in filtered)
+                {
+                    FilteredLocations.Add(new LocationItemViewModel(location));
+                }
+
+                LocationCount = FilteredLocations.Count;
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert("Error", $"Failed to filter locations: {ex.Message}", "OK");
+            }
         }
     }
 
@@ -147,9 +216,14 @@ public partial class LocationItemViewModel : ObservableObject
         IsLibrary = false;
     }
 
-    public LocationItemViewModel(object location) : this()
+    public LocationItemViewModel(AdriftLocation location) : this()
     {
-        // TODO: Map from clsLocation to view model properties
+        Key = location.Key;
+        Name = location.ShortDescription;
+        ShortDescription = location.ShortDescription;
+        ExitCount = location.Directions.Count;
+        IsHidden = location.HideOnMap;
+        IsLibrary = location.IsLibrary;
     }
 
     [ObservableProperty]

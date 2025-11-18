@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using ADRIFT.Core.Models;
 
 namespace ADRIFT.Developer.ViewModels;
 
@@ -91,33 +92,40 @@ public partial class VariableEditorViewModel : ObservableObject
 
     public async Task InitializeAsync()
     {
-        if (!string.IsNullOrEmpty(VariableKey))
+        try
         {
-            // Edit mode - load existing variable
-            IsEditMode = true;
-            PageTitle = "Edit Variable";
+            var adventure = _adventureService.CurrentAdventure;
+            if (adventure == null) return;
 
-            // TODO: Load variable from adventure service
-            // For now, using sample data
-            VariableName = "Sample Variable";
-            SelectedVariableType = "Integer";
-            InitialValue = "10";
-            CurrentValue = "15";
-            Description = "This is a sample variable for demonstration";
+            if (!string.IsNullOrEmpty(VariableKey) && adventure.Variables.TryGetValue(VariableKey, out var existingVariable))
+            {
+                // Edit mode - load existing variable
+                IsEditMode = true;
+                PageTitle = "Edit Variable";
+
+                VariableName = existingVariable.Name;
+                SelectedVariableType = existingVariable.Type.ToString();
+                InitialValue = existingVariable.InitialValue;
+                CurrentValue = existingVariable.CurrentValue;
+                Description = existingVariable.Description;
+            }
+            else
+            {
+                // New variable mode
+                VariableKey = "var_" + Guid.NewGuid().ToString("N").Substring(0, 8);
+                IsEditMode = false;
+                PageTitle = "New Variable";
+                VariableName = "";
+                SelectedVariableType = "Integer";
+                InitialValue = "0";
+                CurrentValue = "0";
+                Description = "";
+            }
         }
-        else
+        catch (Exception ex)
         {
-            // New variable mode
-            IsEditMode = false;
-            PageTitle = "New Variable";
-            VariableName = "";
-            SelectedVariableType = "Integer";
-            InitialValue = "0";
-            CurrentValue = "0";
-            Description = "";
+            await Shell.Current.DisplayAlert("Error", $"Failed to initialize: {ex.Message}", "OK");
         }
-
-        await Task.CompletedTask;
     }
 
     [RelayCommand]
@@ -186,14 +194,49 @@ public partial class VariableEditorViewModel : ObservableObject
 
     private async Task SaveVariable()
     {
-        // TODO: Save variable to adventure service
-        // For now, just a placeholder
-        await Task.Delay(100);
-
-        // If this was a new variable, generate a key
-        if (string.IsNullOrEmpty(VariableKey))
+        try
         {
-            VariableKey = "var_" + Guid.NewGuid().ToString("N")[..8];
+            var adventure = _adventureService.CurrentAdventure;
+            if (adventure == null)
+            {
+                await Shell.Current.DisplayAlert("Error", "No adventure loaded", "OK");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(VariableKey))
+            {
+                VariableKey = "var_" + Guid.NewGuid().ToString("N").Substring(0, 8);
+            }
+
+            var variable = new Variable
+            {
+                Key = VariableKey,
+                Name = VariableName,
+                InitialValue = InitialValue,
+                CurrentValue = CurrentValue,
+                Description = Description,
+                LastModified = DateTime.Now
+            };
+
+            // Parse variable type
+            if (Enum.TryParse<VariableType>(SelectedVariableType, out var varType))
+            {
+                variable.Type = varType;
+            }
+
+            // Add or update in adventure
+            if (adventure.Variables.ContainsKey(VariableKey))
+            {
+                adventure.Variables[VariableKey] = variable;
+            }
+            else
+            {
+                adventure.Variables.Add(VariableKey, variable);
+            }
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Error", $"Failed to save variable: {ex.Message}", "OK");
         }
     }
 }

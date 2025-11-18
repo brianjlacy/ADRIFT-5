@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:vm="clr-namespace:ADRIFT.Developer.ViewModels" x:Class="ADRIFT.Developer.Views.EventListPage"
+             xmlns:vm="clr-namespace:ADRIFT.Developer.ViewModels" x:Class="ADRIFT.Developer.Pages.EventListPage"
+             xmlns:vm="clr-namespace:ADRIFT.Developer.ViewModels" x:Class="ADRIFT.Developer.Pages.EventListPage"
              x:DataType="vm:EventListViewModel" Title="Events">
     <Grid RowDefinitions="Auto,Auto,*,Auto">
         <Frame Grid.Row="0" BackgroundColor="{StaticResource ADRIFTPrimary}" Padding="16" Margin="0" CornerRadius="0">

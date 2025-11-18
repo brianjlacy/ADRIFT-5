@@ -13,7 +13,14 @@ public class AdventureService : IAdventureService
 
     public System.Threading.Tasks.Task<Adventure> CreateNewAdventureAsync()
     {
-        var adventure = new Adventure();
+        var adventure = new Adventure
+        {
+            Title = "New Adventure",
+            Author = Environment.UserName,
+            Version = "1.0",
+            Created = DateTime.Now,
+            Modified = DateTime.Now
+        };
         _currentAdventure = adventure;
         AdventureChanged?.Invoke(this, new AdventureChangedEventArgs { Adventure = adventure });
         return System.Threading.Tasks.Task.FromResult(adventure);
@@ -54,7 +61,13 @@ public class AdventureService : IAdventureService
     {
         try
         {
-            await AdventureLoader.SaveAdventureAsync(filePath, adventure, compress: true);
+            // Update modification timestamp
+            adventure.Modified = DateTime.Now;
+
+            // Determine if we should compress based on file extension
+            bool compress = filePath.EndsWith(".taf", StringComparison.OrdinalIgnoreCase);
+
+            await AdventureLoader.SaveAdventureAsync(filePath, adventure, compress);
             _currentAdventure = adventure;
             AdventureChanged?.Invoke(this, new AdventureChangedEventArgs
             {

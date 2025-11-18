@@ -2,7 +2,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:ADRIFT.Developer.ViewModels"
-             x:Class="ADRIFT.Developer.Views.ObjectListPage"
+             x:Class="ADRIFT.Developer.Pages.ObjectListPage"
+             x:Class="ADRIFT.Developer.Pages.ObjectListPage"
              x:DataType="vm:ObjectListViewModel"
              Title="Objects">
 

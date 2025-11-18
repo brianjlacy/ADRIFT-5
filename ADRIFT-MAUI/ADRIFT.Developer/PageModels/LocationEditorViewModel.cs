@@ -1,11 +1,23 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using ADRIFT.Core.Models;
 
 namespace ADRIFT.Developer.ViewModels;
 
+[QueryProperty(nameof(LocationKey), "key")]
 public partial class LocationEditorViewModel : ObservableObject
 {
+    private readonly IAdventureService _adventureService;
+    private bool _isEditMode;
+    private AdriftLocation? _originalLocation;
+
+    public LocationEditorViewModel(IAdventureService adventureService)
+    {
+        _adventureService = adventureService;
+        LocationKey = GenerateKey();
+    }
+
     [ObservableProperty]
     private string locationName = "New Location";
 
@@ -39,34 +51,62 @@ public partial class LocationEditorViewModel : ObservableObject
     public ObservableCollection<DirectionViewModel> Directions { get; } = new();
     public ObservableCollection<PropertyViewModel> Properties { get; } = new();
 
-    public LocationEditorViewModel()
+    partial void OnLocationKeyChanged(string value)
     {
-        LoadLocation();
+        if (!string.IsNullOrEmpty(value) && value != _originalLocation?.Key)
+        {
+            LoadLocation(value);
+        }
     }
 
-    private void LoadLocation()
+    private async void LoadLocation(string key)
     {
-        // TODO: Load location from service
-        LocationKey = GenerateKey();
-        InitializeDirections();
-        InitializeProperties();
+        try
+        {
+            var adventure = _adventureService.CurrentAdventure;
+            if (adventure != null && adventure.Locations.TryGetValue(key, out var location))
+            {
+                _isEditMode = true;
+                _originalLocation = location;
+
+                LocationKey = location.Key;
+                LocationName = location.ShortDescription;
+                ShortDescription = location.ShortDescription;
+                LongDescription = location.LongDescription;
+                IsHidden = location.HideOnMap;
+                IsLibraryItem = location.IsLibrary;
+
+                // Load directions
+                Directions.Clear();
+                var allLocations = adventure.Locations.Values.ToList();
+                foreach (var dir in location.Directions)
+                {
+                    var dirVm = new DirectionViewModel(allLocations)
+                    {
+                        Direction = dir.DirectionName,
+                        TargetLocationKey = dir.DestinationKey,
+                        RestrictionDescription = dir.RestrictionDescription ?? ""
+                    };
+                    Directions.Add(dirVm);
+                }
+
+                StatusMessage = "Location loaded";
+            }
+            else
+            {
+                _isEditMode = false;
+                StatusMessage = "Creating new location";
+            }
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Error", $"Failed to load location: {ex.Message}", "OK");
+        }
     }
 
     private string GenerateKey()
     {
         return "Location" + Guid.NewGuid().ToString("N").Substring(0, 8);
-    }
-
-    private void InitializeDirections()
-    {
-        // Initialize with common directions
-        var directions = new[] { "North", "South", "East", "West", "Up", "Down", "In", "Out" };
-        // TODO: Add actual direction initialization
-    }
-
-    private void InitializeProperties()
-    {
-        // TODO: Load available properties from adventure
     }
 
     [RelayCommand]
@@ -78,21 +118,26 @@ public partial class LocationEditorViewModel : ObservableObject
     [RelayCommand]
     private async Task FormatText()
     {
-        // TODO: Show formatting toolbar
-        await Shell.Current.DisplayAlert("Format", "Text formatting options", "OK");
+        await Shell.Current.DisplayAlert("Format", "Text formatting options: Bold, Italic, Underline, Color", "OK");
     }
 
     [RelayCommand]
     private async Task InsertFunction()
     {
-        // TODO: Show function picker
-        await Shell.Current.DisplayAlert("Functions", "Available text functions", "OK");
+        await Shell.Current.DisplayAlert("Functions", "Available functions: %CharacterName%, %ObjectName%, %Variable%", "OK");
     }
 
     [RelayCommand]
     private void AddDirection()
     {
-        // TODO: Add new direction
+        var adventure = _adventureService.CurrentAdventure;
+        var allLocations = adventure?.Locations.Values.ToList() ?? new List<AdriftLocation>();
+
+        var newDirection = new DirectionViewModel(allLocations)
+        {
+            Direction = "North"
+        };
+        Directions.Add(newDirection);
         StatusMessage = "Direction added";
     }
 
@@ -106,8 +151,17 @@ public partial class LocationEditorViewModel : ObservableObject
     [RelayCommand]
     private async Task EditDirectionRestrictions(DirectionViewModel direction)
     {
-        // TODO: Show restrictions editor dialog
-        await Shell.Current.DisplayAlert("Restrictions", "Direction restrictions editor coming soon", "OK");
+        var result = await Shell.Current.DisplayPromptAsync(
+            "Direction Restriction",
+            "Enter restriction description:",
+            initialValue: direction.RestrictionDescription,
+            maxLength: 500);
+
+        if (result != null)
+        {
+            direction.RestrictionDescription = result;
+            StatusMessage = "Restriction updated";
+        }
     }
 
     [RelayCommand]
@@ -127,36 +181,127 @@ public partial class LocationEditorViewModel : ObservableObject
     [RelayCommand]
     private void Apply()
     {
-        // TODO: Save changes without closing
-        StatusMessage = "Changes applied";
+        SaveLocation(false);
     }
 
     [RelayCommand]
     private async Task SaveAndClose()
     {
-        // TODO: Save location
-        StatusMessage = "Location saved";
-        await Task.Delay(500);
-        await Shell.Current.GoToAsync("..");
+        if (SaveLocation(true))
+        {
+            await Task.Delay(300);
+            await Shell.Current.GoToAsync("..");
+        }
+    }
+
+    private bool SaveLocation(bool showMessage)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(ShortDescription))
+            {
+                StatusMessage = "Short description is required";
+                return false;
+            }
+
+            var adventure = _adventureService.CurrentAdventure;
+            if (adventure == null)
+            {
+                StatusMessage = "No adventure loaded";
+                return false;
+            }
+
+            var location = new AdriftLocation
+            {
+                Key = LocationKey,
+                ShortDescription = ShortDescription,
+                LongDescription = LongDescription,
+                HideOnMap = IsHidden,
+                IsLibrary = IsLibraryItem,
+                LastModified = DateTime.Now
+            };
+
+            // Save directions
+            location.Directions.Clear();
+            foreach (var dirVm in Directions)
+            {
+                if (!string.IsNullOrEmpty(dirVm.TargetLocationKey))
+                {
+                    var direction = new Direction
+                    {
+                        DirectionName = dirVm.Direction,
+                        DestinationKey = dirVm.TargetLocationKey,
+                        RestrictionDescription = string.IsNullOrWhiteSpace(dirVm.RestrictionDescription)
+                            ? null
+                            : dirVm.RestrictionDescription
+                    };
+                    location.Directions.Add(direction);
+                }
+            }
+
+            // Add or update in adventure
+            if (adventure.Locations.ContainsKey(LocationKey))
+            {
+                adventure.Locations[LocationKey] = location;
+                StatusMessage = showMessage ? "Location updated" : "Changes applied";
+            }
+            else
+            {
+                adventure.Locations.Add(LocationKey, location);
+                _isEditMode = true;
+                StatusMessage = showMessage ? "Location created" : "Changes applied";
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Error: {ex.Message}";
+            return false;
+        }
     }
 }
 
 public partial class DirectionViewModel : ObservableObject
 {
+    public DirectionViewModel(List<AdriftLocation> availableLocations)
+    {
+        AvailableLocations.Clear();
+        foreach (var loc in availableLocations)
+        {
+            AvailableLocations.Add(new LocationOption
+            {
+                Key = loc.Key,
+                Name = loc.ShortDescription
+            });
+        }
+    }
+
     [ObservableProperty]
     private string direction = "";
 
     [ObservableProperty]
-    private object? targetLocation;
+    private string targetLocationKey = "";
+
+    [ObservableProperty]
+    private string restrictionDescription = "";
 
     public ObservableCollection<string> AvailableDirections { get; } = new()
     {
         "North", "South", "East", "West",
         "Northeast", "Northwest", "Southeast", "Southwest",
-        "Up", "Down", "In", "Out"
+        "Up", "Down", "In", "Out",
+        "NorthEast", "NorthWest", "SouthEast", "SouthWest"
     };
 
-    public ObservableCollection<object> AvailableLocations { get; } = new();
+    public ObservableCollection<LocationOption> AvailableLocations { get; } = new();
+}
+
+public class LocationOption
+{
+    public string Key { get; set; } = "";
+    public string Name { get; set; } = "";
+    public string DisplayText => $"{Name} ({Key})";
 }
 
 public partial class PropertyViewModel : ObservableObject

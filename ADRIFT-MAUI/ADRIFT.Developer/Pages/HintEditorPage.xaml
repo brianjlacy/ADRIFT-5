@@ -2,7 +2,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:ADRIFT.Developer.ViewModels"
-             x:Class="ADRIFT.Developer.Views.HintEditorPage"
+             x:Class="ADRIFT.Developer.Pages.HintEditorPage"
+             x:Class="ADRIFT.Developer.Pages.HintEditorPage"
              x:DataType="vm:HintEditorViewModel"
              Title="Hint Editor">
     <Grid RowDefinitions="*,Auto">

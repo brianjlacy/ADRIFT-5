@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ADRIFT.Runner.Pages.GamePage"
+             Title="ADRIFT Runner">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Save" Clicked="OnSaveGame" />
+        <ToolbarItem Text="Load" Clicked="OnLoadGame" />
+        <ToolbarItem Text="Hints" Clicked="OnShowHints" />
+        <ToolbarItem Text="Export" Clicked="OnExportTranscript" />
+        <ToolbarItem Text="Restart" Clicked="OnRestartGame" />
+    </ContentPage.ToolbarItems>
+
+    <Grid RowDefinitions="*,Auto,Auto" Padding="10">
+
+        <!-- Output area -->
+        <ScrollView x:Name="OutputScroll" Grid.Row="0">
+            <VerticalStackLayout x:Name="OutputStack" Spacing="10" Padding="10">
+                <Label x:Name="OutputLabel"
+                       Text=""
+                       FontFamily="Courier New"
+                       FontSize="14"
+                       TextColor="{DynamicResource PrimaryTextColor}"
+                       LineBreakMode="WordWrap" />
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Status bar -->
+        <Grid Grid.Row="1" ColumnDefinitions="*,*,*" Padding="5" BackgroundColor="{DynamicResource SecondaryColor}">
+            <Label Grid.Column="0" x:Name="ScoreLabel" Text="Score: 0" FontSize="12" VerticalOptions="Center" />
+            <Label Grid.Column="1" x:Name="TurnsLabel" Text="Turns: 0" FontSize="12" VerticalOptions="Center" HorizontalOptions="Center" />
+            <Label Grid.Column="2" x:Name="LocationLabel" Text="" FontSize="12" VerticalOptions="Center" HorizontalOptions="End" />
+        </Grid>
+
+        <!-- Input area -->
+        <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto,Auto" Padding="10" ColumnSpacing="5">
+            <Button Grid.Column="0"
+                    Text="↑"
+                    Clicked="OnHistoryUp"
+                    WidthRequest="40"
+                    ToolTipProperties.Text="Previous command" />
+
+            <Entry x:Name="CommandEntry"
+                   Grid.Column="1"
+                   Placeholder="Enter command..."
+                   FontFamily="Courier New"
+                   FontSize="14"
+                   Completed="OnCommandEntered"
+                   ReturnCommand="{Binding SubmitCommandCommand}" />
+
+            <Button Grid.Column="2"
+                    Text="↓"
+                    Clicked="OnHistoryDown"
+                    WidthRequest="40"
+                    ToolTipProperties.Text="Next command" />
+
+            <Button Grid.Column="3"
+                    Text="Send"
+                    Clicked="OnCommandEntered"
+                    WidthRequest="80" />
+        </Grid>
+
+    </Grid>
+
+</ContentPage>

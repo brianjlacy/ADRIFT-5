@@ -1,5 +1,6 @@
 using ADRIFT.Developer.ViewModels;
-namespace ADRIFT.Developer.Views;
+namespace ADRIFT.Developer.Pages;
+namespace ADRIFT.Developer.Pages;
 public partial class VariableListPage : ContentPage
 {
     public VariableListPage(VariableListViewModel viewModel) { InitializeComponent(); BindingContext = viewModel; }
