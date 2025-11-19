@@ -444,6 +444,104 @@ public class GameEngine
                     }
                 }
                 break;
+
+            case "endgame":
+                // End the game with win/lose/neutral status
+                var endType = action.Parameters.GetValueOrDefault("Type", "win");
+                switch (endType.ToLower())
+                {
+                    case "win":
+                        _state.GameWon = true;
+                        var winText = action.Parameters.GetValueOrDefault("Text", "");
+                        if (!string.IsNullOrEmpty(winText))
+                        {
+                            _state.AddOutput(FormatText(winText, parameters));
+                        }
+                        else if (!string.IsNullOrEmpty(_adventure.WinText.Text))
+                        {
+                            _state.AddOutput(FormatText(_adventure.WinText.Text, parameters));
+                        }
+                        else
+                        {
+                            _state.AddOutput("\n**Congratulations! You have won the game!**");
+                        }
+                        break;
+
+                    case "lose":
+                        _state.GameLost = true;
+                        var loseText = action.Parameters.GetValueOrDefault("Text", "");
+                        if (!string.IsNullOrEmpty(loseText))
+                        {
+                            _state.AddOutput(FormatText(loseText, parameters));
+                        }
+                        else if (!string.IsNullOrEmpty(_adventure.LoseText.Text))
+                        {
+                            _state.AddOutput(FormatText(_adventure.LoseText.Text, parameters));
+                        }
+                        else
+                        {
+                            _state.AddOutput("\n**Game Over. You have lost.**");
+                        }
+                        break;
+
+                    case "neutral":
+                    default:
+                        _state.GameEnded = true;
+                        var neutralText = action.Parameters.GetValueOrDefault("Text", "");
+                        if (!string.IsNullOrEmpty(neutralText))
+                        {
+                            _state.AddOutput(FormatText(neutralText, parameters));
+                        }
+                        else
+                        {
+                            _state.AddOutput("\n**The game has ended.**");
+                        }
+                        break;
+                }
+                break;
+
+            case "movecharacter":
+                // Move a character to a location
+                if (action.Parameters.TryGetValue("Character", out var moveCharKey) &&
+                    action.Parameters.TryGetValue("Location", out var moveCharLoc))
+                {
+                    var resolvedCharKey = ResolveParameter(moveCharKey, parameters);
+                    var resolvedLoc = ResolveParameter(moveCharLoc, parameters);
+                    _state.MoveCharacter(resolvedCharKey, resolvedLoc);
+                }
+                break;
+
+            case "executetask":
+                // Execute another task
+                if (action.Parameters.TryGetValue("Task", out var execTaskKey))
+                {
+                    var resolvedTaskKey = ResolveParameter(execTaskKey, parameters);
+                    var task = _adventure.Tasks.GetValueOrDefault(resolvedTaskKey);
+                    if (task != null)
+                    {
+                        ExecuteTask(task, new CommandMatch { Parameters = parameters });
+                    }
+                }
+                break;
+
+            case "setproperty":
+                // Set a custom property value
+                if (action.Parameters.TryGetValue("Property", out var propKey) &&
+                    action.Parameters.TryGetValue("Value", out var propValue))
+                {
+                    var resolvedValue = ResolveParameter(propValue, parameters);
+                    _state.SetPropertyValue(propKey, resolvedValue);
+                }
+                break;
+
+            case "time":
+                // Advance game time
+                if (action.Parameters.TryGetValue("Minutes", out var minutes) &&
+                    int.TryParse(minutes, out var minutesToAdd))
+                {
+                    _state.TimeElapsed += minutesToAdd;
+                }
+                break;
         }
     }
 
@@ -533,18 +631,21 @@ public class GameEngine
 
     private void CheckGameEnd()
     {
-        // TODO: Check for win/lose conditions
-        // For now, check if max score is reached
+        // Check if game already ended through action
+        if (_state.GameWon || _state.GameLost || _state.GameEnded)
+            return;
+
+        // Check if max score is reached (one win condition)
         if (_state.Score >= _adventure.MaxScore && _adventure.MaxScore > 0)
         {
             _state.GameWon = true;
-            if (!string.IsNullOrEmpty(_adventure.WinningText))
+            if (!string.IsNullOrEmpty(_adventure.WinText.Text))
             {
-                _state.AddOutput("\n" + _adventure.WinningText);
+                _state.AddOutput("\n" + FormatText(_adventure.WinText.Text, new Dictionary<string, string>()));
             }
             else
             {
-                _state.AddOutput("\nCongratulations! You have won the game!");
+                _state.AddOutput("\n**Congratulations! You have won the game!**");
             }
         }
     }

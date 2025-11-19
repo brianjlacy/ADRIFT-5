@@ -16,6 +16,7 @@ public class GameState
     public int TurnCount { get; set; }
     public bool GameWon { get; set; }
     public bool GameLost { get; set; }
+    public bool GameEnded { get; set; }
 
     // Entity locations and states
     public Dictionary<string, string> ObjectLocations { get; set; } = new(); // ObjectKey -> LocationKey
@@ -26,6 +27,9 @@ public class GameState
 
     // Variable values (runtime)
     public Dictionary<string, string> VariableValues { get; set; } = new(); // VariableKey -> Current value
+
+    // Property values (runtime)
+    public Dictionary<string, string> PropertyValues { get; set; } = new(); // PropertyKey -> Current value
 
     // Object states
     public Dictionary<string, bool> ObjectStates { get; set; } = new(); // ObjectKey.PropertyName -> Value
@@ -231,6 +235,16 @@ public class GameState
     public void SetVariableValue(string variableKey, string value)
     {
         VariableValues[variableKey] = value;
+    }
+
+    public string GetPropertyValue(string propertyKey)
+    {
+        return PropertyValues.GetValueOrDefault(propertyKey, string.Empty);
+    }
+
+    public void SetPropertyValue(string propertyKey, string value)
+    {
+        PropertyValues[propertyKey] = value;
     }
 
     /// <summary>
