@@ -9,12 +9,13 @@
         <ToolbarItem Text="Inventory" Clicked="OnToggleInventory" />
         <ToolbarItem Text="Save" Clicked="OnSaveGame" />
         <ToolbarItem Text="Load" Clicked="OnLoadGame" />
+        <ToolbarItem Text="Undo" Clicked="OnUndo" />
         <ToolbarItem Text="Hints" Clicked="OnShowHints" />
         <ToolbarItem Text="Export" Clicked="OnExportTranscript" />
         <ToolbarItem Text="Restart" Clicked="OnRestartGame" />
     </ContentPage.ToolbarItems>
 
-    <Grid RowDefinitions="Auto,*,Auto,Auto" ColumnDefinitions="*,Auto" Padding="10">
+    <Grid RowDefinitions="Auto,*,Auto,Auto,Auto" ColumnDefinitions="*,Auto" Padding="10">
 
         <!-- Map Panel (collapsible, at top) -->
         <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
@@ -38,7 +39,7 @@
         </Border>
 
         <!-- Output area with HTML rendering -->
-        <WebView x:Name="OutputWebView" Grid.Row="1" Grid.Column="0" Grid.RowSpan="3" />
+        <WebView x:Name="OutputWebView" Grid.Row="1" Grid.Column="0" Grid.RowSpan="4" />
 
         <!-- Hidden ScrollView fallback (legacy support) -->
         <ScrollView x:Name="OutputScroll" Grid.Row="1" Grid.Column="0" IsVisible="False">
@@ -53,7 +54,7 @@
         </ScrollView>
 
         <!-- Inventory Panel (collapsible) -->
-        <Border Grid.Row="1" Grid.Column="1" Grid.RowSpan="3"
+        <Border Grid.Row="1" Grid.Column="1" Grid.RowSpan="4"
                 x:Name="InventoryPanel"
                 IsVisible="False"
                 BackgroundColor="{DynamicResource SecondaryBackgroundColor}"
@@ -90,8 +91,32 @@
             <Label Grid.Column="2" x:Name="LocationLabel" Text="" FontSize="12" VerticalOptions="Center" HorizontalOptions="End" />
         </Grid>
 
+        <!-- Autocomplete suggestions (collapsible) -->
+        <Border Grid.Row="3" Grid.Column="0"
+                x:Name="AutocompletePanel"
+                IsVisible="False"
+                BackgroundColor="{DynamicResource SecondaryBackgroundColor}"
+                Stroke="{DynamicResource BorderColor}"
+                StrokeThickness="1"
+                Padding="5"
+                Margin="5,0,5,0"
+                MaximumHeightRequest="150">
+            <CollectionView x:Name="SuggestionsList"
+                            SelectionMode="Single"
+                            SelectionChanged="OnSuggestionSelected">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Label Text="{Binding}"
+                               FontFamily="Courier New"
+                               FontSize="12"
+                               Padding="5,3" />
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Border>
+
         <!-- Input area -->
-        <Grid Grid.Row="3" Grid.Column="0" ColumnDefinitions="Auto,*,Auto,Auto" Padding="10" ColumnSpacing="5">
+        <Grid Grid.Row="4" Grid.Column="0" ColumnDefinitions="Auto,*,Auto,Auto" Padding="10" ColumnSpacing="5">
             <Button Grid.Column="0"
                     Text="↑"
                     Clicked="OnHistoryUp"
@@ -103,6 +128,7 @@
                    Placeholder="Enter command..."
                    FontFamily="Courier New"
                    FontSize="14"
+                   TextChanged="OnCommandTextChanged"
                    Completed="OnCommandEntered"
                    ReturnCommand="{Binding SubmitCommandCommand}" />
 

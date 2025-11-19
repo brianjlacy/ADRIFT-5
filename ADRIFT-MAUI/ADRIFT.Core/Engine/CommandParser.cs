@@ -10,11 +10,28 @@ public class CommandParser
 {
     private readonly Adventure _adventure;
     private readonly Dictionary<string, List<string>> _synonyms;
+    private string? _lastReferencedObjectKey;
+    private string? _lastReferencedCharacterKey;
 
     public CommandParser(Adventure adventure)
     {
         _adventure = adventure;
         _synonyms = BuildSynonymDictionary();
+    }
+
+    /// <summary>
+    /// Update the last referenced object/character for pronoun resolution
+    /// </summary>
+    public void UpdateLastReferences(Dictionary<string, string> parameters)
+    {
+        if (parameters.TryGetValue("object", out var objKey))
+        {
+            _lastReferencedObjectKey = objKey;
+        }
+        if (parameters.TryGetValue("character", out var charKey))
+        {
+            _lastReferencedCharacterKey = charKey;
+        }
     }
 
     private Dictionary<string, List<string>> BuildSynonymDictionary()
@@ -47,6 +64,9 @@ public class CommandParser
         // Normalize input
         input = input.Trim().ToLower();
 
+        // Resolve pronouns (it, them, him, her)
+        input = ResolvePronouns(input);
+
         // Expand synonyms
         var expandedInputs = ExpandSynonyms(input);
 
@@ -72,6 +92,40 @@ public class CommandParser
         return matches.OrderByDescending(m => m.Task.Priority)
                      .ThenByDescending(m => m.Specificity)
                      .ToList();
+    }
+
+    /// <summary>
+    /// Resolve pronouns to last referenced object/character names
+    /// </summary>
+    private string ResolvePronouns(string input)
+    {
+        var words = input.Split(' ');
+
+        for (int i = 0; i < words.Length; i++)
+        {
+            var word = words[i].ToLower();
+
+            // Object pronouns (it, them)
+            if ((word == "it" || word == "them") && _lastReferencedObjectKey != null)
+            {
+                if (_adventure.Objects.TryGetValue(_lastReferencedObjectKey, out var obj))
+                {
+                    // Use first name or article name
+                    var objName = obj.Names.FirstOrDefault() ?? obj.Name;
+                    words[i] = objName;
+                }
+            }
+            // Character pronouns (him, her, them for people)
+            else if ((word == "him" || word == "her" || word == "them") && _lastReferencedCharacterKey != null)
+            {
+                if (_adventure.Characters.TryGetValue(_lastReferencedCharacterKey, out var character))
+                {
+                    words[i] = character.Name;
+                }
+            }
+        }
+
+        return string.Join(' ', words);
     }
 
     private List<string> ExpandSynonyms(string input)

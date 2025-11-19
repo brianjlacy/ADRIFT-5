@@ -268,6 +268,9 @@ public class GameEngine
         // Execute success actions
         ExecuteActions(task.SuccessActions, match.Parameters);
 
+        // Update pronoun references for parser
+        _parser.UpdateLastReferences(match.Parameters);
+
         // Output completion text
         if (!string.IsNullOrEmpty(task.CompletionText))
         {
