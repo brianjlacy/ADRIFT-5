@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ADRIFT.Developer.Pages.SettingsPage"
+             Title="Adventure Settings">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Save" Clicked="OnSave" />
+    </ContentPage.ToolbarItems>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+
+            <!-- General Settings -->
+            <Frame>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="General Information" FontSize="20" FontAttributes="Bold" />
+
+                    <Label Text="Title:" FontAttributes="Bold" />
+                    <Entry x:Name="TitleEntry" Placeholder="Adventure title" />
+
+                    <Label Text="Author:" FontAttributes="Bold" />
+                    <Entry x:Name="AuthorEntry" Placeholder="Your name" />
+
+                    <Label Text="Version:" FontAttributes="Bold" />
+                    <Entry x:Name="VersionEntry" Placeholder="1.0" />
+
+                    <Label Text="Description:" FontAttributes="Bold" />
+                    <Editor x:Name="DescriptionEditor"
+                            Placeholder="Brief description of your adventure"
+                            HeightRequest="100"
+                            AutoSize="TextChanges" />
+
+                    <Label Text="Genre:" FontAttributes="Bold" />
+                    <Entry x:Name="GenreEntry" Placeholder="e.g., Fantasy, Sci-Fi, Mystery" />
+
+                    <Label Text="Language:" FontAttributes="Bold" />
+                    <Entry x:Name="LanguageEntry" Placeholder="e.g., English, Spanish" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Game Settings -->
+            <Frame>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Game Settings" FontSize="20" FontAttributes="Bold" />
+
+                    <Label Text="Maximum Score:" FontAttributes="Bold" />
+                    <Entry x:Name="MaxScoreEntry" Placeholder="0" Keyboard="Numeric" />
+
+                    <HorizontalStackLayout Spacing="10">
+                        <CheckBox x:Name="UseTimeCheckBox" />
+                        <Label Text="Use time-based system (instead of turn-based)" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Spacing="10">
+                        <CheckBox x:Name="ShowExitsCheckBox" />
+                        <Label Text="Show available exits" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Spacing="10">
+                        <CheckBox x:Name="Use8PointCompassCheckBox" />
+                        <Label Text="Use 8-point compass (NE, SE, SW, NW)" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Spacing="10">
+                        <CheckBox x:Name="EnableBattleSystemCheckBox" />
+                        <Label Text="Enable battle system" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+
+                    <Label Text="Task Execution Mode:" FontAttributes="Bold" />
+                    <Picker x:Name="TaskExecutionModePicker">
+                        <Picker.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>HighestPriorityTask</x:String>
+                                <x:String>HighestPriorityPassingTask</x:String>
+                            </x:Array>
+                        </Picker.ItemsSource>
+                    </Picker>
+
+                    <Label Text="Default Perspective:" FontAttributes="Bold" />
+                    <Picker x:Name="DefaultPerspectivePicker">
+                        <Picker.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>FirstPerson</x:String>
+                                <x:String>SecondPerson</x:String>
+                                <x:String>ThirdPerson</x:String>
+                            </x:Array>
+                        </Picker.ItemsSource>
+                    </Picker>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Display Settings -->
+            <Frame>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Display Settings" FontSize="20" FontAttributes="Bold" />
+
+                    <Label Text="Font Name:" FontAttributes="Bold" />
+                    <Entry x:Name="CustomFontNameEntry" Placeholder="Default system font" />
+
+                    <Label Text="Font Size:" FontAttributes="Bold" />
+                    <Entry x:Name="CustomFontSizeEntry" Placeholder="Default" Keyboard="Numeric" />
+
+                    <Label Text="Background Color:" FontAttributes="Bold" />
+                    <HorizontalStackLayout Spacing="10">
+                        <Entry x:Name="BackgroundColorEntry" Placeholder="#FFFFFF or White" HorizontalOptions="FillAndExpand" />
+                        <Button Text="Pick" Clicked="OnPickBackgroundColor" WidthRequest="80" />
+                    </HorizontalStackLayout>
+
+                    <Label Text="Foreground Color (Text):" FontAttributes="Bold" />
+                    <HorizontalStackLayout Spacing="10">
+                        <Entry x:Name="ForegroundColorEntry" Placeholder="#000000 or Black" HorizontalOptions="FillAndExpand" />
+                        <Button Text="Pick" Clicked="OnPickForegroundColor" WidthRequest="80" />
+                    </HorizontalStackLayout>
+
+                    <Label Text="Link Color:" FontAttributes="Bold" />
+                    <HorizontalStackLayout Spacing="10">
+                        <Entry x:Name="LinkColorEntry" Placeholder="#0000FF or Blue" HorizontalOptions="FillAndExpand" />
+                        <Button Text="Pick" Clicked="OnPickLinkColor" WidthRequest="80" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Game Text -->
+            <Frame>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Game Text" FontSize="20" FontAttributes="Bold" />
+
+                    <Label Text="Introduction Text:" FontAttributes="Bold" />
+                    <Editor x:Name="IntroductionTextEditor"
+                            Placeholder="Text shown at game start"
+                            HeightRequest="100"
+                            AutoSize="TextChanges" />
+
+                    <Label Text="Win Text:" FontAttributes="Bold" />
+                    <Editor x:Name="WinTextEditor"
+                            Placeholder="Text shown when player wins"
+                            HeightRequest="100"
+                            AutoSize="TextChanges" />
+
+                    <Label Text="Lose Text:" FontAttributes="Bold" />
+                    <Editor x:Name="LoseTextEditor"
+                            Placeholder="Text shown when player loses"
+                            HeightRequest="100"
+                            AutoSize="TextChanges" />
+
+                    <Label Text="Not Understood Message:" FontAttributes="Bold" />
+                    <Entry x:Name="NotUnderstoodMessageEntry"
+                           Placeholder="I don't understand that command." />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Library Settings -->
+            <Frame>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Library Settings" FontSize="20" FontAttributes="Bold" />
+
+                    <HorizontalStackLayout Spacing="10">
+                        <CheckBox x:Name="IsLibraryCheckBox" />
+                        <Label Text="This is a library (items can be imported by other adventures)" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+
+                    <Label Text="💡 Libraries allow you to create reusable content that can be imported into multiple adventures."
+                           FontSize="12"
+                           TextColor="Gray"
+                           IsVisible="{Binding Source={x:Reference IsLibraryCheckBox}, Path=IsChecked}" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Metadata (Babel Treaty) -->
+            <Frame>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Metadata (Babel Treaty)" FontSize="20" FontAttributes="Bold" />
+
+                    <Label Text="IFID (Interactive Fiction ID):" FontAttributes="Bold" />
+                    <Entry x:Name="IFIDEntry" Placeholder="Auto-generated on save if empty" IsReadOnly="True" />
+
+                    <Label Text="Forgiveness Level:" FontAttributes="Bold" />
+                    <Picker x:Name="ForgivenessLevelPicker">
+                        <Picker.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>Merciful</x:String>
+                                <x:String>Polite</x:String>
+                                <x:String>Tough</x:String>
+                                <x:String>Nasty</x:String>
+                                <x:String>Cruel</x:String>
+                            </x:Array>
+                        </Picker.ItemsSource>
+                    </Picker>
+
+                    <Label Text="First Published:" FontAttributes="Bold" />
+                    <DatePicker x:Name="FirstPublishedPicker" />
+                </VerticalStackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

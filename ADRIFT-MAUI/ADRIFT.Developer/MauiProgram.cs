@@ -67,6 +67,7 @@ public static class MauiProgram
         builder.Services.AddTransient<SynonymEditorPage>();
         builder.Services.AddTransient<GroupEditorPage>();
         builder.Services.AddTransient<HintEditorPage>();
+        builder.Services.AddTransient<SettingsPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

@@ -18,6 +18,7 @@ public partial class AppShell : Shell
         Routing.RegisterRoute("synonymeditor", typeof(SynonymEditorPage));
         Routing.RegisterRoute("groupeditor", typeof(GroupEditorPage));
         Routing.RegisterRoute("hinteditor", typeof(HintEditorPage));
+        Routing.RegisterRoute("settings", typeof(SettingsPage));
     }
 
     private async void OnNewAdventure(object sender, EventArgs e)
@@ -47,7 +48,7 @@ public partial class AppShell : Shell
 
     private async void OnSettings(object sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync("//settings");
+        await Shell.Current.GoToAsync("settings");
     }
 
     private async void OnAbout(object sender, EventArgs e)
