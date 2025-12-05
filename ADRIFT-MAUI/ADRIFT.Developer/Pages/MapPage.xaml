@@ -2,36 +2,75 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ADRIFT.Developer.Pages.MapPage"
-             x:Class="ADRIFT.Developer.Pages.MapPage"
              xmlns:viewmodels="clr-namespace:ADRIFT.Developer.ViewModels"
              x:DataType="viewmodels:MapViewModel"
              Title="Adventure Map">
 
-    <Grid RowDefinitions="Auto,*" Padding="10">
+    <Grid RowDefinitions="Auto,Auto,*,Auto" Padding="0">
+
+        <!-- Header -->
+        <Frame Grid.Row="0"
+               BackgroundColor="{StaticResource ADRIFTPrimary}"
+               Padding="16"
+               Margin="0"
+               CornerRadius="0">
+            <Label Text="Adventure Map Visualizer"
+                   FontSize="20"
+                   FontAttributes="Bold"
+                   TextColor="White" />
+        </Frame>
+
         <!-- Toolbar -->
-        <HorizontalStackLayout Grid.Row="0" Spacing="10" Margin="0,0,0,10">
-            <Button Text="Zoom In" Command="{Binding ZoomInCommand}" />
-            <Button Text="Zoom Out" Command="{Binding ZoomOutCommand}" />
-            <Button Text="Reset View" Command="{Binding ResetViewCommand}" />
+        <HorizontalStackLayout Grid.Row="1" Spacing="10" Padding="10" BackgroundColor="{StaticResource ADRIFTLight}">
+            <Button Text="🔍+" Command="{Binding ZoomInCommand}" WidthRequest="50" />
+            <Button Text="🔍-" Command="{Binding ZoomOutCommand}" WidthRequest="50" />
+            <Button Text="↺" Command="{Binding ResetViewCommand}" WidthRequest="50" />
+            <Button Text="↻" Command="{Binding RefreshCommand}" WidthRequest="50" />
+            <Button Text="+" Command="{Binding AddLocationCommand}" />
+            <CheckBox IsChecked="{Binding ShowHiddenLocations}" Color="{StaticResource ADRIFTPrimary}" />
+            <Label Text="Show Hidden" VerticalOptions="Center" />
+            <CheckBox IsChecked="{Binding AutoLayout}" Color="{StaticResource ADRIFTPrimary}" />
+            <Label Text="Auto Layout" VerticalOptions="Center" />
+            <Button Text="📊" Command="{Binding ShowStatisticsCommand}" WidthRequest="50" />
         </HorizontalStackLayout>
 
         <!-- Map Canvas Area -->
-        <Border Grid.Row="1"
+        <Border Grid.Row="2"
                 Stroke="{StaticResource Gray200}"
                 StrokeThickness="1"
-                BackgroundColor="{StaticResource Gray100}">
-            <ScrollView>
-                <VerticalStackLayout Padding="20" Spacing="10">
-                    <Label Text="Adventure Map"
-                           FontSize="24"
-                           FontAttributes="Bold"
-                           HorizontalOptions="Center"/>
-                    <Label Text="Map visualization will be implemented here."
-                           HorizontalOptions="Center"
-                           TextColor="{StaticResource Gray600}"/>
-                </VerticalStackLayout>
-            </ScrollView>
+                BackgroundColor="White">
+            <GraphicsView x:Name="MapGraphicsView"
+                          HeightRequest="600"
+                          WidthRequest="800"
+                          HorizontalOptions="Fill"
+                          VerticalOptions="Fill">
+                <GraphicsView.GestureRecognizers>
+                    <PanGestureRecognizer PanUpdated="OnPanUpdated" />
+                    <PinchGestureRecognizer PinchUpdated="OnPinchUpdated" />
+                    <TapGestureRecognizer Tapped="OnMapTapped" />
+                </GraphicsView.GestureRecognizers>
+            </GraphicsView>
         </Border>
+
+        <!-- Status Bar -->
+        <Frame Grid.Row="3"
+               BackgroundColor="{StaticResource ADRIFTLight}"
+               Padding="10"
+               Margin="0"
+               CornerRadius="0">
+            <Grid ColumnDefinitions="*,Auto,Auto">
+                <Label Grid.Column="0"
+                       Text="{Binding StatusMessage}"
+                       VerticalOptions="Center" />
+                <Label Grid.Column="1"
+                       Text="{Binding LocationCount, StringFormat='Locations: {0}'}"
+                       VerticalOptions="Center"
+                       Margin="10,0" />
+                <Label Grid.Column="2"
+                       Text="{Binding ConnectionCount, StringFormat='Connections: {0}'}"
+                       VerticalOptions="Center" />
+            </Grid>
+        </Frame>
     </Grid>
 
 </ContentPage>
