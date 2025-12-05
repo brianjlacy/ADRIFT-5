@@ -1,6 +1,6 @@
 CRITICAL OPERATING INSTRUCTIONS:
 
-0. VITAL! Treat the /ADRIFT-MAUI directory as the project root for the sake of these instructions. Do NOT modify anything outsid of /ADRIFT-MAUI!
+0. VITAL! Treat the /ADRIFT-MAUI directory as the project/repository root for the sake of these instructions. Do NOT modify anything outsid of /ADRIFT-MAUI!
 
 1. Project Specifications Document (SPECIFICATION.md). Ensure there is a document in the root called SPECIFICATION.md. This document shall include the complete, verbatim SPECIFICATION. Purpose: Ensures that you always have a "canonical" understanding of the full scope of the project.
    a. NEVER Modify the SPECIFICATION.md file WITHOUT EXPLICIT INSTRUCTIONS FROM ME TO DO SO!
