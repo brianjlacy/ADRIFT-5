@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ADRIFT.Developer.Pages.ALREditorPage"
+             Title="ALR Editor">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Save" Clicked="OnSave" />
+        <ToolbarItem Text="Delete" Clicked="OnDelete" />
+    </ContentPage.ToolbarItems>
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="16" Padding="20">
+
+            <Frame>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Text Override Details" FontSize="18" FontAttributes="Bold" />
+
+                    <Label Text="Find this text:" FontAttributes="Bold" />
+                    <Editor x:Name="OldTextEditor"
+                            Placeholder="Text to find and replace"
+                            HeightRequest="100"
+                            AutoSize="TextChanges" />
+
+                    <Label Text="Replace with:" FontAttributes="Bold" />
+                    <Editor x:Name="NewTextEditor"
+                            Placeholder="Replacement text"
+                            HeightRequest="100"
+                            AutoSize="TextChanges" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Options" FontSize="18" FontAttributes="Bold" />
+
+                    <HorizontalStackLayout Spacing="10">
+                        <CheckBox x:Name="CaseSensitiveCheckBox" />
+                        <Label Text="Case Sensitive" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Spacing="10">
+                        <CheckBox x:Name="WholeWordsOnlyCheckBox" />
+                        <Label Text="Whole Words Only" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+
+                    <Label Text="Priority Order (lower = applied earlier):" FontAttributes="Bold" />
+                    <Stepper x:Name="OrderStepper"
+                             Minimum="1"
+                             Maximum="1000"
+                             Increment="10"
+                             ValueChanged="OnOrderChanged" />
+                    <Label x:Name="OrderLabel" Text="100" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame BackgroundColor="{StaticResource ADRIFTSurface}">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="💡 Tip" FontAttributes="Bold" />
+                    <Label Text="ALRs (Alternate Reality Layers) allow you to find and replace text in all descriptions. They are applied in order - lower numbers are applied first."
+                           FontSize="12"
+                           TextColor="Gray" />
+                </VerticalStackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

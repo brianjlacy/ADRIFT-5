@@ -1,5 +1,7 @@
 using ADRIFT.Core.Engine;
 using ADRIFT.Core.Models;
+using ADRIFT.Runner.Controls;
+using System.Collections.ObjectModel;
 using System.Text.Json;
 
 namespace ADRIFT.Runner.Pages;
@@ -11,10 +13,18 @@ public partial class GamePage : ContentPage
     private int _historyIndex = -1;
     private Adventure? _currentAdventure;
     private HintManager? _hintManager;
+    private string _htmlContent = "";
+    private bool _useDarkMode = true; // TODO: Make configurable
+    private MapView? _mapView;
+    private Stack<GameState> _undoStack = new Stack<GameState>();
+    private const int MaxUndoLevels = 50; // Limit undo history
+    private List<string> _commandDictionary = new();
+    private ObservableCollection<string> _suggestions = new();
 
     public GamePage()
     {
         InitializeComponent();
+        SuggestionsList.ItemsSource = _suggestions;
     }
 
     public GamePage(Adventure adventure) : this()
@@ -28,6 +38,15 @@ public partial class GamePage : ContentPage
         _engine = new GameEngine(adventure);
         _hintManager = new HintManager(adventure, _engine.State);
 
+        // Clear undo stack for new game
+        _undoStack.Clear();
+
+        // Build command dictionary for autocomplete
+        BuildCommandDictionary(adventure);
+
+        // Initialize map view
+        InitializeMapView();
+
         // Display introduction
         var intro = _engine.GetIntroduction();
         AppendOutput(intro);
@@ -39,6 +58,18 @@ public partial class GamePage : ContentPage
         CommandEntry.Focus();
     }
 
+    private void InitializeMapView()
+    {
+        if (_currentAdventure == null || _engine == null)
+            return;
+
+        // Create and add map view to container
+        _mapView = new MapView();
+        _mapView.SetAdventure(_currentAdventure, _engine.State);
+        MapContainer.Children.Clear();
+        MapContainer.Children.Add(_mapView);
+    }
+
     private void OnCommandEntered(object? sender, EventArgs e)
     {
         if (_engine == null)
@@ -47,6 +78,9 @@ public partial class GamePage : ContentPage
         var command = CommandEntry.Text?.Trim();
         if (string.IsNullOrWhiteSpace(command))
             return;
+
+        // Save state for undo before processing command
+        SaveUndoState();
 
         // Add to history
         _commandHistory.Add(command);
@@ -80,13 +114,58 @@ public partial class GamePage : ContentPage
 
         // Clear input
         CommandEntry.Text = string.Empty;
+    }
 
-        // Scroll to bottom
-        MainThread.BeginInvokeOnMainThread(async () =>
+    private void SaveUndoState()
+    {
+        if (_engine == null)
+            return;
+
+        // Clone current state
+        var stateCopy = _engine.State.Clone();
+        _undoStack.Push(stateCopy);
+
+        // Limit stack size to prevent excessive memory usage
+        if (_undoStack.Count > MaxUndoLevels)
         {
-            await Task.Delay(100);
-            await OutputScroll.ScrollToAsync(0, OutputLabel.Height, false);
-        });
+            // Convert to list, remove oldest, convert back
+            var stateList = _undoStack.ToList();
+            stateList.RemoveAt(stateList.Count - 1); // Remove oldest (at bottom)
+            _undoStack = new Stack<GameState>(stateList.AsEnumerable().Reverse());
+        }
+    }
+
+    private async void OnUndo(object? sender, EventArgs e)
+    {
+        if (_engine == null)
+        {
+            await DisplayAlert("Undo", "No game in progress.", "OK");
+            return;
+        }
+
+        if (_undoStack.Count == 0)
+        {
+            await DisplayAlert("Undo", "No actions to undo.", "OK");
+            return;
+        }
+
+        // Restore previous state
+        var previousState = _undoStack.Pop();
+        _engine.RestoreGame(previousState);
+
+        // Refresh display
+        AppendOutput("\n[Undone]\n> ");
+        UpdateStatusBar();
+
+        if (InventoryPanel.IsVisible)
+        {
+            UpdateInventoryDisplay();
+        }
+
+        if (MapPanel.IsVisible && _mapView != null)
+        {
+            _mapView.UpdatePlayerLocation();
+        }
     }
 
     private void UpdateStatusBar()
@@ -102,10 +181,81 @@ public partial class GamePage : ContentPage
         {
             LocationLabel.Text = location.ShortDescription;
         }
+
+        // Update inventory display if visible
+        if (InventoryPanel.IsVisible)
+        {
+            UpdateInventoryDisplay();
+        }
+
+        // Update map if visible
+        if (MapPanel.IsVisible && _mapView != null)
+        {
+            _mapView.UpdatePlayerLocation();
+        }
+    }
+
+    private void OnToggleMap(object? sender, EventArgs e)
+    {
+        MapPanel.IsVisible = !MapPanel.IsVisible;
+    }
+
+    private void OnToggleInventory(object? sender, EventArgs e)
+    {
+        InventoryPanel.IsVisible = !InventoryPanel.IsVisible;
+
+        if (InventoryPanel.IsVisible)
+        {
+            UpdateInventoryDisplay();
+        }
+    }
+
+    private void UpdateInventoryDisplay()
+    {
+        if (_engine == null)
+            return;
+
+        InventoryList.Clear();
+
+        var inventory = _engine.State.Inventory;
+
+        if (inventory.Count == 0)
+        {
+            EmptyInventoryLabel.IsVisible = true;
+        }
+        else
+        {
+            EmptyInventoryLabel.IsVisible = false;
+
+            foreach (var item in inventory)
+            {
+                var itemLabel = new Label
+                {
+                    Text = $"• {item.FullName}",
+                    FontSize = 12,
+                    Padding = new Thickness(5)
+                };
+
+                InventoryList.Add(itemLabel);
+            }
+        }
     }
 
     private void AppendOutput(string text)
     {
+        if (string.IsNullOrEmpty(text))
+            return;
+
+        // Update HTML content
+        _htmlContent = HtmlFormatter.AppendHtml(_htmlContent, text, _useDarkMode);
+
+        // Update WebView
+        OutputWebView.Source = new HtmlWebViewSource
+        {
+            Html = _htmlContent
+        };
+
+        // Also update label for transcript export
         if (string.IsNullOrEmpty(OutputLabel.Text))
         {
             OutputLabel.Text = text;
@@ -223,8 +373,12 @@ public partial class GamePage : ContentPage
             {
                 _engine.RestoreGame(savedState);
 
+                // Clear undo stack when loading a save
+                _undoStack.Clear();
+
                 // Clear and re-display
                 OutputLabel.Text = "";
+                _htmlContent = "";
                 AppendOutput($"Game loaded from '{choice}'\n\n");
 
                 // Show current location
@@ -233,6 +387,7 @@ public partial class GamePage : ContentPage
                 AppendOutput("\n> ");
 
                 CommandEntry.IsEnabled = true;
+                UpdateStatusBar();
                 await DisplayAlert("Success", "Game loaded successfully.", "OK");
             }
         }
@@ -259,6 +414,7 @@ public partial class GamePage : ContentPage
         {
             // Clear output
             OutputLabel.Text = "";
+            _htmlContent = "";
 
             // Restart the game
             StartAdventure(_currentAdventure);
@@ -442,6 +598,110 @@ public partial class GamePage : ContentPage
         catch (Exception ex)
         {
             await DisplayAlert("Error", $"Failed to export transcript: {ex.Message}", "OK");
+        }
+    }
+
+    private void BuildCommandDictionary(Adventure adventure)
+    {
+        _commandDictionary.Clear();
+
+        // Add common system commands
+        var systemCommands = new[]
+        {
+            "look", "l", "inventory", "i", "take", "get", "drop",
+            "examine", "x", "go", "north", "n", "south", "s",
+            "east", "e", "west", "w", "northeast", "ne",
+            "northwest", "nw", "southeast", "se", "southwest", "sw",
+            "up", "u", "down", "d", "in", "out",
+            "open", "close", "unlock", "lock", "read",
+            "talk to", "ask", "tell", "give", "show",
+            "wear", "remove", "eat", "drink", "use",
+            "push", "pull", "turn", "switch", "press"
+        };
+
+        _commandDictionary.AddRange(systemCommands);
+
+        // Extract command patterns from tasks
+        if (adventure.Tasks != null)
+        {
+            foreach (var task in adventure.Tasks.Values)
+            {
+                foreach (var command in task.Commands)
+                {
+                    // Remove parameter placeholders like %object%, %character%, etc.
+                    var cleanCommand = command
+                        .Replace("%object%", "")
+                        .Replace("%character%", "")
+                        .Replace("%location%", "")
+                        .Replace("%direction%", "")
+                        .Replace("%text%", "")
+                        .Replace("%number%", "")
+                        .Trim();
+
+                    if (!string.IsNullOrWhiteSpace(cleanCommand) &&
+                        !_commandDictionary.Contains(cleanCommand, StringComparer.OrdinalIgnoreCase))
+                    {
+                        _commandDictionary.Add(cleanCommand.ToLower());
+                    }
+                }
+            }
+        }
+
+        // Sort for better autocomplete experience
+        _commandDictionary.Sort();
+    }
+
+    private void OnCommandTextChanged(object? sender, TextChangedEventArgs e)
+    {
+        var input = e.NewTextValue?.Trim().ToLower();
+
+        if (string.IsNullOrWhiteSpace(input) || input.Length < 2)
+        {
+            // Hide suggestions if input is too short
+            AutocompletePanel.IsVisible = false;
+            _suggestions.Clear();
+            return;
+        }
+
+        // Find matching commands
+        var matches = _commandDictionary
+            .Where(cmd => cmd.StartsWith(input, StringComparison.OrdinalIgnoreCase))
+            .Take(10) // Limit to top 10 matches
+            .ToList();
+
+        if (matches.Count > 0)
+        {
+            _suggestions.Clear();
+            foreach (var match in matches)
+            {
+                _suggestions.Add(match);
+            }
+            AutocompletePanel.IsVisible = true;
+        }
+        else
+        {
+            AutocompletePanel.IsVisible = false;
+            _suggestions.Clear();
+        }
+    }
+
+    private void OnSuggestionSelected(object? sender, SelectionChangedEventArgs e)
+    {
+        if (e.CurrentSelection.FirstOrDefault() is string selectedCommand)
+        {
+            // Apply the selected suggestion
+            CommandEntry.Text = selectedCommand;
+            CommandEntry.CursorPosition = selectedCommand.Length;
+
+            // Hide suggestions
+            AutocompletePanel.IsVisible = false;
+            _suggestions.Clear();
+
+            // Clear selection to allow re-selection of the same item
+            SuggestionsList.SelectedItem = null;
+
+            // Focus back on entry
+            CommandEntry.Focus();
         }
     }
 }

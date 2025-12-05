@@ -106,7 +106,7 @@ public class ConversationManager
     /// <summary>
     /// Find a matching conversation topic
     /// </summary>
-    private ConversationTopic? FindMatchingTopic(Character character, string input)
+    private Topic? FindMatchingTopic(Character character, string input)
     {
         if (character.Topics.Count == 0)
             return null;

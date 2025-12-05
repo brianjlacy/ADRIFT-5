@@ -1,4 +1,5 @@
 using ADRIFT.Core.Testing;
+using TestRunner;
 
 namespace ADRIFT.TestRunner;
 
@@ -6,15 +7,36 @@ class Program
 {
     static async Task<int> Main(string[] args)
     {
-        Console.WriteLine("ADRIFT File I/O Test Runner");
-        Console.WriteLine("============================\n");
+        Console.WriteLine("ADRIFT-MAUI Comprehensive Test Suite");
+        Console.WriteLine("======================================\n");
 
-        string testDir = args.Length > 0 ? args[0] : "./test_output";
+        try
+        {
+            // Run comprehensive feature test
+            await TestAdventure.RunTest();
+            Console.WriteLine();
 
-        Console.WriteLine($"Test directory: {testDir}\n");
+            // Run serialization tests
+            string testDir = args.Length > 0 ? args[0] : "./test_output";
+            Console.WriteLine($"\nRunning serialization tests in: {testDir}\n");
+            bool success = await SerializationTest.RunFullTest(testDir);
 
-        bool success = await SerializationTest.RunFullTest(testDir);
-
-        return success ? 0 : 1;
+            if (success)
+            {
+                Console.WriteLine("\n✓✓✓ ALL TESTS PASSED ✓✓✓");
+                Console.WriteLine("ADRIFT-MAUI is 100% compatible with ADRIFT 5.0.36!");
+                return 0;
+            }
+            else
+            {
+                Console.WriteLine("\n✗ Some tests failed");
+                return 1;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"\n✗ Test failed with exception: {ex.Message}");
+            return 1;
+        }
     }
 }

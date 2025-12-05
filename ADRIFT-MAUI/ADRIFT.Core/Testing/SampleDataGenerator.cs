@@ -247,18 +247,18 @@ public static class SampleDataGenerator
             GeneralGreeting = "Good evening. Welcome to the mansion."
         };
 
-        butler.Topics.Add(new ConversationTopic
+        butler.Topics.Add("topic1", new Topic
         {
             TopicName = "Mansion",
-            Keywords = "mansion, house, building",
-            Response = "Ah yes, the mansion. It has stood here for over two hundred years. Many strange things have happened within these walls."
+            Keywords = new List<string> { "mansion", "house", "building" },
+            Response = new Description { Text = "Ah yes, the mansion. It has stood here for over two hundred years. Many strange things have happened within these walls." }
         });
 
-        butler.Topics.Add(new ConversationTopic
+        butler.Topics.Add("topic2", new Topic
         {
             TopicName = "Secret",
-            Keywords = "secret, mystery, hidden",
-            Response = "I'm afraid I cannot speak of such matters, sir. Some secrets are best left buried."
+            Keywords = new List<string> { "secret", "mystery", "hidden" },
+            Response = new Description { Text = "I'm afraid I cannot speak of such matters, sir. Some secrets are best left buried." }
         });
 
         butler.WalkSteps.Add(new WalkStep

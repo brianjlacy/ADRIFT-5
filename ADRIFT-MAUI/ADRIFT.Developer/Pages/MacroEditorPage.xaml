@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ADRIFT.Developer.Pages.MacroEditorPage"
+             Title="Macro Editor">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Save" Clicked="OnSave" />
+        <ToolbarItem Text="Delete" Clicked="OnDelete" />
+    </ContentPage.ToolbarItems>
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="16" Padding="20">
+
+            <Frame>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Macro Details" FontSize="18" FontAttributes="Bold" />
+
+                    <Label Text="Macro Name:" FontAttributes="Bold" />
+                    <Entry x:Name="NameEntry" Placeholder="Short descriptive name" />
+
+                    <Label Text="Command:" FontAttributes="Bold" />
+                    <Entry x:Name="CommandEntry" Placeholder="The command to execute (e.g., 'look', 'inventory')" />
+
+                    <Label Text="Keyboard Shortcut:" FontAttributes="Bold" />
+                    <Entry x:Name="KeyBindingEntry" Placeholder="e.g., Ctrl+L, F1, etc." />
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame BackgroundColor="{StaticResource ADRIFTSurface}">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="💡 About Macros" FontAttributes="Bold" />
+                    <Label Text="Macros are command shortcuts that let players type abbreviated commands or use keyboard shortcuts. Common examples:"
+                           FontSize="12"
+                           TextColor="Gray" />
+                    <Label Text="• 'l' → 'look'&#x0a;• 'i' → 'inventory'&#x0a;• 'x' → 'examine'"
+                           FontSize="12"
+                           TextColor="Gray"
+                           FontFamily="Courier New" />
+                </VerticalStackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

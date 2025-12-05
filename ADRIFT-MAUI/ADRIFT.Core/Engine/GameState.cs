@@ -16,6 +16,7 @@ public class GameState
     public int TurnCount { get; set; }
     public bool GameWon { get; set; }
     public bool GameLost { get; set; }
+    public bool GameEnded { get; set; }
 
     // Entity locations and states
     public Dictionary<string, string> ObjectLocations { get; set; } = new(); // ObjectKey -> LocationKey
@@ -26,6 +27,9 @@ public class GameState
 
     // Variable values (runtime)
     public Dictionary<string, string> VariableValues { get; set; } = new(); // VariableKey -> Current value
+
+    // Property values (runtime)
+    public Dictionary<string, string> PropertyValues { get; set; } = new(); // PropertyKey -> Current value
 
     // Object states
     public Dictionary<string, bool> ObjectStates { get; set; } = new(); // ObjectKey.PropertyName -> Value
@@ -40,6 +44,9 @@ public class GameState
     // Player attributes (for character-based games)
     public string PlayerName { get; set; } = "Adventurer";
     public Dictionary<string, object> PlayerAttributes { get; set; } = new();
+
+    // Time tracking (for time-based games)
+    public int TimeElapsed { get; set; } = 0; // Minutes elapsed
 
     /// <summary>
     /// Initialize game state from an adventure
@@ -230,6 +237,16 @@ public class GameState
         VariableValues[variableKey] = value;
     }
 
+    public string GetPropertyValue(string propertyKey)
+    {
+        return PropertyValues.GetValueOrDefault(propertyKey, string.Empty);
+    }
+
+    public void SetPropertyValue(string propertyKey, string value)
+    {
+        PropertyValues[propertyKey] = value;
+    }
+
     /// <summary>
     /// Mark a task as completed
     /// </summary>
@@ -244,6 +261,30 @@ public class GameState
     public bool IsTaskCompleted(string taskKey)
     {
         return CompletedTasks.GetValueOrDefault(taskKey, false);
+    }
+
+    /// <summary>
+    /// Get the current location of a character
+    /// </summary>
+    public string GetCharacterLocation(string characterKey)
+    {
+        return CharacterLocations.GetValueOrDefault(characterKey, string.Empty);
+    }
+
+    /// <summary>
+    /// Get the current location of an object
+    /// </summary>
+    public string GetObjectLocation(string objectKey)
+    {
+        return ObjectLocations.GetValueOrDefault(objectKey, string.Empty);
+    }
+
+    /// <summary>
+    /// Move a character to a new location
+    /// </summary>
+    public void MoveCharacter(string characterKey, string destinationKey)
+    {
+        CharacterLocations[characterKey] = destinationKey;
     }
 
     /// <summary>
@@ -292,6 +333,7 @@ public class GameState
                 this.CharacterWalkStates.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Clone())),
             PlayerName = this.PlayerName,
             PlayerAttributes = new Dictionary<string, object>(this.PlayerAttributes),
+            TimeElapsed = this.TimeElapsed,
             LastCommand = this.LastCommand
         };
     }

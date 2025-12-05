@@ -1,5 +1,5 @@
 using ADRIFT.Core.Models;
-using ADRIFT.Engine;
+using ADRIFT.Core.IO;
 
 namespace ADRIFT.Developer.Services;
 
@@ -30,7 +30,7 @@ public class AdventureService : IAdventureService
     {
         try
         {
-            var adventure = await AdventureLoader.LoadAdventureAsync(filePath);
+            var adventure = await AdventureFileIO.LoadAdventureAsync(filePath);
             _currentAdventure = adventure;
             AdventureChanged?.Invoke(this, new AdventureChangedEventArgs
             {
@@ -67,7 +67,7 @@ public class AdventureService : IAdventureService
             // Determine if we should compress based on file extension
             bool compress = filePath.EndsWith(".taf", StringComparison.OrdinalIgnoreCase);
 
-            await AdventureLoader.SaveAdventureAsync(filePath, adventure, compress);
+            await AdventureFileIO.SaveAdventureAsync(adventure, filePath, compress);
             _currentAdventure = adventure;
             AdventureChanged?.Invoke(this, new AdventureChangedEventArgs
             {

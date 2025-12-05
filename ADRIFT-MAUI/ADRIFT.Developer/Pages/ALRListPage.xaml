@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ADRIFT.Developer.Pages.ALRListPage"
+             Title="Text Overrides (ALRs)">
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
+        <Frame Grid.Row="0" BackgroundColor="{StaticResource ADRIFTPrimary}" Padding="16" Margin="0" CornerRadius="0">
+            <Label Text="Text Overrides (ALRs)" FontSize="20" FontAttributes="Bold" TextColor="White" />
+        </Frame>
+
+        <SearchBar Grid.Row="1" Placeholder="Search ALRs..." x:Name="SearchBar" Margin="16,8" />
+
+        <CollectionView Grid.Row="2" x:Name="ALRsCollection">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Margin="16,8" Padding="12">
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnALRTapped" />
+                        </Frame.GestureRecognizers>
+                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
+                            <Label Grid.Row="0" Grid.Column="0" Text="{Binding DisplayName}" FontSize="16" FontAttributes="Bold" />
+                            <Label Grid.Row="0" Grid.Column="1" Text="{Binding Order, StringFormat='Order: {0}'}" FontSize="12" TextColor="Gray" />
+                            <Label Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding OldText, StringFormat='Find: {0}'}" FontSize="14" TextColor="Gray" />
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <Button Grid.Row="3" Text="+ Add ALR" Clicked="OnAddALR"
+                BackgroundColor="{StaticResource ADRIFTPrimary}" Margin="16" HeightRequest="50" />
+    </Grid>
+</ContentPage>

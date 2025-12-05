@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ADRIFT.Developer.Pages.PropertyEditorPage"
+             Title="Property Editor">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Save" Clicked="OnSave" />
+        <ToolbarItem Text="Delete" Clicked="OnDelete" />
+    </ContentPage.ToolbarItems>
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="16" Padding="20">
+
+            <Frame>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Property Details" FontSize="18" FontAttributes="Bold" />
+
+                    <Label Text="Name:" FontAttributes="Bold" />
+                    <Entry x:Name="NameEntry" Placeholder="Property name" />
+
+                    <Label Text="Description:" FontAttributes="Bold" />
+                    <Editor x:Name="DescriptionEditor" Placeholder="Property description" HeightRequest="80" />
+
+                    <Label Text="Type:" FontAttributes="Bold" />
+                    <Picker x:Name="TypePicker" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame x:Name="StatesFrame" IsVisible="False">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="States (State List property)" FontSize="16" FontAttributes="Bold" />
+
+                    <Editor x:Name="StatesEditor"
+                            Placeholder="Enter states, one per line"
+                            HeightRequest="150"
+                            AutoSize="TextChanges" />
+
+                    <Label Text="Selected State:" FontAttributes="Bold" />
+                    <Entry x:Name="SelectedStateEntry" Placeholder="Default state" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame x:Name="IntegerFrame" IsVisible="False">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Integer Value" FontSize="16" FontAttributes="Bold" />
+
+                    <Label Text="Current Value:" FontAttributes="Bold" />
+                    <Entry x:Name="IntegerValueEntry" Placeholder="0" Keyboard="Numeric" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame x:Name="TextFrame" IsVisible="False">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Text Value" FontSize="16" FontAttributes="Bold" />
+
+                    <Label Text="Current Value:" FontAttributes="Bold" />
+                    <Editor x:Name="TextValueEditor" Placeholder="Enter text" HeightRequest="100" />
+                </VerticalStackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
