@@ -19,6 +19,7 @@ public partial class AppShell : Shell
         Routing.RegisterRoute("groupeditor", typeof(GroupEditorPage));
         Routing.RegisterRoute("hinteditor", typeof(HintEditorPage));
         Routing.RegisterRoute("settings", typeof(SettingsPage));
+        Routing.RegisterRoute("walkeditor", typeof(WalkEditorPage));
     }
 
     private async void OnNewAdventure(object sender, EventArgs e)

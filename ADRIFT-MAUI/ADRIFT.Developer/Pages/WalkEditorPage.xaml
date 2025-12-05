@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:ADRIFT.Developer.PageModels"
+             x:Class="ADRIFT.Developer.Pages.WalkEditorPage"
+             x:DataType="viewmodels:WalkEditorViewModel"
+             Title="Walk Route Editor">
+
+    <Grid RowDefinitions="Auto,*,Auto" Padding="0">
+
+        <!-- Header -->
+        <Frame Grid.Row="0"
+               BackgroundColor="{StaticResource ADRIFTPrimary}"
+               Padding="16"
+               Margin="0"
+               CornerRadius="0">
+            <Label Text="Walk Route Configuration"
+                   FontSize="20"
+                   FontAttributes="Bold"
+                   TextColor="White" />
+        </Frame>
+
+        <!-- Content -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="16" Spacing="16">
+
+                <!-- Walk Route Settings -->
+                <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Walk Route Settings" FontSize="16" FontAttributes="Bold" />
+
+                        <Label Text="Description:" FontAttributes="Bold" />
+                        <Entry Text="{Binding Description}"
+                               Placeholder="e.g., Patrol the castle grounds" />
+
+                        <HorizontalStackLayout Spacing="12">
+                            <CheckBox IsChecked="{Binding Loop}" Color="{StaticResource ADRIFTPrimary}" />
+                            <Label Text="Loop (repeat walk continuously)" VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+
+                        <HorizontalStackLayout Spacing="12">
+                            <CheckBox IsChecked="{Binding StartActive}" Color="{StaticResource ADRIFTPrimary}" />
+                            <Label Text="Start active (begin walk immediately)" VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+
+                        <Label Text="Status:" FontAttributes="Bold" />
+                        <Picker SelectedItem="{Binding Status}">
+                            <Picker.ItemsSource>
+                                <x:Array Type="{x:Type x:String}">
+                                    <x:String>NotStarted</x:String>
+                                    <x:String>Active</x:String>
+                                    <x:String>Paused</x:String>
+                                    <x:String>Finished</x:String>
+                                </x:Array>
+                            </Picker.ItemsSource>
+                        </Picker>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Walk Steps -->
+                <Frame Padding="16" BorderColor="{StaticResource ADRIFTSecondary}">
+                    <VerticalStackLayout Spacing="12">
+                        <HorizontalStackLayout Spacing="8">
+                            <Label Text="Walk Steps"
+                                   FontSize="16"
+                                   FontAttributes="Bold"
+                                   VerticalOptions="Center" />
+                            <Label Text="{Binding StepCountText}"
+                                   FontSize="14"
+                                   TextColor="Gray"
+                                   VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+
+                        <Label Text="Define the sequence of steps for this walk route"
+                               FontSize="12"
+                               TextColor="Gray" />
+
+                        <!-- Steps List -->
+                        <CollectionView ItemsSource="{Binding Steps}"
+                                        SelectionMode="None"
+                                        EmptyView="No steps defined. Add steps below.">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <SwipeView>
+                                        <SwipeView.RightItems>
+                                            <SwipeItems>
+                                                <SwipeItem Text="Delete"
+                                                          BackgroundColor="Red"
+                                                          Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WalkEditorViewModel}}, Path=RemoveStepCommand}"
+                                                          CommandParameter="{Binding .}" />
+                                            </SwipeItems>
+                                        </SwipeView.RightItems>
+
+                                        <Frame Padding="12"
+                                               Margin="0,4"
+                                               BorderColor="{StaticResource ADRIFTSecondary}">
+                                            <Grid ColumnDefinitions="Auto,*,Auto,Auto"
+                                                  RowDefinitions="Auto,Auto,Auto"
+                                                  ColumnSpacing="12"
+                                                  RowSpacing="8">
+
+                                                <!-- Step Number -->
+                                                <Frame Grid.Row="0" Grid.Column="0" Grid.RowSpan="3"
+                                                       Padding="8"
+                                                       BackgroundColor="{StaticResource ADRIFTPrimary}"
+                                                       CornerRadius="4"
+                                                       WidthRequest="40"
+                                                       HeightRequest="40"
+                                                       VerticalOptions="Center">
+                                                    <Label Text="{Binding StepNumber}"
+                                                           FontSize="18"
+                                                           FontAttributes="Bold"
+                                                           TextColor="White"
+                                                           HorizontalOptions="Center"
+                                                           VerticalOptions="Center" />
+                                                </Frame>
+
+                                                <!-- Location -->
+                                                <Label Grid.Row="0" Grid.Column="1"
+                                                       Text="{Binding LocationKey, StringFormat='Location: {0}'}"
+                                                       FontAttributes="Bold" />
+
+                                                <!-- Direction -->
+                                                <Label Grid.Row="1" Grid.Column="1"
+                                                       Text="{Binding Direction, StringFormat='Direction: {0}'}"
+                                                       FontSize="14"
+                                                       TextColor="Gray" />
+
+                                                <!-- Delay -->
+                                                <Label Grid.Row="2" Grid.Column="1"
+                                                       Text="{Binding DelayTurns, StringFormat='Delay: {0} turns'}"
+                                                       FontSize="12"
+                                                       TextColor="Gray" />
+
+                                                <!-- Move Up Button -->
+                                                <Button Grid.Row="0" Grid.Column="2"
+                                                        Text="↑"
+                                                        FontSize="18"
+                                                        Padding="0"
+                                                        WidthRequest="40"
+                                                        HeightRequest="40"
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WalkEditorViewModel}}, Path=MoveStepUpCommand}"
+                                                        CommandParameter="{Binding .}" />
+
+                                                <!-- Move Down Button -->
+                                                <Button Grid.Row="0" Grid.Column="3"
+                                                        Text="↓"
+                                                        FontSize="18"
+                                                        Padding="0"
+                                                        WidthRequest="40"
+                                                        HeightRequest="40"
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WalkEditorViewModel}}, Path=MoveStepDownCommand}"
+                                                        CommandParameter="{Binding .}" />
+
+                                                <!-- Edit Button -->
+                                                <Button Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2"
+                                                        Text="Edit Step"
+                                                        FontSize="12"
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WalkEditorViewModel}}, Path=EditStepCommand}"
+                                                        CommandParameter="{Binding .}" />
+                                            </Grid>
+                                        </Frame>
+                                    </SwipeView>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+
+                        <!-- Add Step Button -->
+                        <Button Text="+ Add Walk Step"
+                                Command="{Binding AddStepCommand}"
+                                BackgroundColor="{StaticResource ADRIFTSecondary}"
+                                Margin="0,8,0,0" />
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Info -->
+                <Frame BackgroundColor="{StaticResource ADRIFTSurface}">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="💡 About Walk Routes" FontAttributes="Bold" />
+                        <Label Text="Walk routes define automatic movement patterns for characters. Each step specifies a location/direction and optional delay. Enable Loop to repeat the route continuously."
+                               FontSize="12"
+                               TextColor="Gray" />
+                    </VerticalStackLayout>
+                </Frame>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Action Buttons -->
+        <Grid Grid.Row="2"
+              ColumnDefinitions="*,Auto,Auto"
+              Padding="16"
+              BackgroundColor="{StaticResource ADRIFTLight}"
+              ColumnSpacing="12">
+            <Button Grid.Column="0"
+                    Text="Cancel"
+                    Command="{Binding CancelCommand}"
+                    BackgroundColor="Gray" />
+            <Button Grid.Column="1"
+                    Text="Apply"
+                    Command="{Binding ApplyCommand}"
+                    BackgroundColor="{StaticResource ADRIFTSecondary}" />
+            <Button Grid.Column="2"
+                    Text="OK"
+                    Command="{Binding SaveAndCloseCommand}"
+                    BackgroundColor="{StaticResource ADRIFTPrimary}" />
+        </Grid>
+    </Grid>
+
+</ContentPage>

@@ -45,6 +45,7 @@ public static class MauiProgram
         builder.Services.AddTransient<SynonymEditorViewModel>();
         builder.Services.AddTransient<GroupEditorViewModel>();
         builder.Services.AddTransient<HintEditorViewModel>();
+        builder.Services.AddTransient<WalkEditorViewModel>();
 
         // Register Views - Main & List Pages
         builder.Services.AddTransient<MainPage>();
@@ -68,6 +69,7 @@ public static class MauiProgram
         builder.Services.AddTransient<GroupEditorPage>();
         builder.Services.AddTransient<HintEditorPage>();
         builder.Services.AddTransient<SettingsPage>();
+        builder.Services.AddTransient<WalkEditorPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();
