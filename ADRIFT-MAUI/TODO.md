@@ -1,8 +1,8 @@
 # ADRIFT-5 MAUI Conversion - Project Tracker
 
-**Last Updated**: 2025-11-18
+**Last Updated**: 2025-12-05
 **Status**: 🚧 Active Development
-**Overall Progress**: 37%
+**Overall Progress**: 49%
 
 ---
 
@@ -11,10 +11,10 @@
 ```
 Infrastructure:     ████████████████████ 100%
 Core Services:      ████████████████████ 100%
-List Pages:         ████████████████████ 100% ✅
+List Pages:         ████████████████████ 100% ✅ (11/11)
 Simple Editors:     ████████████████████ 100% ✅
-Medium Editors:     ████████░░░░░░░░░░░░  40% (4/10)
-Complex Editors:    ░░░░░░░░░░░░░░░░░░░░   0%
+Medium Editors:     ████████████████░░░░  80% (8/10)
+Complex Editors:    ░░░░░░░░░░░░░░░░░░░░   0% (0/3)
 Custom Controls:    ░░░░░░░░░░░░░░░░░░░░   0%
 Testing:            ░░░░░░░░░░░░░░░░░░░░   0%
 ```
@@ -86,7 +86,7 @@ Testing:            ░░░░░░░░░░░░░░░░░░░░
 **Duration**: Week 5-6
 **Completed**: 2025-11-18
 
-### List Pages Created (7/7)
+### List Pages Created (11/11)
 
 - [x] LocationListPage.xaml - List all locations
 - [x] ObjectListPage.xaml - List all objects
@@ -95,6 +95,10 @@ Testing:            ░░░░░░░░░░░░░░░░░░░░
 - [x] EventListPage.xaml - List all events
 - [x] VariableListPage.xaml - List all variables
 - [x] GroupListPage.xaml - List all groups
+- [x] PropertyListPage.xaml - List all properties
+- [x] ALRListPage.xaml - List all ALRs (text overrides)
+- [x] UserFunctionListPage.xaml - List all user functions
+- [x] MacroListPage.xaml - List all macros
 
 ### Features Implemented
 
@@ -116,6 +120,10 @@ Testing:            ░░░░░░░░░░░░░░░░░░░░
 ✅ EventListPage.xaml + .cs + EventListViewModel.cs
 ✅ VariableListPage.xaml + .cs + VariableListViewModel.cs
 ✅ GroupListPage.xaml + .cs + GroupListViewModel.cs
+✅ PropertyListPage.xaml + .cs (code-behind pattern)
+✅ ALRListPage.xaml + .cs (code-behind pattern)
+✅ UserFunctionListPage.xaml + .cs (code-behind pattern)
+✅ MacroListPage.xaml + .cs (code-behind pattern)
 ✅ All pages registered in MauiProgram.cs
 
 ### Pattern Template
@@ -206,11 +214,11 @@ Priority: Easiest to hardest
 
 ## 🏗️ Phase 5: Medium Editor Pages
 
-**Status**: 🚧 40% Complete (4/10)
+**Status**: 🚧 80% Complete (8/10)
 **Duration**: Week 11-16
 **Target**: 2026-02-09
 
-### Medium Complexity Editors (4/10)
+### Medium Complexity Editors (8/10)
 
 - [x] **LocationEditorPage** ✅ (Example implementation)
   - Tabs: Description, Directions, Properties, Advanced
@@ -251,52 +259,74 @@ Priority: Easiest to hardest
   - Action sequencing
   - Event output text
 
-- [ ] **PropertyEditorPage**
-  - Property name
+- [✅] **PropertyEditorPage** ✅
+  - Property name input
   - Type selection (Text/Integer/StateList/CharacterKey/etc.)
-  - State list editor
-  - Default value
-  - Description
+  - State list editor (dynamic, shows for StateList type)
+  - Default value input (dynamic based on type)
+  - Description editor
+  - Full CRUD operations with Save/Delete
+  - Code-behind pattern: PropertyEditorPage.xaml.cs
 
-- [ ] **ALREditorPage** (Text Override)
-  - Original text
-  - Override text
-  - Restriction editor
+- [✅] **ALREditorPage** ✅ (Text Override)
+  - Find this text input (multi-line)
+  - Replace with text input (multi-line)
+  - Case sensitive checkbox
+  - Whole words only checkbox
+  - Priority order stepper (controls application order)
+  - Full CRUD operations with Save/Delete
+  - Code-behind pattern: ALREditorPage.xaml.cs
 
-- [ ] **UserFunctionEditorPage**
-  - Function name
-  - Parameters list
-  - Return type
-  - Expression builder
-  - Test functionality
+- [✅] **UserFunctionEditorPage** ✅
+  - Function name input (no spaces)
+  - Description editor
+  - Output text/formula editor (supports argument names)
+  - Arguments editor (multi-line: name|type format)
+  - Dynamic usage label (shows how to call the function)
+  - Argument type validation (Object, Character, Location, Number, Text)
+  - Full CRUD operations with Save/Delete
+  - Code-behind pattern: UserFunctionEditorPage.xaml.cs
 
-- [ ] **SettingsPage**
+- [✅] **MacroEditorPage** ✅ (Not originally in TODO - additional feature)
+  - Macro name input
+  - Command input (the command to execute)
+  - Keyboard shortcut input
+  - Help text explaining macro usage
+  - Full CRUD operations with Save/Delete
+  - Code-behind pattern: MacroEditorPage.xaml.cs
+
+- [ ] **SettingsPage** ⚠️ NOT YET CREATED
   - Adventure settings
   - Default values
   - Color scheme
   - Font settings
   - Library settings
 
-- [ ] **WalkEditorPage** (Character Walk)
+- [ ] **WalkEditorPage** (Character Walk) ⚠️ NOT YET CREATED
   - Walk steps list
   - Location/direction per step
   - Timing configuration
   - Loop settings
+  - NOTE: Walk editing is currently handled within CharacterEditorPage
 
-- [ ] **MapPage**
-  - Map visualization
-  - Zoom/pan controls
-  - Location selection
-  - Auto-layout option
+- [ ] **MapPage** ⚠️ STUB ONLY
+  - MapPage.xaml exists with basic toolbar (Zoom In, Zoom Out, Reset View)
+  - MapViewModel.cs exists with basic commands
+  - Map visualization NOT YET IMPLEMENTED (shows placeholder text)
+  - Needs: GraphicsView-based map rendering
+  - Needs: Location box drawing and connection lines
+  - Needs: Touch gestures for zoom/pan
 
 ### Completion Criteria
 
-- [ ] All 10 pages created
-- [ ] Tab controls implemented
-- [ ] Complex data binding working
-- [ ] CollectionViews for sub-items
-- [ ] Property grids functional
-- [ ] Navigation between editors
+- [x] 8 of 10 pages fully created (Location, Object, Character, Event, Property, ALR, UserFunction, Macro)
+- [ ] 2 of 10 pages incomplete (Settings not created, Map is stub, Walk not separate page)
+- [x] Tab controls implemented (where applicable)
+- [x] Complex data binding working
+- [x] CollectionViews for sub-items
+- [x] Property grids functional (using dynamic UI patterns)
+- [x] Navigation between editors
+- [✅] Code-behind pattern successfully used for PropertyEditorPage, ALREditorPage, UserFunctionEditorPage, MacroEditorPage
 
 ---
 
@@ -308,11 +338,13 @@ Priority: Easiest to hardest
 
 ### Complex Editors (0/3)
 
-- [ ] **TaskEditorPage** (Most Complex!)
+- [ ] **TaskEditorPage** (Most Complex!) ⚠️ STUB ONLY
+  - **Current Status**: TaskEditorPage.xaml exists with BASIC stub (only TaskName and Description fields)
+  - **Current Status**: TaskEditorViewModel.cs exists with minimal implementation
   - **Challenge**: Original has 44+ tabs
   - **Approach**: Simplify to wizard-style or grouped sections
 
-  **Tabs/Sections Required**:
+  **Tabs/Sections Required** (NOT YET IMPLEMENTED):
   - [ ] General (Name, Type, Priority)
   - [ ] Commands (Multi-step command builder)
   - [ ] Restrictions (Complex condition editor)
@@ -320,7 +352,7 @@ Priority: Easiest to hardest
   - [ ] References (Object/Character/Direction/etc.)
   - [ ] Advanced (Repeatable, Score, etc.)
 
-  **Sub-Components**:
+  **Sub-Components** (NOT YET IMPLEMENTED):
   - [ ] Command builder UI
   - [ ] Restriction builder (Expression tree)
   - [ ] Action list editor
@@ -604,12 +636,12 @@ Priority: Easiest to hardest
 - [x] AdventureService
 - [x] FileService
 
-### Pages (18/50)
+### Pages (27/50)
 - [x] MainPage (Dashboard)
-- [x] LocationEditorPage (Example)
+- [x] LocationEditorPage
 - [x] LocationListPage
 - [x] ObjectListPage
-- [x] TaskListPage
+- [x] TaskListPage (list only, editor is stub)
 - [x] CharacterListPage
 - [x] EventListPage
 - [x] VariableListPage
@@ -621,10 +653,20 @@ Priority: Easiest to hardest
 - [x] ObjectEditorPage
 - [x] CharacterEditorPage
 - [x] EventEditorPage
-- [ ] 6 more Medium editors
-- [ ] 3 Complex editors
+- [x] PropertyEditorPage ✅
+- [x] PropertyListPage ✅
+- [x] ALREditorPage ✅
+- [x] ALRListPage ✅
+- [x] UserFunctionEditorPage ✅
+- [x] UserFunctionListPage ✅
+- [x] MacroEditorPage ✅
+- [x] MacroListPage ✅
+- [ ] MapPage (stub only - basic UI, no visualization)
+- [ ] TaskEditorPage (stub only - name & description only)
+- [ ] SettingsPage (not created)
+- [ ] WalkEditorPage (not created - integrated in CharacterEditor)
 - [ ] 10 Runner pages
-- [ ] 15 Supporting pages
+- [ ] 13 Supporting pages
 
 ### ViewModels (18/50)
 - [x] MainViewModel
@@ -643,7 +685,10 @@ Priority: Easiest to hardest
 - [x] ObjectEditorViewModel
 - [x] CharacterEditorViewModel
 - [x] EventEditorViewModel
-- [ ] 32 more ViewModels
+- [x] MapViewModel (basic - commands only, no rendering)
+- [x] TaskEditorViewModel (stub - minimal implementation)
+- [ ] NOTE: Property, ALR, UserFunction, Macro editors use code-behind pattern (no ViewModels)
+- [ ] 32 more ViewModels needed
 
 ### Custom Controls (0/8)
 - [ ] 8 custom controls
@@ -680,10 +725,11 @@ Priority: Easiest to hardest
 ### Code Statistics
 
 **Current**:
-- Files: 61
-- Lines of Code: ~10,500
-- XAML Pages: 18
-- ViewModels: 18
+- Files: 70+ (estimated)
+- Lines of Code: ~12,000 (estimated)
+- XAML Pages: 27 (includes 2 stubs: MapPage, TaskEditorPage)
+- ViewModels: 18 (in PageModels folder)
+- Code-behind Pages: 4 (Property, ALR, UserFunction, Macro editors)
 - Services: 4
 - Documentation: ~15,000 words
 
@@ -735,6 +781,24 @@ Priority: Easiest to hardest
 ---
 
 ## 🔄 Recent Changes
+
+### 2025-12-05 (Comprehensive Status Review)
+- ✅ Conducted thorough project review to verify actual completion status
+- ✅ **FOUND DISCREPANCY**: Phase 3 List Pages actually 11/11 complete (not 7/7)
+  * Added 4 missing list pages: PropertyListPage, ALRListPage, UserFunctionListPage, MacroListPage
+  * All use code-behind pattern with full CRUD operations
+- ✅ **FOUND DISCREPANCY**: Phase 5 Medium Editors actually 8/10 complete (not 4/10)
+  * PropertyEditorPage ✅ COMPLETE (full implementation with dynamic UI)
+  * ALREditorPage ✅ COMPLETE (text override with options)
+  * UserFunctionEditorPage ✅ COMPLETE (with argument parsing)
+  * MacroEditorPage ✅ COMPLETE (not originally in TODO - additional feature)
+  * MapPage ⚠️ EXISTS but is STUB ONLY (basic toolbar, no visualization)
+  * SettingsPage ⚠️ NOT CREATED
+  * WalkEditorPage ⚠️ NOT CREATED (walk editing integrated in CharacterEditorPage)
+- ✅ **FOUND**: TaskEditorPage exists but is STUB ONLY (only name & description fields)
+- ✅ Updated TODO.md with accurate completion status
+- ✅ Overall Progress: 37% → 49%
+- ✅ Developer pages: 18 → 27 pages (including stubs)
 
 ### 2025-11-18 (Session 4)
 - ✅ Started Phase 5: Medium Editor Pages (4/10 complete, 40%)
