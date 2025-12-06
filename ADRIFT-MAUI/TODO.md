@@ -427,7 +427,7 @@ Priority: Easiest to hardest
 **Duration**: Week 23-25
 **Target**: 2026-04-20
 
-### Custom Controls (1/8)
+### Custom Controls (2/8)
 
 - [x] **AutoCompleteCombo** ✅ COMPLETE
   - Type-ahead search with case-insensitive filtering
@@ -437,11 +437,12 @@ Priority: Easiest to hardest
   - ItemSelected event
   - **Solution**: Custom implementation (avoids commercial Syncfusion)
 
-- [ ] **PropertyGrid Control**
-  - Property name/value pairs
-  - Different editors per type
-  - Expandable sections
-  - **Solution**: Custom CollectionView with data templates
+- [x] **PropertyGrid Control** ✅ COMPLETE
+  - Property name/value pairs with dynamic UI generation
+  - 6 editor types: Text, Number, Boolean, Picker, MultilineText, ReadOnly
+  - Category grouping with headers
+  - PropertyGridItem model with ValueChanged events
+  - **Solution**: Custom dynamic UI generation
 
 - [ ] **DirectionEditor Control**
   - Direction picker
