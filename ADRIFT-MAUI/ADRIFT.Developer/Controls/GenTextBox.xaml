@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ADRIFT.Developer.Controls.GenTextBox"
+             x:Name="this">
+
+    <Grid RowDefinitions="Auto,*,Auto" RowSpacing="5">
+
+        <!-- Toolbar -->
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,Auto,Auto,5,Auto,Auto,5,Auto,Auto"
+              ColumnSpacing="5" Padding="5" BackgroundColor="{StaticResource Gray100}"
+              IsVisible="{Binding ShowToolbar, Source={x:Reference this}}">
+
+            <Button Grid.Column="0" Text="**B**" FontAttributes="Bold"
+                    Clicked="OnBoldClicked" ToolTipProperties.Text="Bold"
+                    WidthRequest="40" HeightRequest="35" FontSize="12"/>
+            <Button Grid.Column="1" Text="*I*" FontAttributes="Italic"
+                    Clicked="OnItalicClicked" ToolTipProperties.Text="Italic"
+                    WidthRequest="40" HeightRequest="35" FontSize="12"/>
+            <Button Grid.Column="2" Text="__U__"
+                    Clicked="OnUnderlineClicked" ToolTipProperties.Text="Underline"
+                    WidthRequest="40" HeightRequest="35" FontSize="12"/>
+
+            <Button Grid.Column="4" Text="H1" FontAttributes="Bold"
+                    Clicked="OnHeading1Clicked" ToolTipProperties.Text="Heading 1"
+                    WidthRequest="40" HeightRequest="35" FontSize="12"/>
+            <Button Grid.Column="5" Text="H2" FontAttributes="Bold"
+                    Clicked="OnHeading2Clicked" ToolTipProperties.Text="Heading 2"
+                    WidthRequest="40" HeightRequest="35" FontSize="11"/>
+
+            <Button Grid.Column="7" Text="• List"
+                    Clicked="OnBulletListClicked" ToolTipProperties.Text="Bullet List"
+                    WidthRequest="60" HeightRequest="35" FontSize="12"/>
+            <Button Grid.Column="8" Text="1. List"
+                    Clicked="OnNumberListClicked" ToolTipProperties.Text="Numbered List"
+                    WidthRequest="60" HeightRequest="35" FontSize="12"/>
+        </Grid>
+
+        <!-- Editor -->
+        <Editor Grid.Row="1"
+                x:Name="TextEditor"
+                Text="{Binding Text, Source={x:Reference this}, Mode=TwoWay}"
+                Placeholder="{Binding Placeholder, Source={x:Reference this}}"
+                FontSize="{Binding FontSize, Source={x:Reference this}}"
+                FontFamily="Courier"
+                AutoSize="TextChanges"
+                MinimumHeightRequest="100"/>
+
+        <!-- Status Bar -->
+        <Grid Grid.Row="2" ColumnDefinitions="*,Auto,Auto" Padding="5"
+              BackgroundColor="{StaticResource Gray100}"
+              IsVisible="{Binding ShowStatusBar, Source={x:Reference this}}">
+            <Label Grid.Column="0" Text="Markdown Format" FontSize="11"
+                   TextColor="{StaticResource Gray600}" VerticalOptions="Center"/>
+            <Label Grid.Column="1" x:Name="CharCountLabel" Text="0 chars"
+                   FontSize="11" TextColor="{StaticResource Gray600}"
+                   VerticalOptions="Center" Margin="0,0,10,0"/>
+            <Button Grid.Column="2" Text="Preview" Clicked="OnPreviewClicked"
+                    FontSize="11" HeightRequest="30" WidthRequest="70"/>
+        </Grid>
+
+    </Grid>
+
+</ContentView>
