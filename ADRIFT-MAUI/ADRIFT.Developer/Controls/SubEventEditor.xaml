@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ADRIFT.Developer.Controls.SubEventEditor"
+             x:Name="this">
+
+    <Frame Padding="15" BorderColor="{StaticResource Gray300}" CornerRadius="8" Margin="0,5">
+        <VerticalStackLayout Spacing="12">
+
+            <!-- Header with Delete Button -->
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                <Label Grid.Column="0" Text="Sub-Event" FontSize="16" FontAttributes="Bold" VerticalOptions="Center"/>
+                <Button Grid.Column="1" Text="🗑️" FontSize="16"
+                        Clicked="OnDeleteClicked"
+                        BackgroundColor="Red" TextColor="White"
+                        WidthRequest="40" HeightRequest="40" CornerRadius="20"/>
+            </Grid>
+
+            <!-- Timing Configuration -->
+            <Frame BackgroundColor="{StaticResource Gray100}" Padding="10" CornerRadius="6">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Timing" FontSize="14" FontAttributes="Bold"/>
+
+                    <Grid ColumnDefinitions="Auto,*,Auto,*" ColumnSpacing="10" RowSpacing="8">
+                        <Label Grid.Row="0" Grid.Column="0" Text="When:" VerticalOptions="Center"/>
+                        <Entry Grid.Row="0" Grid.Column="1" x:Name="WhenEntry"
+                               Text="{Binding When, Source={x:Reference this}, Mode=TwoWay}"
+                               Keyboard="Numeric" Placeholder="0"/>
+
+                        <Label Grid.Row="0" Grid.Column="2" Text="+/-" VerticalOptions="Center"/>
+                        <Entry Grid.Row="0" Grid.Column="3" x:Name="RandomEntry"
+                               Text="{Binding WhenRandom, Source={x:Reference this}, Mode=TwoWay}"
+                               Keyboard="Numeric" Placeholder="0"/>
+                    </Grid>
+
+                    <Label Text="(turn/second number within event)" FontSize="11"
+                           TextColor="{StaticResource Gray600}" FontAttributes="Italic"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Description -->
+            <VerticalStackLayout Spacing="5">
+                <Label Text="Description:" FontSize="14" FontAttributes="Bold"/>
+                <Editor x:Name="DescriptionEditor"
+                        Text="{Binding DescriptionText, Source={x:Reference this}, Mode=TwoWay}"
+                        Placeholder="Message to display when sub-event occurs..."
+                        HeightRequest="80" AutoSize="TextChanges"/>
+            </VerticalStackLayout>
+
+            <!-- Actions -->
+            <VerticalStackLayout Spacing="5">
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label Grid.Column="0" Text="Actions:" FontSize="14" FontAttributes="Bold" VerticalOptions="Center"/>
+                    <Button Grid.Column="1" Text="+ Add Action" FontSize="12"
+                            Clicked="OnAddActionClicked"
+                            BackgroundColor="{StaticResource ADRIFTPrimary}"
+                            TextColor="White" Padding="8,4"/>
+                </Grid>
+
+                <CollectionView x:Name="ActionsCollectionView" SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Frame Padding="8" Margin="0,2" BorderColor="{StaticResource Gray200}">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <Label Grid.Column="0" Text="{Binding .}" FontSize="12" VerticalOptions="Center"/>
+                                    <Button Grid.Column="1" Text="✕" FontSize="14"
+                                            Clicked="OnRemoveActionClicked"
+                                            BindingContext="{Binding .}"
+                                            BackgroundColor="Transparent" TextColor="Red"
+                                            Padding="5"/>
+                                </Grid>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                    <CollectionView.EmptyView>
+                        <Label Text="No actions defined" FontSize="11"
+                               TextColor="{StaticResource Gray500}" Margin="5"/>
+                    </CollectionView.EmptyView>
+                </CollectionView>
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </Frame>
+
+</ContentView>
