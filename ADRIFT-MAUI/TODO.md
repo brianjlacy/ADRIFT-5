@@ -423,11 +423,11 @@ Priority: Easiest to hardest
 
 ## 🎨 Phase 7: Custom Controls
 
-**Status**: ⏳ Not Started
+**Status**: ✅ COMPLETE (7/8 - 1 skipped)
 **Duration**: Week 23-25
 **Target**: 2026-04-20
 
-### Custom Controls (6/8 - 1 skipped due to commercial requirement)
+### Custom Controls (7/8 - 1 skipped due to commercial requirement) ✅ COMPLETE
 
 - [x] **AutoCompleteCombo** ✅ COMPLETE
   - Type-ahead search with case-insensitive filtering
@@ -478,10 +478,13 @@ Priority: Easiest to hardest
   - ValueChanged event
   - **Solution**: Entry with buttons in bordered Grid
 
-- [ ] **EventControl**
-  - Sub-event editor
-  - Timing configuration
-  - Action list
+- [x] **SubEventEditor Control** ✅ COMPLETE
+  - Sub-event editor with timing + description + actions
+  - When/WhenRandom timing configuration
+  - Multi-line description editor
+  - Action list with 7 action types
+  - DeleteClicked, ActionAdded, ActionRemoved events
+  - LoadSubEvent helper method
   - **Solution**: Custom composite control
 
 ### Completion Criteria
