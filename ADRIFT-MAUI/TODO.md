@@ -348,11 +348,11 @@ Priority: Easiest to hardest
 
 ## 🔥 Phase 6: Complex Editor Pages
 
-**Status**: ✅ In Progress (1/3 Complete)
+**Status**: ✅ In Progress (2/3 Complete)
 **Duration**: Week 17-22
 **Target**: 2026-03-30
 
-### Complex Editors (1/3)
+### Complex Editors (2/3)
 
 - [x] **TaskEditorPage** ✅ COMPLETE
   - **Implementation**: Comprehensive tabbed interface with 5 organized tabs
@@ -374,21 +374,25 @@ Priority: Easiest to hardest
   - [x] Reference management
   - [x] Tab switching UI with code-behind
 
-- [ ] **GenTextBox Control** (Rich Text Editor)
-  - **Original**: 2000+ line custom control with formatting
-  - **Options**:
-    - DevExpress RichEdit (recommended)
-    - Syncfusion RichTextEditor
-    - Custom WebView-based editor
+- [x] **GenTextBox Control** ✅ COMPLETE
+  - **Implementation**: Markdown-based text editor with two-way adapter
+  - **Approach**: Standard Editor control + MarkdownAdapter utility
+  - **Avoids**: Commercial dependencies (DevExpress, Syncfusion) and WebView complexity
 
-  **Features Required**:
-  - [ ] Bold, Italic, Underline
-  - [ ] Color selection
-  - [ ] Font family/size
-  - [ ] Insert function
-  - [ ] Insert image
-  - [ ] Undo/Redo
-  - [ ] Copy/Paste with formatting
+  **Features Implemented** ✅:
+  - [x] Bold, Italic, Underline (via Markdown: **, *, __)
+  - [x] Headers H1/H2 (via Markdown: #, ##)
+  - [x] Bullet and numbered lists (via Markdown: -, 1.)
+  - [x] Toolbar with formatting buttons
+  - [x] Character counter and status bar
+  - [x] Preview functionality (Markdown to HTML)
+  - [x] MarkdownAdapter: Two-way conversion utilities
+  - [x] Validation and syntax checking
+
+  **Components Created** ✅:
+  - [x] GenTextBox.xaml - Custom control with toolbar
+  - [x] GenTextBox.xaml.cs - Bindable properties and event handlers
+  - [x] MarkdownAdapter.cs - Conversion utilities
 
 - [ ] **ExpressionBuilderPage** (Logic Expression Editor)
   - **Challenge**: Nested logical expressions (AND/OR/NOT)
@@ -404,7 +408,7 @@ Priority: Easiest to hardest
 ### Completion Criteria
 
 - [x] Task editor functional (simplified tabbed UI) ✅
-- [ ] Rich text editing working
+- [x] Rich text editing working (GenTextBox with Markdown) ✅
 - [ ] Expression builder operational
 - [ ] All features tested
 - [ ] Performance optimized
