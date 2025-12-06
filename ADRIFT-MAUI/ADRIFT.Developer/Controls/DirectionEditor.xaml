@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ADRIFT.Developer.Controls.DirectionEditor"
+             x:Name="this">
+
+    <Frame Padding="12" BorderColor="{StaticResource Gray300}" CornerRadius="8">
+        <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*,Auto" RowSpacing="10" ColumnSpacing="10">
+
+            <!-- Direction Picker -->
+            <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="5">
+                <Label Text="Direction:" FontSize="12" FontAttributes="Bold"/>
+                <Picker x:Name="DirectionPicker"
+                        SelectedIndex="{Binding SelectedDirectionIndex, Source={x:Reference this}, Mode=TwoWay}"
+                        FontSize="13"/>
+            </VerticalStackLayout>
+
+            <!-- Location Picker -->
+            <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="5">
+                <Label Text="Destination:" FontSize="12" FontAttributes="Bold"/>
+                <Picker x:Name="LocationPicker"
+                        SelectedItem="{Binding SelectedLocationKey, Source={x:Reference this}, Mode=TwoWay}"
+                        FontSize="13"/>
+            </VerticalStackLayout>
+
+            <!-- Restriction Button -->
+            <VerticalStackLayout Grid.Row="0" Grid.Column="2" Spacing="5" VerticalOptions="End">
+                <Button x:Name="RestrictionButton" Text="🔒" FontSize="16"
+                        Clicked="OnRestrictionClicked"
+                        WidthRequest="40" HeightRequest="40"
+                        CornerRadius="20"
+                        ToolTipProperties.Text="Add/Edit Restrictions"/>
+            </VerticalStackLayout>
+
+            <!-- Restriction Count Indicator -->
+            <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
+                   Text="{Binding RestrictionCountText, Source={x:Reference this}}"
+                   IsVisible="{Binding HasRestrictions, Source={x:Reference this}}"
+                   FontSize="11" TextColor="{StaticResource Gray600}"
+                   FontAttributes="Italic"/>
+
+        </Grid>
+    </Frame>
+
+</ContentView>
