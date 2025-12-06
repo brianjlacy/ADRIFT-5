@@ -427,13 +427,15 @@ Priority: Easiest to hardest
 **Duration**: Week 23-25
 **Target**: 2026-04-20
 
-### Custom Controls (0/8)
+### Custom Controls (1/8)
 
-- [ ] **AutoCompleteCombo**
-  - Type-ahead search
-  - Dropdown list
-  - Custom item templates
-  - **Solution**: Syncfusion SfComboBox or SfAutoComplete
+- [x] **AutoCompleteCombo** ✅ COMPLETE
+  - Type-ahead search with case-insensitive filtering
+  - Dropdown list with CollectionView
+  - Prioritizes prefix matches over contains matches
+  - Configurable min prefix length and max suggestions
+  - ItemSelected event
+  - **Solution**: Custom implementation (avoids commercial Syncfusion)
 
 - [ ] **PropertyGrid Control**
   - Property name/value pairs
