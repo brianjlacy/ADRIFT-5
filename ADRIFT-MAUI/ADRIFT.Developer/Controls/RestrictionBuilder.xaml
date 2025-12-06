@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ADRIFT.Developer.Controls.RestrictionBuilder"
+             x:Name="this">
+
+    <Grid RowDefinitions="Auto,*" RowSpacing="10">
+
+        <!-- Header with Add Button -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="10">
+            <Label Grid.Column="0" Text="Restrictions" FontSize="16" FontAttributes="Bold" VerticalOptions="Center"/>
+            <Button Grid.Column="1" Text="+ Add Restriction"
+                    Clicked="OnAddRestrictionClicked"
+                    BackgroundColor="{StaticResource ADRIFTPrimary}"
+                    TextColor="White" FontSize="14" Padding="10,5"/>
+        </Grid>
+
+        <!-- Restrictions List -->
+        <CollectionView Grid.Row="1" x:Name="RestrictionsCollectionView" SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <SwipeView>
+                        <SwipeView.RightItems>
+                            <SwipeItem Text="Delete" BackgroundColor="Red"
+                                      Command="{Binding Source={x:Reference this}, Path=RemoveRestrictionCommand}"
+                                      CommandParameter="{Binding .}"/>
+                        </SwipeView.RightItems>
+
+                        <Frame Padding="12" Margin="0,5" BorderColor="{StaticResource Gray300}" CornerRadius="8">
+                            <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="8">
+
+                                <!-- Type and Must -->
+                                <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                    <Label Grid.Column="0" Text="{Binding MustText}" FontAttributes="Bold"
+                                           FontSize="14" TextColor="{StaticResource ADRIFTPrimary}"/>
+                                    <Label Grid.Column="1" Text="{Binding TypeText}" FontSize="14"
+                                           VerticalOptions="Center"/>
+                                    <Button Grid.Column="2" Text="Edit" FontSize="12"
+                                           Clicked="OnEditRestrictionClicked"
+                                           BindingContext="{Binding .}" Padding="8,4"/>
+                                </Grid>
+
+                                <!-- Details -->
+                                <Label Grid.Row="1" Text="{Binding DetailsText}" FontSize="12"
+                                       TextColor="{StaticResource Gray600}" LineBreakMode="WordWrap"
+                                       IsVisible="{Binding HasDetails}"/>
+
+                                <!-- Fail Message -->
+                                <Grid Grid.Row="2" ColumnDefinitions="Auto,*" ColumnSpacing="5"
+                                      IsVisible="{Binding HasFailMessage}">
+                                    <Label Grid.Column="0" Text="❌" FontSize="12"/>
+                                    <Label Grid.Column="1" Text="{Binding FailMessageText}" FontSize="11"
+                                           TextColor="{StaticResource Gray500}" FontAttributes="Italic"
+                                           LineBreakMode="WordWrap"/>
+                                </Grid>
+
+                            </Grid>
+                        </Frame>
+                    </SwipeView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+            <CollectionView.EmptyView>
+                <VerticalStackLayout Padding="20" Spacing="10" HorizontalOptions="Center">
+                    <Label Text="No restrictions defined" FontSize="14" TextColor="{StaticResource Gray500}"
+                           HorizontalOptions="Center"/>
+                    <Label Text="Add restrictions to control when this can occur"
+                           FontSize="12" TextColor="{StaticResource Gray400}"
+                           HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+        </CollectionView>
+
+    </Grid>
+
+</ContentView>
