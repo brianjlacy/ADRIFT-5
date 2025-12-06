@@ -499,11 +499,11 @@ Priority: Easiest to hardest
 
 ## 🎮 Phase 8: Runner Application
 
-**Status**: ⏳ Not Started
+**Status**: 🚧 In Progress (4/10 - 40%)
 **Duration**: Week 26-28
 **Target**: 2026-05-11
 
-### Runner Components (3/10)
+### Runner Components (4/10)
 
 - [x] **GamePage** ✅ COMPLETE (Main game interface)
   - Text output display with color-coded lines
@@ -527,11 +527,14 @@ Priority: Easiest to hardest
   - HTML parsing (<b>, <i>, <br> tags)
   - Clear, ScrollToBottom/Top methods
 
-- [ ] **CommandInputControl**
-  - Text entry
-  - Autocomplete
-  - Command history
-  - Quick commands
+- [x] **CommandInputControl** ✅ COMPLETE
+  - AutoCompleteCombo integration for command suggestions
+  - Command history navigation with ↑/↓ arrows (50-command buffer)
+  - Quick command buttons with customizable actions
+  - Configurable placeholder text and show/hide quick commands
+  - CommandSubmitted and CommandSelected events
+  - History persistence (LoadHistory/GetHistory methods)
+  - SetCommandText, ClearCommandText, FocusCommandEntry helpers
 
 - [ ] **MapViewerControl** (Runner version)
   - Display map
