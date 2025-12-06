@@ -427,7 +427,7 @@ Priority: Easiest to hardest
 **Duration**: Week 23-25
 **Target**: 2026-04-20
 
-### Custom Controls (2/8)
+### Custom Controls (3/8)
 
 - [x] **AutoCompleteCombo** ✅ COMPLETE
   - Type-ahead search with case-insensitive filtering
@@ -444,10 +444,11 @@ Priority: Easiest to hardest
   - PropertyGridItem model with ValueChanged events
   - **Solution**: Custom dynamic UI generation
 
-- [ ] **DirectionEditor Control**
-  - Direction picker
-  - Location picker
-  - Restriction button
+- [x] **DirectionEditor Control** ✅ COMPLETE
+  - Direction picker (all 12 directions)
+  - Location picker with bindable locations
+  - Restriction button with visual indicator
+  - DirectionChanged and RestrictionButtonClicked events
   - **Solution**: Custom composite control
 
 - [ ] **RestrictionSummary Control**
