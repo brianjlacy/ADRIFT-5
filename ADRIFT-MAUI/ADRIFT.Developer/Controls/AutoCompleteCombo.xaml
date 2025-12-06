@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ADRIFT.Developer.Controls.AutoCompleteCombo"
+             x:Name="this">
+
+    <Grid RowDefinitions="Auto,Auto" RowSpacing="0">
+
+        <!-- Search Entry -->
+        <Border Grid.Row="0" StrokeShape="RoundRectangle 4" Stroke="{StaticResource Gray300}" StrokeThickness="1">
+            <Entry x:Name="SearchEntry"
+                   Text="{Binding Text, Source={x:Reference this}, Mode=TwoWay}"
+                   Placeholder="{Binding Placeholder, Source={x:Reference this}}"
+                   TextChanged="OnTextChanged"
+                   Focused="OnEntryFocused"
+                   Unfocused="OnEntryUnfocused"
+                   Completed="OnEntryCompleted"
+                   FontSize="14"
+                   Margin="8,4"/>
+        </Border>
+
+        <!-- Dropdown List (Initially Hidden) -->
+        <Border Grid.Row="1" x:Name="DropdownBorder"
+                IsVisible="False"
+                StrokeShape="RoundRectangle 4"
+                Stroke="{StaticResource Gray300}"
+                StrokeThickness="1"
+                BackgroundColor="White"
+                Margin="0,2,0,0"
+                Shadow="{Shadow Brush=Black, Opacity=0.1, Radius=8, Offset='0,2'}">
+
+            <CollectionView x:Name="SuggestionsCollectionView"
+                            MaximumHeightRequest="200"
+                            SelectionMode="Single"
+                            SelectionChanged="OnSelectionChanged">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Padding="12,8" BackgroundColor="Transparent">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnItemTapped"/>
+                            </Grid.GestureRecognizers>
+                            <Label Text="{Binding .}" FontSize="14" VerticalOptions="Center"/>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+
+                <CollectionView.EmptyView>
+                    <Label Text="No matches found" FontSize="12"
+                           TextColor="{StaticResource Gray500}"
+                           Padding="12,8" HorizontalOptions="Center"/>
+                </CollectionView.EmptyView>
+            </CollectionView>
+        </Border>
+
+    </Grid>
+
+</ContentView>
