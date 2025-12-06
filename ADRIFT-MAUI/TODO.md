@@ -427,7 +427,7 @@ Priority: Easiest to hardest
 **Duration**: Week 23-25
 **Target**: 2026-04-20
 
-### Custom Controls (3/8)
+### Custom Controls (5/8)
 
 - [x] **AutoCompleteCombo** ✅ COMPLETE
   - Type-ahead search with case-insensitive filtering
@@ -451,17 +451,19 @@ Priority: Easiest to hardest
   - DirectionChanged and RestrictionButtonClicked events
   - **Solution**: Custom composite control
 
-- [ ] **RestrictionSummary Control**
-  - Display restriction text
-  - Edit button
-  - Visual indicator (✓/✗)
-  - **Solution**: Custom label with gesture recognizers
+- [x] **RestrictionSummary Control** ✅ COMPLETE
+  - Display restriction text with truncation
+  - Edit button with EditClicked event
+  - Visual indicator (✓ green / ✗ red) based on Must/MustNot + passing state
+  - SetRestrictionState helper method
+  - **Solution**: Custom Frame with label and gesture recognizers
 
-- [ ] **Map Viewer Control**
-  - Draw location boxes
-  - Draw connections
-  - Zoom/pan gestures
-  - **Solution**: GraphicsView with custom drawing
+- [x] **Map Viewer Control** ✅ COMPLETE (implemented as MapDrawable.cs in previous session)
+  - Draw location boxes with names and badges
+  - Draw connections with directional arrows
+  - Zoom/pan/tap gestures via MapPage
+  - Custom IDrawable implementation for GraphicsView
+  - **Solution**: MapDrawable.cs + MapViewModel + MapPage
 
 - [ ] **FolderList Control**
   - Hierarchical folder tree
