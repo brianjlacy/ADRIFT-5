@@ -427,7 +427,7 @@ Priority: Easiest to hardest
 **Duration**: Week 23-25
 **Target**: 2026-04-20
 
-### Custom Controls (5/8)
+### Custom Controls (6/8 - 1 skipped due to commercial requirement)
 
 - [x] **AutoCompleteCombo** ✅ COMPLETE
   - Type-ahead search with case-insensitive filtering
@@ -465,16 +465,18 @@ Priority: Easiest to hardest
   - Custom IDrawable implementation for GraphicsView
   - **Solution**: MapDrawable.cs + MapViewModel + MapPage
 
-- [ ] **FolderList Control**
+- [ ] **FolderList Control** ⚠️ SKIPPED (requires commercial Syncfusion SfTreeView)
   - Hierarchical folder tree
   - Drag-drop support
-  - **Solution**: Syncfusion SfTreeView
+  - **Solution**: Would require custom TreeView implementation or alternative
 
-- [ ] **NumericTextBox**
-  - Numeric-only input
-  - Increment/decrement buttons
-  - Min/max validation
-  - **Solution**: Entry with NumericKeyboard
+- [x] **NumericTextBox** ✅ COMPLETE
+  - Numeric-only input with numeric keyboard
+  - Increment/decrement buttons (+/-)
+  - Min/max validation with automatic clamping
+  - Configurable increment value
+  - ValueChanged event
+  - **Solution**: Entry with buttons in bordered Grid
 
 - [ ] **EventControl**
   - Sub-event editor
