@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ADRIFT.Runner.Pages.SaveLoadPage"
+             Title="Save / Load Game"
+             Shell.NavBarIsVisible="True">
+
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
+
+        <!-- Header -->
+        <Frame Grid.Row="0" BackgroundColor="{StaticResource ADRIFTLight}"
+               Padding="15" CornerRadius="0" Margin="0">
+            <Grid ColumnDefinitions="*,Auto">
+                <Label Grid.Column="0" Text="Manage Save Files"
+                       FontSize="16" FontAttributes="Bold"
+                       VerticalOptions="Center"/>
+                <Button Grid.Column="1" Text="↻" FontSize="18"
+                        Clicked="OnRefreshClicked"
+                        BackgroundColor="Transparent"
+                        WidthRequest="40" HeightRequest="40"
+                        ToolTipProperties.Text="Refresh save list"/>
+            </Grid>
+        </Frame>
+
+        <!-- Quick Save Section -->
+        <Frame Grid.Row="1" Padding="15" Margin="10,10,10,0"
+               BorderColor="{StaticResource ADRIFTPrimary}"
+               BackgroundColor="{StaticResource Gray100}">
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                <Button Grid.Column="0" Text="💾 Quick Save"
+                        Clicked="OnQuickSaveClicked"
+                        BackgroundColor="{StaticResource ADRIFTPrimary}"
+                        TextColor="White" FontSize="14"
+                        HeightRequest="45" CornerRadius="8"/>
+                <Button Grid.Column="1" Text="📂 Quick Load"
+                        Clicked="OnQuickLoadClicked"
+                        BackgroundColor="{StaticResource ADRIFTSecondary}"
+                        TextColor="White" FontSize="14"
+                        HeightRequest="45" CornerRadius="8"/>
+            </Grid>
+        </Frame>
+
+        <!-- Save Files List -->
+        <ScrollView Grid.Row="2" Padding="10">
+            <VerticalStackLayout Spacing="10">
+                <Label Text="Saved Games:" FontSize="14" FontAttributes="Bold" Margin="0,5,0,5"/>
+                <VerticalStackLayout x:Name="SaveFilesContainer" Spacing="8">
+                    <!-- Save files will be added here dynamically -->
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Empty State -->
+        <Frame Grid.Row="2" x:Name="EmptyFrame"
+               IsVisible="False"
+               BackgroundColor="Transparent"
+               BorderColor="Transparent">
+            <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="10">
+                <Label Text="💾" FontSize="48" HorizontalOptions="Center"/>
+                <Label Text="No saved games found"
+                       FontSize="16" TextColor="{StaticResource Gray600}"
+                       HorizontalOptions="Center"/>
+                <Label Text="Use Quick Save to save your progress"
+                       FontSize="12" TextColor="{StaticResource Gray500}"
+                       HorizontalOptions="Center"/>
+            </VerticalStackLayout>
+        </Frame>
+
+        <!-- Footer with Actions -->
+        <Frame Grid.Row="3" BackgroundColor="{StaticResource ADRIFTPrimary}"
+               Padding="10" CornerRadius="0" Margin="0">
+            <Grid ColumnDefinitions="*,Auto,Auto">
+                <Label Grid.Column="0" x:Name="StatusLabel"
+                       Text="Select a save file to load or delete"
+                       TextColor="White" FontSize="12"
+                       VerticalOptions="Center"/>
+                <Button Grid.Column="1" Text="Save As..."
+                        Clicked="OnSaveAsClicked"
+                        BackgroundColor="White"
+                        TextColor="{StaticResource ADRIFTPrimary}"
+                        FontSize="12" Padding="12,6"
+                        CornerRadius="4" Margin="0,0,10,0"/>
+                <Button Grid.Column="2" Text="Close"
+                        Clicked="OnCloseClicked"
+                        BackgroundColor="White"
+                        TextColor="{StaticResource ADRIFTPrimary}"
+                        FontSize="12" Padding="12,6"
+                        CornerRadius="4"/>
+            </Grid>
+        </Frame>
+
+    </Grid>
+
+</ContentPage>
