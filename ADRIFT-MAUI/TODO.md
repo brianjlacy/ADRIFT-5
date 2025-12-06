@@ -503,18 +503,20 @@ Priority: Easiest to hardest
 **Duration**: Week 26-28
 **Target**: 2026-05-11
 
-### Runner Components (0/10)
+### Runner Components (2/10)
 
-- [ ] **GamePage** (Main game interface)
-  - Text output display
-  - Command input
-  - Status bar
-  - Menu
+- [x] **GamePage** ✅ COMPLETE (Main game interface)
+  - Text output display with color-coded lines
+  - Command input with Enter to submit
+  - Status bar (location, turn, score)
+  - Game menu (New, Save, Load, Restart, About)
+  - Auto-scrolling to latest output
 
-- [ ] **GameViewModel**
-  - Game state management
-  - Command processing
-  - Output formatting
+- [x] **GameViewModel** ✅ COMPLETE
+  - Game state management (turn, score, location)
+  - Command processing (LOOK, INVENTORY, SCORE, HELP, QUIT)
+  - Output formatting (6 line types with colors/fonts)
+  - Command history with ↑/↓ navigation (50 buffer)
 
 - [ ] **GameOutputControl**
   - Scrollable text
