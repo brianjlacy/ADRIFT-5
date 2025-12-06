@@ -499,11 +499,11 @@ Priority: Easiest to hardest
 
 ## 🎮 Phase 8: Runner Application
 
-**Status**: 🚧 In Progress (4/10 - 40%)
+**Status**: 🚧 In Progress (5/10 - 50%)
 **Duration**: Week 26-28
 **Target**: 2026-05-11
 
-### Runner Components (4/10)
+### Runner Components (5/10)
 
 - [x] **GamePage** ✅ COMPLETE (Main game interface)
   - Text output display with color-coded lines
@@ -536,10 +536,13 @@ Priority: Easiest to hardest
   - History persistence (LoadHistory/GetHistory methods)
   - SetCommandText, ClearCommandText, FocusCommandEntry helpers
 
-- [ ] **MapViewerControl** (Runner version)
-  - Display map
-  - Show current location
-  - Touch to navigate
+- [x] **MapViewerControl** ✅ COMPLETE (Runner version)
+  - XAML wrapper around MapView for clean integration
+  - Touch hit testing with GetLocationAtPoint method
+  - Tap navigation to connected locations (LocationSelected event)
+  - Current location highlighting (green box + yellow marker)
+  - Refresh button and location info display
+  - Adjacent location detection and filtering
 
 - [ ] **InventoryPage**
   - List carried items
