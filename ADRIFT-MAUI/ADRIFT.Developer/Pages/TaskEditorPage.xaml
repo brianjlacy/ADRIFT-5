@@ -1,22 +1,304 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ADRIFT.Developer.Pages.TaskEditorPage"
              xmlns:viewmodels="clr-namespace:ADRIFT.Developer.ViewModels"
-             x:Class="ADRIFT.Developer.Pages.TaskEditorPage"
-             x:Class="ADRIFT.Developer.Pages.TaskEditorPage"
              x:DataType="viewmodels:TaskEditorViewModel"
              Title="Task Editor">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="10">
-            <Label Text="Task Name:" FontAttributes="Bold" />
-            <Entry Text="{Binding TaskName}" Placeholder="Enter task name" />
+    <Grid RowDefinitions="*,Auto">
 
-            <Label Text="Description:" FontAttributes="Bold" />
-            <Editor Text="{Binding Description}" Placeholder="Enter description" HeightRequest="100" />
+        <!-- Main Content -->
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Padding="20" Spacing="15">
 
-            <Button Text="Save" Command="{Binding SaveTaskCommand}" HorizontalOptions="Center" />
-        </VerticalStackLayout>
-    </ScrollView>
+                <!-- Header -->
+                <Frame BackgroundColor="{StaticResource ADRIFTPrimary}" Padding="15" CornerRadius="8">
+                    <Label Text="Task Editor" FontSize="22" FontAttributes="Bold" TextColor="White" />
+                </Frame>
+
+                <!-- Tabs -->
+                <Grid RowDefinitions="Auto,*" ColumnDefinitions="*,*,*,*,*" ColumnSpacing="5">
+
+                    <!-- Tab Buttons -->
+                    <Button Grid.Row="0" Grid.Column="0" Text="General" x:Name="GeneralTab" Clicked="OnTabClicked" />
+                    <Button Grid.Row="0" Grid.Column="1" Text="Commands" x:Name="CommandsTab" Clicked="OnTabClicked" />
+                    <Button Grid.Row="0" Grid.Column="2" Text="Restrictions" x:Name="RestrictionsTab" Clicked="OnTabClicked" />
+                    <Button Grid.Row="0" Grid.Column="3" Text="Actions" x:Name="ActionsTab" Clicked="OnTabClicked" />
+                    <Button Grid.Row="0" Grid.Column="4" Text="Advanced" x:Name="AdvancedTab" Clicked="OnTabClicked" />
+
+                    <!-- Tab Content Container -->
+                    <Frame Grid.Row="1" Grid.ColumnSpan="5" Padding="15" BorderColor="{StaticResource Gray200}" Margin="0,10,0,0">
+                        <VerticalStackLayout x:Name="TabContentContainer" Spacing="10">
+
+                            <!-- GENERAL TAB -->
+                            <VerticalStackLayout x:Name="GeneralContent" Spacing="12" IsVisible="True">
+                                <Label Text="General Settings" FontSize="18" FontAttributes="Bold" />
+
+                                <Label Text="Task Name:" FontAttributes="Bold" />
+                                <Entry Text="{Binding TaskName}" Placeholder="Enter task name" />
+
+                                <Label Text="Task Type:" FontAttributes="Bold" />
+                                <Picker ItemsSource="{Binding TaskTypes}" SelectedItem="{Binding SelectedTaskType}" />
+
+                                <Label Text="Priority (0-99999, higher = more priority):" FontAttributes="Bold" />
+                                <HorizontalStackLayout Spacing="10">
+                                    <Stepper Value="{Binding Priority}" Minimum="0" Maximum="99999" Increment="100" WidthRequest="150" />
+                                    <Label Text="{Binding Priority}" VerticalOptions="Center" FontSize="16" />
+                                </HorizontalStackLayout>
+
+                                <Label Text="Description:" FontAttributes="Bold" />
+                                <Editor Text="{Binding Description}" Placeholder="Task description" HeightRequest="100" />
+                            </VerticalStackLayout>
+
+                            <!-- COMMANDS TAB -->
+                            <VerticalStackLayout x:Name="CommandsContent" Spacing="12" IsVisible="False">
+                                <Label Text="Command Patterns" FontSize="18" FontAttributes="Bold" />
+                                <Label Text="Define command patterns using placeholders like #object1#, #character2#, etc."
+                                       FontSize="12" TextColor="{StaticResource Gray600}" />
+
+                                <Button Text="Add Command Pattern" Command="{Binding AddCommandCommand}"
+                                        BackgroundColor="{StaticResource ADRIFTPrimary}" TextColor="White" />
+
+                                <CollectionView ItemsSource="{Binding Commands}" Margin="0,10,0,0">
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate x:DataType="viewmodels:TaskCommandViewModel">
+                                            <SwipeView>
+                                                <SwipeView.RightItems>
+                                                    <SwipeItem Text="Delete" BackgroundColor="Red"
+                                                              Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:TaskEditorViewModel}}, Path=RemoveCommandCommand}"
+                                                              CommandParameter="{Binding .}" />
+                                                </SwipeView.RightItems>
+                                                <Frame Padding="10" Margin="0,5" BorderColor="{StaticResource Gray200}">
+                                                    <Grid ColumnDefinitions="*,Auto">
+                                                        <Label Grid.Column="0" Text="{Binding Pattern}" VerticalOptions="Center" />
+                                                        <Button Grid.Column="1" Text="Edit"
+                                                               Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:TaskEditorViewModel}}, Path=EditCommandCommand}"
+                                                               CommandParameter="{Binding .}" />
+                                                    </Grid>
+                                                </Frame>
+                                            </SwipeView>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                    <CollectionView.EmptyView>
+                                        <Label Text="No commands defined. Add at least one command pattern."
+                                               TextColor="{StaticResource Gray600}" Margin="10" />
+                                    </CollectionView.EmptyView>
+                                </CollectionView>
+                            </VerticalStackLayout>
+
+                            <!-- RESTRICTIONS TAB -->
+                            <VerticalStackLayout x:Name="RestrictionsContent" Spacing="12" IsVisible="False">
+                                <Label Text="Restrictions" FontSize="18" FontAttributes="Bold" />
+                                <Label Text="All restrictions must pass for the task to execute successfully."
+                                       FontSize="12" TextColor="{StaticResource Gray600}" />
+
+                                <Button Text="Add Restriction" Command="{Binding AddRestrictionCommand}"
+                                        BackgroundColor="{StaticResource ADRIFTPrimary}" TextColor="White" />
+
+                                <CollectionView ItemsSource="{Binding Restrictions}" Margin="0,10,0,0">
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate x:DataType="viewmodels:RestrictionViewModel">
+                                            <SwipeView>
+                                                <SwipeView.RightItems>
+                                                    <SwipeItem Text="Delete" BackgroundColor="Red"
+                                                              Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:TaskEditorViewModel}}, Path=RemoveRestrictionCommand}"
+                                                              CommandParameter="{Binding .}" />
+                                                </SwipeView.RightItems>
+                                                <Frame Padding="10" Margin="0,5" BorderColor="{StaticResource Gray200}">
+                                                    <VerticalStackLayout Spacing="5">
+                                                        <Label Text="{Binding Type}" FontAttributes="Bold" FontSize="12" />
+                                                        <Label Text="{Binding Description}" />
+                                                    </VerticalStackLayout>
+                                                </Frame>
+                                            </SwipeView>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                    <CollectionView.EmptyView>
+                                        <Label Text="No restrictions. Task will always execute if command matches."
+                                               TextColor="{StaticResource Gray600}" Margin="10" />
+                                    </CollectionView.EmptyView>
+                                </CollectionView>
+                            </VerticalStackLayout>
+
+                            <!-- ACTIONS TAB -->
+                            <VerticalStackLayout x:Name="ActionsContent" Spacing="12" IsVisible="False">
+                                <Label Text="Messages and Actions" FontSize="18" FontAttributes="Bold" />
+
+                                <Label Text="Completion Message (shown on success):" FontAttributes="Bold" />
+                                <Editor Text="{Binding CompletionMessage}" Placeholder="Task completed successfully." HeightRequest="80" />
+
+                                <Label Text="Failure Message (shown when restrictions fail):" FontAttributes="Bold" />
+                                <Editor Text="{Binding FailureMessage}" Placeholder="You can't do that." HeightRequest="80" />
+
+                                <BoxView HeightRequest="1" BackgroundColor="{StaticResource Gray300}" Margin="0,10" />
+
+                                <Label Text="Success Actions" FontSize="16" FontAttributes="Bold" />
+                                <Button Text="Add Success Action" Command="{Binding AddSuccessActionCommand}"
+                                        BackgroundColor="{StaticResource ADRIFTPrimary}" TextColor="White" />
+
+                                <CollectionView ItemsSource="{Binding SuccessActions}" Margin="0,5,0,0">
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate x:DataType="viewmodels:TaskActionViewModel">
+                                            <SwipeView>
+                                                <SwipeView.RightItems>
+                                                    <SwipeItem Text="Delete" BackgroundColor="Red"
+                                                              Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:TaskEditorViewModel}}, Path=RemoveSuccessActionCommand}"
+                                                              CommandParameter="{Binding .}" />
+                                                </SwipeView.RightItems>
+                                                <Frame Padding="10" Margin="0,3" BorderColor="{StaticResource Gray200}">
+                                                    <Label Text="{Binding Description}" />
+                                                </Frame>
+                                            </SwipeView>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                    <CollectionView.EmptyView>
+                                        <Label Text="No success actions." TextColor="{StaticResource Gray600}" Margin="5" FontSize="12" />
+                                    </CollectionView.EmptyView>
+                                </CollectionView>
+
+                                <BoxView HeightRequest="1" BackgroundColor="{StaticResource Gray300}" Margin="0,10" />
+
+                                <Label Text="Failure Actions" FontSize="16" FontAttributes="Bold" />
+                                <Button Text="Add Failure Action" Command="{Binding AddFailureActionCommand}"
+                                        BackgroundColor="{StaticResource ADRIFTPrimary}" TextColor="White" />
+
+                                <CollectionView ItemsSource="{Binding FailureActions}" Margin="0,5,0,0">
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate x:DataType="viewmodels:TaskActionViewModel">
+                                            <SwipeView>
+                                                <SwipeView.RightItems>
+                                                    <SwipeItem Text="Delete" BackgroundColor="Red"
+                                                              Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:TaskEditorViewModel}}, Path=RemoveFailureActionCommand}"
+                                                              CommandParameter="{Binding .}" />
+                                                </SwipeView.RightItems>
+                                                <Frame Padding="10" Margin="0,3" BorderColor="{StaticResource Gray200}">
+                                                    <Label Text="{Binding Description}" />
+                                                </Frame>
+                                            </SwipeView>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                    <CollectionView.EmptyView>
+                                        <Label Text="No failure actions." TextColor="{StaticResource Gray600}" Margin="5" FontSize="12" />
+                                    </CollectionView.EmptyView>
+                                </CollectionView>
+                            </VerticalStackLayout>
+
+                            <!-- ADVANCED TAB -->
+                            <VerticalStackLayout x:Name="AdvancedContent" Spacing="12" IsVisible="False">
+                                <Label Text="Advanced Settings" FontSize="18" FontAttributes="Bold" />
+
+                                <HorizontalStackLayout Spacing="10">
+                                    <CheckBox IsChecked="{Binding IsRepeatable}" Color="{StaticResource ADRIFTPrimary}" />
+                                    <Label Text="Task is repeatable" VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+
+                                <Label Text="Score Value (points awarded on completion):" FontAttributes="Bold" />
+                                <HorizontalStackLayout Spacing="10">
+                                    <Stepper Value="{Binding ScoreValue}" Minimum="0" Maximum="1000" Increment="5" WidthRequest="150" />
+                                    <Label Text="{Binding ScoreValue}" VerticalOptions="Center" FontSize="16" />
+                                </HorizontalStackLayout>
+
+                                <BoxView HeightRequest="1" BackgroundColor="{StaticResource Gray300}" Margin="0,10" />
+
+                                <Label Text="Task Execution" FontSize="16" FontAttributes="Bold" />
+
+                                <HorizontalStackLayout Spacing="10">
+                                    <CheckBox IsChecked="{Binding RunImmediately}" Color="{StaticResource ADRIFTPrimary}" />
+                                    <Label Text="Run immediately at game start (System tasks only)" VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+
+                                <HorizontalStackLayout Spacing="10">
+                                    <CheckBox IsChecked="{Binding IsLocationTrigger}" Color="{StaticResource ADRIFTPrimary}" />
+                                    <Label Text="Execute when entering a location" VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+
+                                <Label Text="Trigger Location Key:" FontAttributes="Bold" />
+                                <Entry Text="{Binding TriggerLocationKey}" Placeholder="Location key (if location trigger)"
+                                       IsEnabled="{Binding IsLocationTrigger}" />
+
+                                <BoxView HeightRequest="1" BackgroundColor="{StaticResource Gray300}" Margin="0,10" />
+
+                                <Label Text="Specific Task Settings" FontSize="16" FontAttributes="Bold" />
+
+                                <Label Text="Specific Override Type:" FontAttributes="Bold" />
+                                <Picker ItemsSource="{Binding SpecificOverrideTypes}" SelectedItem="{Binding SelectedSpecificOverride}" />
+
+                                <Button Text="Add Specific" Command="{Binding AddSpecificCommand}"
+                                        BackgroundColor="{StaticResource ADRIFTPrimary}" TextColor="White" />
+
+                                <CollectionView ItemsSource="{Binding Specifics}" Margin="0,5,0,0">
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate x:DataType="viewmodels:TaskSpecificViewModel">
+                                            <SwipeView>
+                                                <SwipeView.RightItems>
+                                                    <SwipeItem Text="Delete" BackgroundColor="Red"
+                                                              Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:TaskEditorViewModel}}, Path=RemoveSpecificCommand}"
+                                                              CommandParameter="{Binding .}" />
+                                                </SwipeView.RightItems>
+                                                <Frame Padding="10" Margin="0,3" BorderColor="{StaticResource Gray200}">
+                                                    <Grid ColumnDefinitions="Auto,*">
+                                                        <Label Grid.Column="0" Text="{Binding Type}" FontAttributes="Bold" WidthRequest="100" />
+                                                        <Label Grid.Column="1" Text="{Binding Details}" />
+                                                    </Grid>
+                                                </Frame>
+                                            </SwipeView>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                    <CollectionView.EmptyView>
+                                        <Label Text="No specifics defined." TextColor="{StaticResource Gray600}" Margin="5" FontSize="12" />
+                                    </CollectionView.EmptyView>
+                                </CollectionView>
+
+                                <BoxView HeightRequest="1" BackgroundColor="{StaticResource Gray300}" Margin="0,10" />
+
+                                <Label Text="Command References" FontSize="16" FontAttributes="Bold" />
+                                <Button Text="Add Reference" Command="{Binding AddReferenceCommand}"
+                                        BackgroundColor="{StaticResource ADRIFTPrimary}" TextColor="White" />
+
+                                <CollectionView ItemsSource="{Binding References}" Margin="0,5,0,0">
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate x:DataType="viewmodels:TaskReferenceViewModel">
+                                            <SwipeView>
+                                                <SwipeView.RightItems>
+                                                    <SwipeItem Text="Delete" BackgroundColor="Red"
+                                                              Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:TaskEditorViewModel}}, Path=RemoveReferenceCommand}"
+                                                              CommandParameter="{Binding .}" />
+                                                </SwipeView.RightItems>
+                                                <Frame Padding="10" Margin="0,3" BorderColor="{StaticResource Gray200}">
+                                                    <Grid ColumnDefinitions="Auto,Auto,*">
+                                                        <Label Grid.Column="0" Text="{Binding ReferenceNumber, StringFormat='#{0}'}" FontAttributes="Bold" WidthRequest="40" />
+                                                        <Label Grid.Column="1" Text="{Binding Type}" WidthRequest="100" />
+                                                        <Label Grid.Column="2" Text="{Binding IsOptional, StringFormat='Optional: {0}'}" FontSize="12" TextColor="{StaticResource Gray600}" />
+                                                    </Grid>
+                                                </Frame>
+                                            </SwipeView>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                    <CollectionView.EmptyView>
+                                        <Label Text="No references defined." TextColor="{StaticResource Gray600}" Margin="5" FontSize="12" />
+                                    </CollectionView.EmptyView>
+                                </CollectionView>
+                            </VerticalStackLayout>
+
+                        </VerticalStackLayout>
+                    </Frame>
+                </Grid>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Action Buttons -->
+        <Frame Grid.Row="1" BackgroundColor="{StaticResource ADRIFTLight}" Padding="15" CornerRadius="0" Margin="0">
+            <Grid ColumnDefinitions="*,Auto,Auto,Auto">
+                <Label Grid.Column="0" Text="{Binding StatusMessage}" VerticalOptions="Center" FontSize="14" />
+                <Button Grid.Column="1" Text="Cancel" Command="{Binding CancelCommand}" Margin="5,0" />
+                <Button Grid.Column="2" Text="Apply" Command="{Binding ApplyCommand}" Margin="5,0" />
+                <Button Grid.Column="3" Text="Save & Close" Command="{Binding SaveAndCloseCommand}"
+                        BackgroundColor="{StaticResource ADRIFTPrimary}" TextColor="White" Margin="5,0" />
+            </Grid>
+        </Frame>
+
+    </Grid>
 
 </ContentPage>
