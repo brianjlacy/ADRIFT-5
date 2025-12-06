@@ -348,11 +348,11 @@ Priority: Easiest to hardest
 
 ## 🔥 Phase 6: Complex Editor Pages
 
-**Status**: ✅ In Progress (2/3 Complete)
+**Status**: ✅ COMPLETE (3/3)
 **Duration**: Week 17-22
 **Target**: 2026-03-30
 
-### Complex Editors (2/3)
+### Complex Editors (3/3)
 
 - [x] **TaskEditorPage** ✅ COMPLETE
   - **Implementation**: Comprehensive tabbed interface with 5 organized tabs
@@ -394,22 +394,28 @@ Priority: Easiest to hardest
   - [x] GenTextBox.xaml.cs - Bindable properties and event handlers
   - [x] MarkdownAdapter.cs - Conversion utilities
 
-- [ ] **ExpressionBuilderPage** (Logic Expression Editor)
-  - **Challenge**: Nested logical expressions (AND/OR/NOT)
+- [x] **RestrictionBuilder Control** ✅ COMPLETE (simplified from ExpressionBuilderPage)
+  - **Implementation**: Reusable control for building restriction lists
+  - **Approach**: List-based builder instead of full tree-based expression editor
+  - **Rationale**: Restriction model doesn't yet support compound AND/OR/NOT logic; list-based is more practical for MVP
 
-  **Features**:
-  - [ ] Expression tree view
-  - [ ] Add condition
-  - [ ] Group conditions
-  - [ ] Edit condition
-  - [ ] Test expression
-  - [ ] Visual tree display
+  **Features Implemented** ✅:
+  - [x] Restriction type selector (8 types: Location, Object, Character, Task, Variable, Property, Direction, Expression)
+  - [x] Must/Must Not toggle
+  - [x] Add/Edit/Remove restrictions
+  - [x] Fail message configuration
+  - [x] User-friendly display with RestrictionDisplayModel
+  - [x] Swipe gestures for deletion
+
+  **Components Created** ✅:
+  - [x] RestrictionBuilder.xaml - Reusable control
+  - [x] RestrictionBuilder.xaml.cs - Logic and RestrictionDisplayModel
 
 ### Completion Criteria
 
 - [x] Task editor functional (simplified tabbed UI) ✅
 - [x] Rich text editing working (GenTextBox with Markdown) ✅
-- [ ] Expression builder operational
+- [x] Restriction builder operational (RestrictionBuilder control) ✅
 - [ ] All features tested
 - [ ] Performance optimized
 
