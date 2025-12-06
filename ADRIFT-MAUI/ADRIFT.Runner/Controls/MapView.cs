@@ -36,6 +36,11 @@ public class MapView : GraphicsView
             Invalidate();
         }
     }
+
+    public string? GetLocationAtPoint(Point tapPoint)
+    {
+        return _drawable.GetLocationAtPoint(new PointF((float)tapPoint.X, (float)tapPoint.Y));
+    }
 }
 
 /// <summary>
@@ -46,6 +51,10 @@ public class MapDrawable : IDrawable
     private Adventure? _adventure;
     private string _currentLocationKey = "";
     private Dictionary<string, PointF> _locationPositions = new();
+    private float _lastScale = 1.0f;
+    private float _lastMinX = 0;
+    private float _lastMinY = 0;
+    private RectF _lastDirtyRect = new();
 
     public void SetAdventure(Adventure adventure, GameState state)
     {
@@ -175,6 +184,12 @@ public class MapDrawable : IDrawable
         var scale = Math.Min(scaleX, scaleY);
         scale = Math.Min(scale, 1.5f); // Cap maximum scale
 
+        // Store transform parameters for hit testing
+        _lastScale = scale;
+        _lastMinX = minX;
+        _lastMinY = minY;
+        _lastDirtyRect = dirtyRect;
+
         // Draw connections first (so they appear behind rooms)
         DrawConnections(canvas, scale, minX, minY, dirtyRect);
 
@@ -265,5 +280,32 @@ public class MapDrawable : IDrawable
         canvas.FontColor = Colors.Gray;
         canvas.FontSize = 14;
         canvas.DrawString("No map available", dirtyRect.Center.X, dirtyRect.Center.Y, HorizontalAlignment.Center);
+    }
+
+    public string? GetLocationAtPoint(PointF tapPoint)
+    {
+        if (_adventure == null || _locationPositions.Count == 0)
+            return null;
+
+        const float roomSize = 60;
+        const float hitRadius = roomSize / 2;
+
+        // Check each location to see if tap is within its bounds
+        foreach (var kvp in _locationPositions)
+        {
+            var transformedPos = TransformPosition(kvp.Value, _lastScale, _lastMinX, _lastMinY, _lastDirtyRect);
+
+            // Check if tap is within room rectangle
+            var dx = tapPoint.X - transformedPos.X;
+            var dy = tapPoint.Y - transformedPos.Y;
+            var distance = Math.Sqrt(dx * dx + dy * dy);
+
+            if (distance <= hitRadius)
+            {
+                return kvp.Key;
+            }
+        }
+
+        return null;
     }
 }
