@@ -499,11 +499,11 @@ Priority: Easiest to hardest
 
 ## 🎮 Phase 8: Runner Application
 
-**Status**: 🚧 In Progress (8/10 - 80%)
+**Status**: 🚧 In Progress (9/10 - 90%)
 **Duration**: Week 26-28
 **Target**: 2026-05-11
 
-### Runner Components (8/10)
+### Runner Components (9/10)
 
 - [x] **GamePage** ✅ COMPLETE (Main game interface)
   - Text output display with color-coded lines
@@ -573,10 +573,14 @@ Priority: Easiest to hardest
   - Reset to defaults with confirmation
   - SettingsChanged event and public getters
 
-- [ ] **AboutPage**
-  - Version info
-  - Credits
-  - Help
+- [x] **AboutPage** ✅ COMPLETE
+  - App version from assembly
+  - Adventure information (title, author, version, genre)
+  - About ADRIFT description
+  - Credits (Original creator, MAUI implementation, tech stack)
+  - Clickable links (Website, Forums, Manual)
+  - License information
+  - System information (Platform, .NET version, Device details)
 
 - [ ] **AudioService**
   - Play sound
