@@ -47,6 +47,9 @@ public static class MauiProgram
         builder.Services.AddTransient<HintEditorViewModel>();
         builder.Services.AddTransient<WalkEditorViewModel>();
 
+        // Register ViewModels - Runner
+        builder.Services.AddTransient<GameViewModel>();
+
         // Register Views - Main & List Pages
         builder.Services.AddTransient<MainPage>();
         builder.Services.AddTransient<LocationListPage>();
@@ -70,6 +73,9 @@ public static class MauiProgram
         builder.Services.AddTransient<HintEditorPage>();
         builder.Services.AddTransient<SettingsPage>();
         builder.Services.AddTransient<WalkEditorPage>();
+
+        // Register Views - Runner
+        builder.Services.AddTransient<GamePage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

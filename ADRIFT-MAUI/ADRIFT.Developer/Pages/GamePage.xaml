@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ADRIFT.Developer.Pages.GamePage"
+             xmlns:viewmodels="clr-namespace:ADRIFT.Developer.ViewModels"
+             x:DataType="viewmodels:GameViewModel"
+             Title="ADRIFT Runner"
+             Shell.NavBarIsVisible="True">
+
+    <Grid RowDefinitions="Auto,*,Auto,Auto">
+
+        <!-- Status Bar -->
+        <Frame Grid.Row="0" BackgroundColor="{StaticResource ADRIFTLight}"
+               Padding="10" CornerRadius="0" Margin="0">
+            <Grid ColumnDefinitions="*,Auto,Auto,Auto">
+                <Label Grid.Column="0" Text="{Binding CurrentLocation}"
+                       FontSize="12" FontAttributes="Bold" VerticalOptions="Center"/>
+                <Label Grid.Column="1" Text="{Binding CurrentTurn, StringFormat='Turn: {0}'}"
+                       FontSize="12" Margin="10,0" VerticalOptions="Center"/>
+                <Label Grid.Column="2" Text="{Binding CurrentScore, StringFormat='Score: {0}'}"
+                       FontSize="12" Margin="10,0" VerticalOptions="Center"/>
+                <Button Grid.Column="3" Text="⋮" FontSize="18"
+                        Clicked="OnMenuClicked"
+                        BackgroundColor="Transparent"
+                        WidthRequest="40" HeightRequest="40"/>
+            </Grid>
+        </Frame>
+
+        <!-- Game Output -->
+        <ScrollView Grid.Row="1" x:Name="OutputScrollView" Padding="10">
+            <CollectionView ItemsSource="{Binding OutputLines}" SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="viewmodels:GameOutputLine">
+                        <Label Text="{Binding Text}"
+                               TextColor="{Binding TextColor}"
+                               FontAttributes="{Binding FontAttribute}"
+                               FontSize="14"
+                               LineBreakMode="WordWrap"
+                               Margin="0,2"/>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </ScrollView>
+
+        <!-- Command Input -->
+        <Frame Grid.Row="2" BackgroundColor="{StaticResource Gray100}"
+               Padding="10" CornerRadius="0" Margin="0">
+            <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                <Label Grid.Column="0" Text=">" FontSize="16" FontAttributes="Bold"
+                       VerticalOptions="Center" Margin="0,0,10,0"/>
+
+                <Entry Grid.Column="1"
+                       Text="{Binding CurrentCommand, Mode=TwoWay}"
+                       Placeholder="Enter command..."
+                       ReturnCommand="{Binding ProcessCommandCommand}"
+                       FontSize="14"
+                       IsEnabled="{Binding IsGameRunning}"
+                       x:Name="CommandEntry"/>
+
+                <Button Grid.Column="2" Text="↑" FontSize="16"
+                        Command="{Binding PreviousCommandCommand}"
+                        BackgroundColor="Transparent"
+                        WidthRequest="40" HeightRequest="40"
+                        ToolTipProperties.Text="Previous command"/>
+
+                <Button Grid.Column="3" Text="↓" FontSize="16"
+                        Command="{Binding NextCommandCommand}"
+                        BackgroundColor="Transparent"
+                        WidthRequest="40" HeightRequest="40"
+                        ToolTipProperties.Text="Next command"/>
+            </Grid>
+        </Frame>
+
+        <!-- Bottom Status -->
+        <Frame Grid.Row="3" BackgroundColor="{StaticResource ADRIFTPrimary}"
+               Padding="8" CornerRadius="0" Margin="0">
+            <Grid ColumnDefinitions="*,Auto">
+                <Label Grid.Column="0" Text="{Binding StatusMessage}"
+                       TextColor="White" FontSize="11" VerticalOptions="Center"/>
+                <Button Grid.Column="1" Text="New Game"
+                        Command="{Binding StartNewGameCommand}"
+                        BackgroundColor="White"
+                        TextColor="{StaticResource ADRIFTPrimary}"
+                        FontSize="12" Padding="12,6"
+                        CornerRadius="4"/>
+            </Grid>
+        </Frame>
+
+    </Grid>
+
+</ContentPage>
