@@ -499,11 +499,11 @@ Priority: Easiest to hardest
 
 ## 🎮 Phase 8: Runner Application
 
-**Status**: 🚧 In Progress (5/10 - 50%)
+**Status**: 🚧 In Progress (6/10 - 60%)
 **Duration**: Week 26-28
 **Target**: 2026-05-11
 
-### Runner Components (5/10)
+### Runner Components (6/10)
 
 - [x] **GamePage** ✅ COMPLETE (Main game interface)
   - Text output display with color-coded lines
@@ -544,10 +544,14 @@ Priority: Easiest to hardest
   - Refresh button and location info display
   - Adjacent location detection and filtering
 
-- [ ] **InventoryPage**
-  - List carried items
-  - Item actions
-  - Examine item
+- [x] **InventoryPage** ✅ COMPLETE
+  - Dynamic item list with carried items from game state
+  - Item cards with name and short description
+  - Three action buttons: Examine (👁️), Use (⚡), Drop (🗑️)
+  - Full item description in examine dialog
+  - ItemActionRequested event for game engine integration
+  - Empty state with helpful message
+  - Item count display and refresh button
 
 - [ ] **SaveLoadPage**
   - Save game
