@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ADRIFT.Developer.Controls.CommandInputControl"
+             xmlns:controls="clr-namespace:ADRIFT.Developer.Controls"
+             x:Name="this">
+
+    <Grid RowDefinitions="Auto,Auto">
+
+        <!-- Quick Commands -->
+        <ScrollView Grid.Row="0" Orientation="Horizontal" HeightRequest="40"
+                    IsVisible="{Binding ShowQuickCommands, Source={x:Reference this}}">
+            <HorizontalStackLayout x:Name="QuickCommandsContainer" Spacing="5" Padding="5"/>
+        </ScrollView>
+
+        <!-- Command Input -->
+        <Frame Grid.Row="1" BackgroundColor="{StaticResource Gray100}"
+               Padding="10" CornerRadius="0" Margin="0">
+            <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto">
+
+                <!-- Prompt -->
+                <Label Grid.Column="0" Text=">" FontSize="16" FontAttributes="Bold"
+                       VerticalOptions="Center" Margin="0,0,10,0"/>
+
+                <!-- AutoComplete Entry -->
+                <controls:AutoCompleteCombo Grid.Column="1" x:Name="CommandEntry"
+                                           Placeholder="{Binding Placeholder, Source={x:Reference this}}"
+                                           MinimumPrefixLength="1"
+                                           MaxSuggestions="8"
+                                           ItemSelected="OnCommandSelected"/>
+
+                <!-- History Buttons -->
+                <Button Grid.Column="2" Text="↑" FontSize="16"
+                        Clicked="OnPreviousCommand"
+                        BackgroundColor="Transparent"
+                        WidthRequest="40" HeightRequest="40"
+                        ToolTipProperties.Text="Previous command (Ctrl+↑)"/>
+
+                <Button Grid.Column="3" Text="↓" FontSize="16"
+                        Clicked="OnNextCommand"
+                        BackgroundColor="Transparent"
+                        WidthRequest="40" HeightRequest="40"
+                        ToolTipProperties.Text="Next command (Ctrl+↓)"/>
+
+                <!-- Submit Button -->
+                <Button Grid.Column="4" Text="➤" FontSize="16"
+                        Clicked="OnSubmitCommand"
+                        BackgroundColor="{StaticResource ADRIFTPrimary}"
+                        TextColor="White"
+                        WidthRequest="50" HeightRequest="40"
+                        CornerRadius="4"
+                        ToolTipProperties.Text="Submit (Enter)"/>
+
+            </Grid>
+        </Frame>
+
+    </Grid>
+
+</ContentView>
